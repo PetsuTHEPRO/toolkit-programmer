@@ -74,6 +74,10 @@ class SystemController {
     store.commit('REMOVE_IMAGE', imagesStorage)
     this.saveSystem()
   }
+  static clearMessagesLog(){
+    store.commit('CLEAR_LOG')
+    this.saveSystem()
+  }
   static getColor() {
     return store.getters['getColorCount']
   }

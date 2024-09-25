@@ -110,6 +110,9 @@ const store = createStore({
       }
       this.commit('ADD_LOG_MESSAGE', logEntry)
     },
+    CLEAR_LOG(state){
+      state.log = []
+    },
     SET_COLOR_COUNT(state, count) {
       state.colorCount = count
     },

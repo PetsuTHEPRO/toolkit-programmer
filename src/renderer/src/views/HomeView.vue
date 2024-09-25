@@ -31,8 +31,9 @@ import ActivityCalendar from '@renderer/components/ActivityCalendar.vue'
         <div class="row mb-4">
           <div class="col">
             <div class="card">
-              <div class="card-header">
+              <div class="card-header d-flex align-items-center justify-content-between">
                 <h5>Log de Atividades</h5>
+                <button class="btn btn-danger" @click="clearLog">Clear Log</button>
               </div>
               <div class="card-body p-0">
                 <pre class="bg-dark text-light p-3 m-0" style="max-height: 250px">
@@ -109,6 +110,9 @@ export default {
     SystemController.updateSystem()
   },
   methods: {
+    clearLog() {
+      SystemController.clearMessagesLog()
+    },
     getLogTypeColor(type) {
       switch (type) {
         case 'COR':
