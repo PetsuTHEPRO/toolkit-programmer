@@ -1,4 +1,5 @@
 import store from '../stores/sistema'
+import notification from '../service/notificationService'
 
 class SystemController {
   static updateSystem() {
@@ -23,6 +24,7 @@ class SystemController {
   static updateColor(change) {
     const data = JSON.parse(change)
     store.commit('ADD_COLOR_COUNT', { type: 'color', data })
+    notification.success('Cor adicionada com sucesso!')
     this.saveSystem()
   }
 
@@ -30,51 +32,59 @@ class SystemController {
     let linksStorage = store.getters['getLinksStorage']
     linksStorage.push(change)
     store.commit('ADD_LINK', linksStorage)
+    notification.success('Link adicionado com sucesso!')
     this.saveSystem()
   }
   static deleteLink(change) {
     let linksStorage = store.getters['getLinksStorage']
     linksStorage.splice(change, 1)
     store.commit('REMOVE_LINK', linksStorage)
+    notification.success('Link removido com sucesso!')
     this.saveSystem()
   }
   static addFont(change) {
     let fontsStorage = store.getters['getFontsStorage']
     fontsStorage.push(change)
     store.commit('ADD_FONT', fontsStorage)
+    notification.success('Fonte adicionada com sucesso!')
     this.saveSystem()
   }
   static deleteFont(change) {
     let fontsStorage = store.getters['getFontsStorage']
     fontsStorage.splice(change, 1)
     store.commit('REMOVE_FONT', fontsStorage)
+    notification.success('Fonte removida com sucesso!')
     this.saveSystem()
   }
   static addFramework(change) {
     let frameworksStorage = store.getters['getFrameworksStorage']
     frameworksStorage.push(change)
     store.commit('ADD_FRAMEWORK', frameworksStorage)
+    notification.success('Framework adicionado com sucesso!')
     this.saveSystem()
   }
   static deleteFramework(change) {
     let frameworksStorage = store.getters['getFrameworksStorage']
     frameworksStorage.splice(change, 1)
     store.commit('REMOVE_FRAMEWORK', frameworksStorage)
+    notification.success('Framework removido com sucesso!')
     this.saveSystem()
   }
   static addImage(change) {
     let imagesStorage = store.getters['getImagesStorage']
     imagesStorage.push(change)
     store.commit('ADD_IMAGE', imagesStorage)
+    notification.success('Imagem adicionada com sucesso!')
     this.saveSystem()
   }
   static deleteImage(change) {
     let imagesStorage = store.getters['getImagesStorage']
     imagesStorage.splice(change, 1)
     store.commit('REMOVE_IMAGE', imagesStorage)
+    notification.success('Imagem removida com sucesso!')
     this.saveSystem()
   }
-  static clearMessagesLog(){
+  static clearMessagesLog() {
     store.commit('CLEAR_LOG')
     this.saveSystem()
   }
