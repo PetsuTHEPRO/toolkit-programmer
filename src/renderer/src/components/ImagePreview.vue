@@ -33,7 +33,7 @@
               <div class="text-muted">
                 <p><strong>Size:</strong> {{ image.width }} x {{ image.height }}</p>
                 <p><strong>Format:</strong> {{ image.format }}</p>
-                <p><strong>File Size:</strong> {{ image.size }} Teste</p>
+                <p><strong>File Size:</strong> {{ image.size }}</p>
               </div>
             </div>
             <div class="mb-4">

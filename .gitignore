@@ -16,7 +16,7 @@ out/
 .env.production.local
 
 # Ignorar imagens
-/assets/images/*
+/src/renderer/src/assets/images/*
 
 # Arquivos do sistema
 .DS_Store
