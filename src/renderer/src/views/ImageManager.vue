@@ -16,32 +16,48 @@ import ModalIcon from '@renderer/components/IconModal.vue'
           </ol>
         </nav>
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h2>Imagem</h2>
-          <div class="d-flex">
-            <button
-              type="button"
-              class="btn btn-outline-primary me-2 d-flex align-items-center"
-              @click="showModal[0] = true"
-            >
-              <i class="bx bx-upload me-1"></i>
-              Upload
-            </button>
+        <div class="card mb-5">
+          <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="card-title">Imagens Recentes</h5>
+            <div class="d-flex">
+              <button
+                type="button"
+                class="btn btn-outline-primary me-2 d-flex align-items-center"
+                @click="showModal[0] = true"
+              >
+                <i class="bx bx-upload me-1"></i>
+                Upload
+              </button>
 
-            <router-link :to="{ name: 'gallery' }" class="btn btn-outline-primary d-flex align-items-center">
-              <i class="bx bx-plus-circle me-1"></i>
-              Ver mais
-            </router-link>
+              <router-link
+                :to="{ name: 'gallery' }"
+                class="btn btn-outline-primary d-flex align-items-center"
+              >
+                <i class="bx bx-plus-circle me-1"></i>
+                Ver mais
+              </router-link>
+            </div>
           </div>
-        </div>
 
-        <!-- Grid de Cards de Imagens -->
-        <div class="row m-0">
-          <div v-for="image in images" :key="image.id" class="col-md-4">
-            <div class="card mb-4 shadow-sm">
-              <img :src="getImageSrc(image.path)" class="card-img-top" :alt="image.alt" />
-              <div class="card-body">
-                <p class="card-text">{{ image.description }}</p>
+          <div class="card-body py-0">
+            <div class="overflow-auto" style="max-height: 400px">
+              <!-- Grid de Cards de Imagens -->
+              <div v-if="images.length === 0" class="text-center text-gray my-3">
+                Nenhuma imagem encontrada.
+              </div>
+              <div class="row m-0">
+                <div v-for="image in images" :key="image.id" class="col-md-4 mt-3">
+                  <div class="card mb-4 shadow-sm">
+                    <img
+                      :src="getImageSrc(image.path)"
+                      class="card-img-top"
+                      :alt="image.fileName"
+                    />
+                    <div class="card-body">
+                      <p class="card-text">{{ image.description }}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -50,7 +66,11 @@ import ModalIcon from '@renderer/components/IconModal.vue'
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h2>Icons</h2>
           <div class="d-flex">
-            <button type="button" class="btn btn-outline-primary me-2 d-flex align-items-center" @click="showModal[1] = true">
+            <button
+              type="button"
+              class="btn btn-outline-primary me-2 d-flex align-items-center"
+              @click="showModal[1] = true"
+            >
               <i class="bx bx-upload me-1"></i>
               Upload
             </button>
@@ -110,18 +130,18 @@ export default {
       // Lista de ícones com suas CDNs e dados
       icons: [
         {
-          name: "Smile Icon",
-          framework: "Boxicons",
-          class: "bx bx-smile",
-          link: "https://boxicons.com/",
-          cdn: "https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+          name: 'Smile Icon',
+          framework: 'Boxicons',
+          class: 'bx bx-smile',
+          link: 'https://boxicons.com/',
+          cdn: 'https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'
         },
         {
-          name: "Heart Icon",
-          framework: "Bootstrap Icons",
-          class: "bi bi-tencent-qq",
-          link: "https://icons.getbootstrap.com/",
-          cdn: "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+          name: 'Heart Icon',
+          framework: 'Bootstrap Icons',
+          class: 'bi bi-tencent-qq',
+          link: 'https://icons.getbootstrap.com/',
+          cdn: 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'
         }
       ]
     }

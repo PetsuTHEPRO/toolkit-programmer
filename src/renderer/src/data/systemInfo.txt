@@ -1,1 +1,1 @@
-"{\"colorCount\":0,\"linkCount\":0,\"fontCount\":0,\"log\":[]}"
+"{\"colorCount\":0,\"linkCount\":0,\"fontCount\":0,\"log\":[{\"timestamp\":\"2024-09-25 20:29:50\",\"type\":\"IMAGEM\",\"description\":\"Uma imagem foi adicionada com sucesso.\"},{\"timestamp\":\"2024-09-25 20:29:35\",\"type\":\"IMAGEM\",\"description\":\"Uma imagem foi adicionada com sucesso.\"},{\"timestamp\":\"2024-09-25 20:20:56\",\"type\":\"IMAGEM\",\"description\":\"Uma imagem foi adicionada com sucesso.\"}]}"
