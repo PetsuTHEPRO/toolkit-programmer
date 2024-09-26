@@ -3,6 +3,12 @@ import { createStore } from 'vuex'
 const store = createStore({
   // store/modules/sistema.js
   state: {
+    sidebarOpen: true,
+    submenus: {
+      Resources: false,
+      Developers: false,
+      Learn: false
+    },
     colorCount: 0,
     linkCount: 0,
     fontCount: 0,
@@ -145,6 +151,18 @@ const store = createStore({
       if (state.log.length > 20) {
         state.log.pop()
       }
+    },
+    TOGGLE_SIDEBAR(state) {
+      state.sidebarOpen = !state.sidebarOpen
+    },
+    TOGGLE_SUBMENU(state, submenu) {
+      state.submenus[submenu] = !state.submenus[submenu]
+    },
+    SET_SIDEBAR(state, isOpen) {
+      state.sidebarOpen = isOpen
+    },
+    SET_SUBMENU(state, { submenu, isOpen }) {
+      state.submenus[submenu] = isOpen
     }
   },
   actions: {
@@ -162,6 +180,12 @@ const store = createStore({
     },
     addLogMessage({ commit }, { type, description }) {
       commit('ADD_LOG_MESSAGE', { type, description })
+    },
+    toggleSidebar({ commit }) {
+      commit('TOGGLE_SIDEBAR')
+    },
+    toggleSubmenu({ commit }, submenu) {
+      commit('TOGGLE_SUBMENU', submenu)
     }
   },
   getters: {
@@ -180,7 +204,9 @@ const store = createStore({
     getLinksStorage: (state) => state.linksStorage,
     getFontsStorage: (state) => state.fontsStorage,
     getFrameworksStorage: (state) => state.frameworksStorage,
-    getImagesStorage: (state) => state.imagesStorage
+    getImagesStorage: (state) => state.imagesStorage,
+    isSidebarOpen: state => state.sidebarOpen,
+    isSubmenuOpen: state => submenu => state.submenus[submenu]
   }
 })
 

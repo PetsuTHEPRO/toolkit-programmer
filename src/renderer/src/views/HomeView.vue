@@ -13,6 +13,7 @@ import ActivityCalendar from '@renderer/components/ActivityCalendar.vue'
             <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
           </ol>
         </nav>
+        <router-link class="btn btn-primary" :to="{ name: 'color' }">Abrir Color</router-link>
         <div class="row g-4 mb-4">
           <div v-for="(stat, index) in stats" :key="index" class="col">
             <div class="card">
