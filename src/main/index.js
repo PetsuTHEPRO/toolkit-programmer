@@ -99,6 +99,10 @@ ipcMain.on('load-images', (event) => {
   event.returnValue = images
 })
 
+ipcMain.on('load-palettes', (event) => {
+  let palettes = fileManager.loadPalettes()
+  event.returnValue = palettes
+})
 // Comunicação IPC para salvar os links no arquivo
 ipcMain.handle('save-system-info', async (event, systemInfo) => {
   fileManager.saveSystemInfo(systemInfo)
@@ -124,6 +128,12 @@ ipcMain.handle('save-images', async (event, images) => {
   fileManager.saveImages(images)
   return true
 })
+
+ipcMain.handle('save-palettes', async (event, palettes) => {
+  fileManager.savePalettes(palettes)
+  return true
+})
+
 // Manipulador IPC para upload de imagem
 ipcMain.handle('upload-image', async (event, imageBuffer, fileName) => {
   const filePath = join(uploadsPath, fileName)

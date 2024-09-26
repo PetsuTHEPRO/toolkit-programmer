@@ -14,13 +14,11 @@ import FrameworkModal from '../components/FrameworkModal.vue'
             <li class="breadcrumb-item active" aria-current="page">Framework</li>
           </ol>
         </nav>
-        <div class="card my-5">
+        <div class="card mt-5 mb-4">
           <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="card-title">Pesquisar Links</h5>
-            <button class="btn btn-primary btn-sm" @click="showModal = true">
-              Adicionar Framework
-            </button>
           </div>
+
           <div class="card-body">
             <div class="input-group">
               <input
@@ -33,6 +31,27 @@ import FrameworkModal from '../components/FrameworkModal.vue'
               <button class="btn btn-outline-secondary" type="button">
                 <i class="bx bx-search"></i>
               </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-2">
+          <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="card-title">Lista de Framework/API</h5>
+            <button
+              type="button"
+              class="btn btn-outline-primary me-2 d-flex align-items-center"
+              @click="showModal = true"
+            >
+              <i class="bx bx-plus-circle me-1"></i>
+              Adicionar
+            </button>
+          </div>
+          <div v-if="frameworks.length === 0" class="card-body py-0">
+            <div class="overflow-auto" style="max-height: 400px">
+              <ul class="list-unstyled">
+                <li class="text-center text-gray mt-3">Nenhum framework/API encontrado.</li>
+              </ul>
             </div>
           </div>
         </div>

@@ -16,25 +16,10 @@ const store = createStore({
     linksStorage: [],
     fontsStorage: [],
     frameworksStorage: [],
-    imagesStorage: []
+    imagesStorage: [],
+    palettesStorage: []
   },
   mutations: {
-    ADD_COLOR_COUNT(state, count) {
-      if (state.colorCount === 0 && count.change < 0) {
-        return
-      }
-
-      state.colorCount += count.change
-
-      // Cria uma mensagem de log
-      const logEntry = {
-        type: 'COR', // Tipo de log, por exemplo, 'COR'
-        description: `Uma cor foi ${count.change > 0 ? 'adicionada' : 'removida'} com sucesso. Total de cores: [${state.colorCount}].`
-      }
-
-      // Adiciona a mensagem ao log
-      this.commit('ADD_LOG_MESSAGE', logEntry)
-    },
     ADD_LINK(state, links) {
       state.linkCount += 1
       state.linksStorage = links
@@ -116,6 +101,26 @@ const store = createStore({
       }
       this.commit('ADD_LOG_MESSAGE', logEntry)
     },
+    ADD_PALETTE(state, payload) {
+      state.colorCount += payload.count
+      state.palettesStorage = payload.palettes
+
+      const logEntry = {
+        type: 'COR', // Tipo de log, por exemplo, 'COR'
+        description: `Uma paleta foi adicionada com sucesso! Com ${payload.count} cores adicionadas.`
+      }
+      this.commit('ADD_LOG_MESSAGE', logEntry)
+    },
+    REMOVE_PALETTE(state, payload) {
+      state.colorCount -= payload.count
+      state.palettesStorage = payload.palettes
+
+      const logEntry = {
+        type: 'COR', // Tipo de log, por exemplo, 'COR'
+        description: `Uma paleta foi removida com sucesso!  Com ${payload.count} cores removidas.`
+      }
+      this.commit('ADD_LOG_MESSAGE', logEntry)
+    },
     CLEAR_LOG(state){
       state.log = []
     },
@@ -139,6 +144,9 @@ const store = createStore({
     },
     SET_IMAGES_STORAGE(state, images) {
       state.imagesStorage = images
+    },
+    SET_PALETTES_STORAGE(state, palettes) {
+      state.palettesStorage = palettes
     },
     SET_LOG(state, log) {
       state.log = log
@@ -205,6 +213,7 @@ const store = createStore({
     getFontsStorage: (state) => state.fontsStorage,
     getFrameworksStorage: (state) => state.frameworksStorage,
     getImagesStorage: (state) => state.imagesStorage,
+    getPalettesStorage: (state) => state.palettesStorage,
     isSidebarOpen: state => state.sidebarOpen,
     isSubmenuOpen: state => submenu => state.submenus[submenu]
   }

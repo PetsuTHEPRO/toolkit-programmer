@@ -1,5 +1,6 @@
 <script setup>
 import Sidebar from '../components/Sidebar.vue'
+import ColorModal from '../components/ColorModal.vue'
 </script>
 
 <template>
@@ -12,18 +13,17 @@ import Sidebar from '../components/Sidebar.vue'
         </ol>
       </nav>
       <div class="col d-flex align-items-center justify-content-center">
-        <div class="card w-100 max-w-4xl">
+        <div class="card w-100">
           <div class="card-header">
-            <h5 class="card-title text-center text-2xl font-bold mb-4">
-              Galeria de Paletas de Cores
-            </h5>
+            <h5 class="card-title text-center font-bold mb-4">Galeria de Paletas de Cores</h5>
             <!-- Barra de Pesquisa -->
             <div class="input-group mb-3">
               <input
+                v-model="searchTerm"
                 type="text"
                 class="form-control"
                 placeholder="Pesquisar paletas..."
-                v-model="searchQuery"
+                @input="handleSearch"
               />
               <button class="btn btn-outline-secondary" type="button" @click="clearSearch">
                 Limpar
@@ -31,32 +31,42 @@ import Sidebar from '../components/Sidebar.vue'
             </div>
           </div>
           <div class="card-body">
-            <div class="row g-4 mb-4">
-              <div v-if="filteredPalettes.length === 0" class="text-center">
+            <div class="row g-4">
+              <div class="w-100 d-flex justify-content-end">
+                <button
+                  type="button"
+                  class="btn btn-outline-primary me-2 d-flex align-items-center"
+                  @click="showModal = true"
+                >
+                  Add Palette
+                </button>
+              </div>
+              <div v-if="palettes.length === 0" class="text-center">
                 <p>Nenhuma paleta encontrada.</p>
               </div>
-              <div v-for="(palette, index) in displayedPalettes" :key="index" class="col-md-6">
+              <div v-for="(palette, index) in palettes" :key="index" class="col-md-4">
                 <ColorPalette
                   :colors="palette.colors"
-                  :title="palette.title"
+                  :title="palette.name"
                   :description="palette.description"
                 />
               </div>
             </div>
           </div>
           <div class="card-footer d-flex justify-content-between">
-            <button class="btn btn-outline-primary" @click="prevPage" :disabled="currentPage === 1">
+            <button class="btn btn-outline-primary" :disabled="currentPage === 1" @click="prevPage" >
               <i class="bi bi-chevron-left me-2"></i> Anterior
             </button>
             <span>Página {{ currentPage }} de {{ totalPages }}</span>
             <button
               class="btn btn-outline-primary"
-              @click="nextPage"
               :disabled="currentPage === totalPages"
+              @click="nextPage"
             >
               Próxima <i class="bi bi-chevron-right ms-2"></i>
             </button>
           </div>
+          <ColorModal :visible="showModal" @close="showModal = false"></ColorModal>
         </div>
       </div>
     </div>
@@ -66,30 +76,7 @@ import Sidebar from '../components/Sidebar.vue'
 <script>
 import { mapGetters } from 'vuex'
 import ColorPalette from '../components/ColorPalette.vue'
-
-function generateRandomPalette() {
-  const numberOfColors = Math.floor(Math.random() * 5) + 1
-
-  return Array(numberOfColors)
-    .fill(null)
-    .map(
-      () =>
-        '#' +
-        Math.floor(Math.random() * 16777215)
-          .toString(16)
-          .padStart(6, '0')
-    )
-}
-
-const allPalettes = Array(50)
-  .fill(null)
-  .map((_, index) => ({
-    colors: generateRandomPalette(),
-    title: `Paleta ${index + 1}`,
-    description: `Uma bela combinação de cores para inspirar seu próximo projeto.`
-  }))
-
-const PALETTES_PER_PAGE = 6
+import SystemController from '../controller/SystemController'
 
 export default {
   components: {
@@ -97,38 +84,51 @@ export default {
   },
   data() {
     return {
+      showModal: false,
+      palettes: [],
       currentPage: 1,
-      allPalettes,
-      searchQuery: ''
+      itemsPerPage: 9,
+      searchTerm: ''
     }
   },
   computed: {
     ...mapGetters(['isSidebarOpen']),
-    totalPages() {
-      return Math.ceil(this.filteredPalettes.length / PALETTES_PER_PAGE)
-    },
-    filteredPalettes() {
-      // Filtra as paletas com base na pesquisa por título ou descrição
-      return this.allPalettes.filter(
-        (palette) =>
-          palette.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          palette.description.toLowerCase().includes(this.searchQuery.toLowerCase())
+    filteredItems() {
+      return this.palettes.filter(
+        (item) =>
+          item.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          item.description.toLowerCase().includes(this.searchTerm.toLowerCase())
       )
     },
-    displayedPalettes() {
-      const startIndex = (this.currentPage - 1) * PALETTES_PER_PAGE
-      return this.filteredPalettes.slice(startIndex, startIndex + PALETTES_PER_PAGE)
+    currentItems() {
+      const indexOfLastItem = this.currentPage * this.itemsPerPage
+      const indexOfFirstItem = indexOfLastItem - this.itemsPerPage
+      return this.filteredItems.slice(indexOfFirstItem, indexOfLastItem)
+    },
+    totalPages() {
+      let totalPages = Math.ceil(this.filteredItems.length / this.itemsPerPage)
+      return totalPages === 0 ? 1 : totalPages
     }
   },
+  created() {
+    this.palettes = SystemController.getPaletteStorage()
+  },
   methods: {
+    handleSearch() {
+      this.currentPage = 1 // Reset to first page on new search
+    },
     prevPage() {
-      this.currentPage = Math.max(this.currentPage - 1, 1)
+      if (this.currentPage > 1) {
+        this.currentPage--
+      }
     },
     nextPage() {
-      this.currentPage = Math.min(this.currentPage + 1, this.totalPages)
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++
+      }
     },
     clearSearch() {
-      this.searchQuery = ''
+      this.searchTerm = ''
     }
   }
 }

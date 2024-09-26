@@ -8,6 +8,7 @@ class SystemController {
     let fonts = window.api.loadFonts()
     let frameworks = window.api.loadFrameworks()
     let images = window.api.loadImages()
+    let palettes = window.api.loadPalettes()
 
     const data = JSON.parse(systemInfo)
     store.commit('SET_COLOR_COUNT', data.colorCount)
@@ -18,6 +19,7 @@ class SystemController {
     store.commit('SET_FONTS_STORAGE', JSON.parse(fonts))
     store.commit('SET_FRAMEWORKS_STORAGE', JSON.parse(frameworks))
     store.commit('SET_IMAGES_STORAGE', JSON.parse(images))
+    store.commit('SET_PALETTES_STORAGE', JSON.parse(palettes))
     this.saveSystem()
   }
 
@@ -84,6 +86,24 @@ class SystemController {
     notification.success('Imagem removida com sucesso!')
     this.saveSystem()
   }
+
+  static addPalette(change) {
+    let palettesStorage = store.getters['getPalettesStorage']
+    let count = change.colors.length
+    palettesStorage.push(change)
+    store.commit('ADD_PALETTE', { palettesStorage, count })
+    notification.success('Paleta adicionada com sucesso!')
+    this.saveSystem()
+  }
+
+  static deletePalette(change) {
+    let palettesStorage = store.getters['getPalettesStorage']
+    let count = change.colors.length
+    palettesStorage.splice(change, 1)
+    store.commit('REMOVE_PALETTE', { palettesStorage, count })
+    notification.success('Paleta removida com sucesso!')
+    this.saveSystem()
+  }
   static clearMessagesLog() {
     store.commit('CLEAR_LOG')
     this.saveSystem()
@@ -116,6 +136,10 @@ class SystemController {
     return store.getters['getImagesStorage']
   }
 
+  static getPaletteStorage() {
+    return store.getters['getPalettesStorage']
+  }
+
   static getMessagesLog() {
     return store.getters['getLog']
   }
@@ -126,11 +150,13 @@ class SystemController {
     let fonts = store.getters['getFontsStorage']
     let frameworks = store.getters['getFrameworksStorage']
     let images = store.getters['getImagesStorage']
+    let palettes = store.getters['getPalettesStorage']
     window.api.saveSystemInfo(JSON.stringify(systemInfo))
     window.api.saveLinks(JSON.stringify(links))
     window.api.saveFonts(JSON.stringify(fonts))
     window.api.saveFrameworks(JSON.stringify(frameworks))
     window.api.saveImages(JSON.stringify(images))
+    window.api.savePalettes(JSON.stringify(palettes))
   }
 }
 

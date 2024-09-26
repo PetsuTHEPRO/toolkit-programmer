@@ -10,11 +10,13 @@ const api = {
   loadFonts: () => ipcRenderer.sendSync('load-fonts'),
   loadFrameworks: () => ipcRenderer.sendSync('load-frameworks'),
   loadImages: () => ipcRenderer.sendSync('load-images'),
+  loadPalettes: () => ipcRenderer.sendSync('load-palettes'),
   saveSystemInfo: (systemInfo) => ipcRenderer.invoke('save-system-info', systemInfo),
   saveLinks: (links) => ipcRenderer.invoke('save-links', links),
   saveFonts: (fonts) => ipcRenderer.invoke('save-fonts', fonts),
   saveFrameworks: (frameworks) => ipcRenderer.invoke('save-frameworks', frameworks),
-  saveImages: (images) => ipcRenderer.invoke('save-images', images)
+  saveImages: (images) => ipcRenderer.invoke('save-images', images),
+  savePalettes: (palettes) => ipcRenderer.invoke('save-palettes', palettes)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

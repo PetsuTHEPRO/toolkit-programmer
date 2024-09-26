@@ -49,6 +49,16 @@ export default {
       return [] // Se o arquivo não existir, retorna uma lista vazia
     }
   },
+
+  loadPalettes() {
+    if (fs.existsSync(filePath)) {
+      const data = fs.readFileSync(filePath + '/paletteStorage.txt', 'utf-8')
+      return JSON.parse(data)
+    } else {
+      return [] // Se o arquivo não existir, retorna uma lista vazia
+    }
+  },
+
   saveSystemInfo(systemInfo) {
     fs.writeFileSync(filePath + '/systemInfo.txt', JSON.stringify(systemInfo, null, 2), 'utf-8')
   },
@@ -67,5 +77,8 @@ export default {
   },
   saveImages(images) {
     fs.writeFileSync(filePath + '/imageStorage.txt', JSON.stringify(images, null, 2), 'utf-8')
+  },
+  savePalettes(palettes) {
+    fs.writeFileSync(filePath + '/paletteStorage.txt', JSON.stringify(palettes, null, 2), 'utf-8')
   }
 }
