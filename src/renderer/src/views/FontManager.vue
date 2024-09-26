@@ -70,7 +70,7 @@ import FontModal from '@renderer/components/FontModal.vue'
                     <div class="col-10">
                       <h3 class="h6 font-semibold mt-2">{{ item.name }}</h3>
                       <p class="text-muted mt-1 my-0">font-family: {{ item.family }}</p>
-                      <p v-if="item.uploadType === 'import'" class="text-muted my-0">
+                      <p v-if="item.uploadType === 'import'" class="text-muted my-0 break-text">
                         {{ item.url }}
                       </p>
                       <div class="buttons mt-2">
@@ -90,7 +90,7 @@ import FontModal from '@renderer/components/FontModal.vue'
                           class="btn btn-success me-2"
                           @click="copyToClipboard(item.url)"
                         >
-                          Copy Content
+                          Copy Import
                         </button>
                         <a
                           :href="item.link"
@@ -208,5 +208,12 @@ export default {
 <style>
 .text-gray {
   color: #6b7280;
+}
+
+.break-text {
+  width: 800px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

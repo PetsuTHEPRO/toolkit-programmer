@@ -3,9 +3,9 @@ import Sidebar from '../../components/Sidebar.vue'
 </script>
 
 <template>
-  <div class="container-fluid d-flex flex-column p-0">
-    <div class="row w-100 m-0">
-      <Sidebar />
+  <div class="container-fluid d-flex p-0">
+    <Sidebar />
+    <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <div class="col">
       <nav aria-label="breadcrumb" class="my-3">
         <ol class="breadcrumb">
@@ -77,6 +77,7 @@ import Sidebar from '../../components/Sidebar.vue'
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import SystemController from '../../controller/SystemController'
 export default {
   data() {
@@ -88,6 +89,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['isSidebarOpen']),
     // Imagens filtradas de acordo com o termo de busca
     filteredImages() {
       return this.images.filter(

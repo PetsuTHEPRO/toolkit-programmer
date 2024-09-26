@@ -5,7 +5,7 @@ import Sidebar from './Sidebar.vue'
 <template>
   <div class="container-fluid d-flex p-0">
     <Sidebar />
-    <div class="row w-100 m-0">
+    <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <nav aria-label="breadcrumb" class="mt-3">
         <ol class="breadcrumb">
           <li class="breadcrumb-item">
@@ -68,12 +68,16 @@ import Sidebar from './Sidebar.vue'
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import SystemController from '../controller/SystemController'
 export default {
   data() {
     return {
       image: null
     }
+  },
+  computed: {
+    ...mapGetters(['isSidebarOpen'])
   },
   created() {
     const imageId = this.$route.params.id

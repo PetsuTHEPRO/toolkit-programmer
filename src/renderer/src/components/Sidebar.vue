@@ -135,6 +135,7 @@ export default {
   min-height: 100vh;
   background-color: #1d1d21;
   color: white;
+  overflow: hidden;
   transition: width 0.3s ease-in-out;
   z-index: 1000;
 }
