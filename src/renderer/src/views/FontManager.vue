@@ -6,7 +6,7 @@ import FontModal from '@renderer/components/FontModal.vue'
 <template>
   <div class="container-fluid d-flex p-0">
     <Sidebar />
-    <div class="row w-100 m-0">
+    <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <div class="col">
         <nav aria-label="breadcrumb" class="mt-3">
           <ol class="breadcrumb">
@@ -71,7 +71,7 @@ import FontModal from '@renderer/components/FontModal.vue'
                       <h3 class="h6 font-semibold mt-2">{{ item.name }}</h3>
                       <p class="text-muted mt-1 my-0">font-family: {{ item.family }}</p>
                       <p v-if="item.uploadType === 'import'" class="text-muted my-0">
-                        @import: {{ item.url }}
+                        {{ item.url }}
                       </p>
                       <div class="buttons mt-2">
                         <a
@@ -140,6 +140,7 @@ import FontModal from '@renderer/components/FontModal.vue'
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import SystemController from '../controller/SystemController'
 export default {
   data() {
@@ -152,6 +153,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['isSidebarOpen']),
     filteredItems() {
       return this.items.filter(
         (item) =>

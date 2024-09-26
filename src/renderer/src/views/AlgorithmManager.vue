@@ -6,7 +6,7 @@ import Sidebar from '@renderer/components/Sidebar.vue'
 <template>
   <div class="container-fluid d-flex p-0">
     <Sidebar />
-    <div class="row w-100 m-0">
+    <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <div class="col">
         <!-- Título da Página -->
         <nav aria-label="breadcrumb" class="mt-3">
@@ -131,6 +131,8 @@ import Sidebar from '@renderer/components/Sidebar.vue'
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   data() {
     return {
@@ -159,6 +161,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['isSidebarOpen']),
     currentAlgorithms() {
       const indexOfLastAlgorithm = this.currentPage * this.algorithmsPerPage
       const indexOfFirstAlgorithm = indexOfLastAlgorithm - this.algorithmsPerPage
@@ -211,7 +214,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .truncate {
   overflow: hidden;
   text-overflow: ellipsis;

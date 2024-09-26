@@ -1,19 +1,23 @@
-<template>
-  <main class="flex-1 overflow-auto mt-5">
-    <section class="py-8">
-      <div class="container px-4 md:px-6">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-              <router-link :to="{ name: 'image' }"> Imagens </router-link>
-            </li>
-            <li class="breadcrumb-item">
-              <router-link :to="{ name: 'gallery' }"> Galeria </router-link>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">{{ image.name }}</li>
-          </ol>
-        </nav>
+<script setup>
+import Sidebar from './Sidebar.vue'
+</script>
 
+<template>
+  <div class="container-fluid d-flex p-0">
+    <Sidebar />
+    <div class="row w-100 m-0">
+      <nav aria-label="breadcrumb" class="mt-3">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <router-link :to="{ name: 'image' }"> Imagens </router-link>
+          </li>
+          <li class="breadcrumb-item">
+            <router-link :to="{ name: 'gallery' }"> Galeria </router-link>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">{{ image.name }}</li>
+        </ol>
+      </nav>
+      <div class="col">
         <div class="row g-4">
           <!-- Imagem -->
           <div class="col-md-6">
@@ -28,7 +32,7 @@
           <!-- Detalhes da Imagem -->
           <div class="col-md-6">
             <div class="mb-4">
-              <h2 class="fs-2 fw-bold">{{ image.name }}</h2>
+              <h2 class="fs-2 fw-bold mb-4">{{ image.name }}</h2>
               <h3 class="fs-5 fw-bold">Image Specifications</h3>
               <div class="text-muted">
                 <p><strong>Size:</strong> {{ image.width }} x {{ image.height }}</p>
@@ -46,7 +50,12 @@
                 Download
               </button>
 
-              <a v-if="image.path" :href="image.path" target="_blank" class="btn btn-outline-primary">
+              <a
+                v-if="image.path"
+                :href="image.path"
+                target="_blank"
+                class="btn btn-outline-primary"
+              >
                 <i class="bi bi-share"></i>
                 Abrir Imagem
               </a>
@@ -54,8 +63,8 @@
           </div>
         </div>
       </div>
-    </section>
-  </main>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -63,7 +72,7 @@ import SystemController from '../controller/SystemController'
 export default {
   data() {
     return {
-      image: null,
+      image: null
     }
   },
   created() {
@@ -78,6 +87,3 @@ export default {
 }
 </script>
 
-<style scoped>
-/* Adicione seus estilos personalizados aqui, se necessário */
-</style>

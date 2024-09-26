@@ -1,60 +1,77 @@
+<script setup>
+import Sidebar from '../../components/Sidebar.vue'
+</script>
+
 <template>
-  <div class="container mt-4">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><router-link :to="{ name: 'image' }">Imagens</router-link></li>
-        <li class="breadcrumb-item active" aria-current="page">Galeria</li>
-      </ol>
-    </nav>
-
-    <h1 class="display-4 mb-4">Galeria de Imagens</h1>
-
-    <!-- Search Bar -->
-    <div class="input-group mb-4">
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Pesquisar imagens..."
-        v-model="searchTerm"
-      />
-      <button class="btn btn-outline-secondary" type="button">
-        <i class="bx bx-search"></i>
-      </button>
-    </div>
-
-    <!-- Image Gallery Grid -->
-    <div class="row g-4">
-      <div class="col-sm-6 col-md-4 col-lg-3" v-for="(image, index) in filteredImages" :key="image.id">
-        <div class="card h-100">
-          <img
-            :src="getImageSrc(image.path)"
-            :alt="image.fileName"
-            class="card-img-top"
-            style="height: 200px; object-fit: cover"
-            @click="handleOpenImage(index)"
+  <div class="container-fluid d-flex flex-column p-0">
+    <div class="row w-100 m-0">
+      <Sidebar />
+      <div class="col">
+      <nav aria-label="breadcrumb" class="my-3">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+              <router-link :to="{ name: 'image' }">Imagens</router-link>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Galeria</li>
+          </ol>
+        </nav>
+        
+        <!-- Search Bar -->
+        <div class="input-group mb-4">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Pesquisar imagens..."
+            v-model="searchTerm"
           />
-          <div class="card-body">
-            <p class="card-text">{{ image.description }}</p>
+          <button class="btn btn-outline-secondary" type="button">
+            <i class="bx bx-search"></i>
+          </button>
+        </div>
+
+        <!-- Image Gallery Grid -->
+        <div class="row g-4">
+          <div
+            class="col-sm-6 col-md-4 col-lg-3"
+            v-for="(image, index) in filteredImages"
+            :key="image.id"
+          >
+            <div class="card h-100">
+              <img
+                :src="getImageSrc(image.path)"
+                :alt="image.fileName"
+                class="card-img-top"
+                style="height: 200px; object-fit: cover"
+                @click="handleOpenImage(index)"
+              />
+              <div class="card-body">
+                <p class="card-text">{{ image.description }}</p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Pagination -->
-    <div class="mt-4 d-flex justify-content-between align-items-center">
-      <button class="btn btn-outline-primary" :disabled="currentPage === 1" @click="handlePrevPage">
-        <i class="bi bi-chevron-left me-2"></i>
-        Anterior
-      </button>
-      <span>Página {{ currentPage }} de {{ totalPages }}</span>
-      <button
-        class="btn btn-outline-primary"
-        :disabled="currentPage === totalPages"
-        @click="handleNextPage"
-      >
-        Próxima
-        <i class="bi bi-chevron-right ms-2"></i>
-      </button>
+        <!-- Pagination -->
+        <div class="mt-4 d-flex justify-content-between align-items-center">
+          <button
+            class="btn btn-outline-primary"
+            :disabled="currentPage === 1"
+            @click="handlePrevPage"
+          >
+            <i class="bi bi-chevron-left me-2"></i>
+            Anterior
+          </button>
+          <span>Página {{ currentPage }} de {{ totalPages }}</span>
+          <button
+            class="btn btn-outline-primary"
+            :disabled="currentPage === totalPages"
+            @click="handleNextPage"
+          >
+            Próxima
+            <i class="bi bi-chevron-right ms-2"></i>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -106,7 +123,7 @@ export default {
       }
     },
     handleOpenImage(index) {
-      console.log("entrou, la ele", index)
+      console.log('entrou, la ele', index)
       this.$router.push({ name: 'preview', params: { id: index } })
     }
   }

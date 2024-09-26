@@ -6,7 +6,7 @@ import LinkModal from '@renderer/components/LinkModal.vue'
 <template>
   <div class="container-fluid d-flex p-0">
     <Sidebar />
-    <div class="row w-100 m-0">
+    <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <div class="col">
         <nav aria-label="breadcrumb" class="mt-3">
           <ol class="breadcrumb">
@@ -113,6 +113,7 @@ import LinkModal from '@renderer/components/LinkModal.vue'
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import SystemController from '../controller/SystemController'
 export default {
   data() {
@@ -125,6 +126,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['isSidebarOpen']),
     filteredItems() {
       return this.items.filter(
         (item) =>

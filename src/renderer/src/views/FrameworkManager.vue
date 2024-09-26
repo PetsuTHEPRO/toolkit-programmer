@@ -6,7 +6,7 @@ import FrameworkModal from '../components/FrameworkModal.vue'
 <template>
   <div class="container-fluid d-flex p-0">
     <Sidebar />
-    <div class="row w-100 m-0">
+    <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <!-- Título da Página -->
       <div class="col">
         <nav aria-label="breadcrumb" class="mt-3">
@@ -149,6 +149,7 @@ import FrameworkModal from '../components/FrameworkModal.vue'
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import SystemController from '../controller/SystemController'
 
 export default {
@@ -162,6 +163,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['isSidebarOpen']),
     filteredFrameworks() {
       return this.frameworks.filter(
         (framework) =>
@@ -193,7 +195,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .object-contain {
   object-fit: contain;
 }

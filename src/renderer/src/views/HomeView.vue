@@ -6,14 +6,13 @@ import ActivityCalendar from '@renderer/components/ActivityCalendar.vue'
 <template>
   <div class="container-fluid d-flex p-0">
     <Sidebar />
-    <div class="row w-100 m-0">
+    <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <div class="col">
         <nav aria-label="breadcrumb" class="my-3">
           <ol class="breadcrumb">
             <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
           </ol>
         </nav>
-        <router-link class="btn btn-primary" :to="{ name: 'color' }">Abrir Color</router-link>
         <div class="row g-4 mb-4">
           <div v-for="(stat, index) in stats" :key="index" class="col">
             <div class="card">
@@ -72,6 +71,7 @@ import ActivityCalendar from '@renderer/components/ActivityCalendar.vue'
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import SystemController from '../controller/SystemController' // Ajuste o caminho conforme necessário
 
 export default {
@@ -96,6 +96,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['isSidebarOpen', 'isSubmenuOpen']),
     stats() {
       return [
         { title: 'Cores', value: SystemController.getColor(), icon: 'bx bx-palette' },
@@ -135,6 +136,15 @@ export default {
 </script>
 
 <style>
+.close-menu{
+  margin-left: 90px !important;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+.open-menu{
+  margin-left: 230px !important;
+  transition: margin-left 0.3s ease-in-out;
+}
 body {
   background-color: #f8f9fa;
 }

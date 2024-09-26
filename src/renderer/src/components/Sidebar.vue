@@ -93,7 +93,7 @@ export default {
           children: [
             { text: 'Images', icon: 'bx bx-image-alt', rota: 'image' },
             { text: 'Fonts', icon: 'bx bx-font', rota: 'font' },
-            { text: 'Color Palette', icon: 'bx bx-palette', rota: '' }
+            { text: 'Color Palette', icon: 'bx bx-palette', rota: 'color' }
           ]
         },
         {
@@ -130,6 +130,7 @@ export default {
 
 <style scoped>
 .sidebar {
+  position: fixed;
   width: 220px;
   min-height: 100vh;
   background-color: #1d1d21;

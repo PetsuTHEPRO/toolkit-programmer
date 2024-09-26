@@ -7,7 +7,7 @@ import ModalIcon from '@renderer/components/IconModal.vue'
 <template>
   <div class="container-fluid d-flex p-0">
     <Sidebar />
-    <div class="row w-100 m-0">
+    <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <div class="col">
         <!-- Título da Página -->
         <nav aria-label="breadcrumb" class="mt-3">
@@ -120,6 +120,7 @@ import ModalIcon from '@renderer/components/IconModal.vue'
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import SystemController from '../controller/SystemController'
 export default {
   name: 'ImageManager',
@@ -146,6 +147,9 @@ export default {
       ]
     }
   },
+  computed: {
+    ...mapGetters(['isSidebarOpen'])
+  },
   created() {
     SystemController.updateSystem()
     this.updateRecentImages()
@@ -169,6 +173,7 @@ export default {
 </script>
 
 <style scoped>
+
 .card {
   border-radius: 8px;
   overflow: hidden;
