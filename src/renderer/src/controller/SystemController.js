@@ -15,6 +15,7 @@ class SystemController {
     store.commit('SET_LINK_COUNT', data.linkCount)
     store.commit('SET_FONT_COUNT', data.fontCount)
     store.commit('SET_LOG', data.log)
+    store.commit('SET_DIARY_ROUTINE', data.routineDaily)
     store.commit('SET_LINKS_STORAGE', JSON.parse(links))
     store.commit('SET_FONTS_STORAGE', JSON.parse(fonts))
     store.commit('SET_FRAMEWORKS_STORAGE', JSON.parse(frameworks))
@@ -23,10 +24,38 @@ class SystemController {
     this.saveSystem()
   }
 
+  static resetCalendar(currentMonth) {
+    store.commit('RESET_CALENDAR', currentMonth)
+
+    let systemInfo = store.getters['getSistemaState']
+
+    window.api.saveSystemInfo(JSON.stringify(systemInfo))
+  }
+
+  static getCurrentCalendar() {
+    return store.getters['getCurrentCalendar']
+  }
+
+  static updateDiaryRoutine() {
+    const day = new Date().getDate()
+    let dailyRoutine = store.getters['getDiaryRoutine']
+    console.log("BUGADA", dailyRoutine[day])
+
+    if (dailyRoutine[day] === undefined) {
+      dailyRoutine[day] = 1
+    } else {
+      dailyRoutine[day] += 1
+    }
+
+    store.commit('SET_DIARY_ROUTINE', dailyRoutine)
+    this.saveSystem()
+  }
+
   static updateColor(change) {
     const data = JSON.parse(change)
     store.commit('ADD_COLOR_COUNT', { type: 'color', data })
     notification.success('Cor adicionada com sucesso!')
+    this.updateDiaryRoutine()
     this.saveSystem()
   }
 
@@ -35,6 +64,7 @@ class SystemController {
     linksStorage.push(change)
     store.commit('ADD_LINK', linksStorage)
     notification.success('Link adicionado com sucesso!')
+    this.updateDiaryRoutine()
     this.saveSystem()
   }
   static deleteLink(change) {
@@ -42,6 +72,7 @@ class SystemController {
     linksStorage.splice(change, 1)
     store.commit('REMOVE_LINK', linksStorage)
     notification.success('Link removido com sucesso!')
+    this.updateDiaryRoutine()
     this.saveSystem()
   }
   static addFont(change) {
@@ -49,6 +80,7 @@ class SystemController {
     fontsStorage.push(change)
     store.commit('ADD_FONT', fontsStorage)
     notification.success('Fonte adicionada com sucesso!')
+    this.updateDiaryRoutine()
     this.saveSystem()
   }
   static deleteFont(change) {
@@ -56,6 +88,7 @@ class SystemController {
     fontsStorage.splice(change, 1)
     store.commit('REMOVE_FONT', fontsStorage)
     notification.success('Fonte removida com sucesso!')
+    this.updateDiaryRoutine()
     this.saveSystem()
   }
   static addFramework(change) {
@@ -63,6 +96,7 @@ class SystemController {
     frameworksStorage.push(change)
     store.commit('ADD_FRAMEWORK', frameworksStorage)
     notification.success('Framework adicionado com sucesso!')
+    this.updateDiaryRoutine()
     this.saveSystem()
   }
   static deleteFramework(change) {
@@ -70,6 +104,7 @@ class SystemController {
     frameworksStorage.splice(change, 1)
     store.commit('REMOVE_FRAMEWORK', frameworksStorage)
     notification.success('Framework removido com sucesso!')
+    this.updateDiaryRoutine()
     this.saveSystem()
   }
   static addImage(change) {
@@ -77,6 +112,7 @@ class SystemController {
     imagesStorage.push(change)
     store.commit('ADD_IMAGE', imagesStorage)
     notification.success('Imagem adicionada com sucesso!')
+    this.updateDiaryRoutine()
     this.saveSystem()
   }
   static deleteImage(change) {
@@ -84,6 +120,7 @@ class SystemController {
     imagesStorage.splice(change, 1)
     store.commit('REMOVE_IMAGE', imagesStorage)
     notification.success('Imagem removida com sucesso!')
+    this.updateDiaryRoutine()
     this.saveSystem()
   }
 
@@ -93,6 +130,7 @@ class SystemController {
     palettesStorage.push(change)
     store.commit('ADD_PALETTE', { palettesStorage, count })
     notification.success('Paleta adicionada com sucesso!')
+    this.updateDiaryRoutine()
     this.saveSystem()
   }
 
@@ -101,6 +139,7 @@ class SystemController {
     palettesStorage.splice(change, 1)
     store.commit('REMOVE_PALETTE', { palettesStorage, count })
     notification.success('Paleta removida com sucesso!')
+    this.updateDiaryRoutine()
     this.saveSystem()
   }
   static clearMessagesLog() {
@@ -143,6 +182,10 @@ class SystemController {
     return store.getters['getLog']
   }
 
+  static getDiaryRoutine() {
+    return store.getters['getDiaryRoutine']
+  }
+
   static saveSystem() {
     let systemInfo = store.getters['getSistemaState']
     let links = store.getters['getLinksStorage']
@@ -150,6 +193,7 @@ class SystemController {
     let frameworks = store.getters['getFrameworksStorage']
     let images = store.getters['getImagesStorage']
     let palettes = store.getters['getPalettesStorage']
+
     window.api.saveSystemInfo(JSON.stringify(systemInfo))
     window.api.saveLinks(JSON.stringify(links))
     window.api.saveFonts(JSON.stringify(fonts))

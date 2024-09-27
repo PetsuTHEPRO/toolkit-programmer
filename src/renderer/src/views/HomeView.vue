@@ -77,21 +77,6 @@ import SystemController from '../controller/SystemController' // Ajuste o caminh
 export default {
   data() {
     return {
-      languageData: [
-        { name: 'JavaScript', value: 40 },
-        { name: 'Python', value: 30 },
-        { name: 'Java', value: 20 },
-        { name: 'C++', value: 15 },
-        { name: 'Ruby', value: 10 }
-      ],
-      trendData: [
-        { month: 'Jan', JavaScript: 30, Python: 20, Java: 15, 'C++': 10, Ruby: 5 },
-        { month: 'Feb', JavaScript: 35, Python: 22, Java: 18, 'C++': 12, Ruby: 7 },
-        { month: 'Mar', JavaScript: 32, Python: 25, Java: 20, 'C++': 14, Ruby: 8 },
-        { month: 'Apr', JavaScript: 38, Python: 28, Java: 22, 'C++': 15, Ruby: 9 },
-        { month: 'May', JavaScript: 40, Python: 30, Java: 20, 'C++': 15, Ruby: 10 },
-        { month: 'Jun', JavaScript: 42, Python: 32, Java: 21, 'C++': 16, Ruby: 11 }
-      ],
       imageSrc: null
     }
   },

@@ -23,13 +23,17 @@
 </template>
 
 <script>
-export default {
+import SystemController from '../controller/SystemController';
 
+export default {
   data() {
     return {
-      data: this.generateActivityData(),
+      data: {},
       dayNames: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'] // Dias da semana
     }
+  },
+  created() {
+    this.data = this.generateActivityData()
   },
   methods: {
     getDayStyle(activity) {
@@ -49,12 +53,30 @@ export default {
       const month = today.getMonth()
       const daysInMonth = new Date(year, month + 1, 0).getDate()
 
-      const data = {}
-      for (let i = 1; i <= daysInMonth; i++) {
-        data[i] = Math.floor(Math.random() * 5) // 0 to 4 activities
+      let resertCalendar = SystemController.getCurrentCalendar()
+
+      let data2 = SystemController.getDiaryRoutine()
+      console.log("Bug", resertCalendar)
+      if (resertCalendar != month + 1) {
+        for (let i = 1; i <= daysInMonth; i++) {
+          this.data[i] = 0
+        }
+        SystemController.resetCalendar(month + 1)
+      } else {
+        console.log("Entrou, la ele")
+        for (let i = 1; i <= daysInMonth; i++) {
+          this.data[i] = 0
+        }
+
+        for (let chave in data2) {
+          if (Object.prototype.hasOwnProperty.call(this.data, chave)) {
+            this.data[chave] = data2[chave]
+          }
+        }
+        console.log("Arrumou", this.data)
       }
 
-      return data
+      return this.data
     }
   }
 }

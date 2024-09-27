@@ -13,6 +13,8 @@ const store = createStore({
     linkCount: 0,
     fontCount: 0,
     log: [],
+    dailyRoutine: {},
+    currentMonth: 0,
     linksStorage: [],
     fontsStorage: [],
     frameworksStorage: [],
@@ -20,6 +22,10 @@ const store = createStore({
     palettesStorage: []
   },
   mutations: {
+    RESET_CALENDAR(state, month) {
+      state.currentMonth = month
+      state.dailyRoutine = {}
+    },
     ADD_LINK(state, links) {
       state.linkCount += 1
       state.linksStorage = links
@@ -151,6 +157,9 @@ const store = createStore({
     SET_LOG(state, log) {
       state.log = log
     },
+    SET_DIARY_ROUTINE(state, routine) {
+      state.dailyRoutine = routine
+    },
     ADD_LOG_MESSAGE(state, { type, description }) {
       const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ') // Formato YYYY-MM-DD HH:mm:ss
       const logEntry = { timestamp, type, description }
@@ -201,12 +210,15 @@ const store = createStore({
     getLinkCount: (state) => state.linkCount,
     getFontCount: (state) => state.fontCount,
     getLog: (state) => state.log,
+    getDiaryRoutine: (state) => state.dailyRoutine,
     getSistemaState: (state) => {
       return {
         colorCount: state.colorCount,
         linkCount: state.linkCount,
         fontCount: state.fontCount,
-        log: state.log
+        log: state.log,
+        routineDaily: state.dailyRoutine,
+        currentMonth: state.currentMonth
       }
     },
     getLinksStorage: (state) => state.linksStorage,
@@ -214,6 +226,7 @@ const store = createStore({
     getFrameworksStorage: (state) => state.frameworksStorage,
     getImagesStorage: (state) => state.imagesStorage,
     getPalettesStorage: (state) => state.palettesStorage,
+    getCurrentCalendar: (state) => state.currentMonth,
     isSidebarOpen: state => state.sidebarOpen,
     isSubmenuOpen: state => submenu => state.submenus[submenu]
   }
