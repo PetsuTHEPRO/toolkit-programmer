@@ -14,7 +14,6 @@ try {
   // Verifica se a pasta existe e cria se não existir
   if (!fs.existsSync(uploadsPath)) {
     fs.mkdirSync(uploadsPath, { recursive: true })
-    console.log('Pasta criada com sucesso:', uploadsPath)
   } else {
     console.log('A pasta já existe:', uploadsPath)
   }

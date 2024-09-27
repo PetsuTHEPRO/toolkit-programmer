@@ -96,9 +96,8 @@ class SystemController {
     this.saveSystem()
   }
 
-  static deletePalette(change) {
+  static deletePalette(change, count) {
     let palettesStorage = store.getters['getPalettesStorage']
-    let count = change.colors.length
     palettesStorage.splice(change, 1)
     store.commit('REMOVE_PALETTE', { palettesStorage, count })
     notification.success('Paleta removida com sucesso!')

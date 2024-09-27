@@ -1,1 +1,1 @@
-"[{\"name\":\"dsasd\",\"description\":\"asdas\",\"colors\":[\"#FFFFFF\",\"#966464\",\"#db0000\"]},{\"name\":\"dsad\",\"description\":\"asdasd\",\"colors\":[\"#FFFFFF\",\"#ff3838\"]},{\"name\":\"asd\",\"description\":\"sada\",\"colors\":[\"#FFFFFF\"]}]"
+"[]"

@@ -7,15 +7,18 @@ import ColorModal from '../components/ColorModal.vue'
   <div class="container-fluid d-flex p-0">
     <Sidebar />
     <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
-      <nav aria-label="breadcrumb" class="my-3">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item active" aria-current="page">Color Palette</li>
-        </ol>
-      </nav>
-      <div class="col d-flex align-items-center justify-content-center">
-        <div class="card w-100">
+      <div class="col">
+        <nav aria-label="breadcrumb" class="my-3">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item active" aria-current="page">Color Palette</li>
+          </ol>
+        </nav>
+
+        <div class="card mb-5 p-0">
           <div class="card-header">
-            <h5 class="card-title text-center font-bold mb-4">Galeria de Paletas de Cores</h5>
+            <h5 class="card-title">Galeria de Paletas de Cores</h5>
+          </div>
+          <div class="card-body">
             <!-- Barra de Pesquisa -->
             <div class="input-group mb-3">
               <input
@@ -30,31 +33,39 @@ import ColorModal from '../components/ColorModal.vue'
               </button>
             </div>
           </div>
-          <div class="card-body">
-            <div class="row g-4">
-              <div class="w-100 d-flex justify-content-end">
-                <button
-                  type="button"
-                  class="btn btn-outline-primary me-2 d-flex align-items-center"
-                  @click="showModal = true"
-                >
-                  Add Palette
-                </button>
-              </div>
-              <div v-if="palettes.length === 0" class="text-center">
-                <p>Nenhuma paleta encontrada.</p>
-              </div>
-              <div v-for="(palette, index) in palettes" :key="index" class="col-md-4">
-                <ColorPalette
-                  :colors="palette.colors"
-                  :title="palette.name"
-                  :description="palette.description"
-                />
-              </div>
+        </div>
+
+        <div class="card mb-5 p-0">
+          <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="card-title">Lista das Paletas</h5>
+            <button
+              type="button"
+              class="btn btn-outline-primary me-2 d-flex align-items-center"
+              @click="showModal = true"
+            >
+              <i class="bx bx-plus-circle me-1"></i>
+              Adicionar
+            </button>
+          </div>
+          <div class="card-body py-0">
+            <div class="overflow-auto" style="max-height: 400px">
+              <ul class="list-unstyled">
+                <li v-if="currentItems.length === 0" class="text-center text-gray mt-3">
+                  Nenhuma paleta encontrada.
+                </li>
+                <div v-for="(palette, index) in palettes" :key="index" class="col-md-4 mt-4">
+                  <ColorPalette
+                    :index="index"
+                    :colors="palette.colors"
+                    :title="palette.name"
+                    :description="palette.description"
+                  />
+                </div>
+              </ul>
             </div>
           </div>
           <div class="card-footer d-flex justify-content-between">
-            <button class="btn btn-outline-primary" :disabled="currentPage === 1" @click="prevPage" >
+            <button class="btn btn-outline-primary" :disabled="currentPage === 1" @click="prevPage">
               <i class="bi bi-chevron-left me-2"></i> Anterior
             </button>
             <span>Página {{ currentPage }} de {{ totalPages }}</span>

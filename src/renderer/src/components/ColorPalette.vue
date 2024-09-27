@@ -1,7 +1,13 @@
 <template>
   <div class="card overflow-visible">
     <div class="card-header p-4">
-      <h5 class="card-title text-lg">{{ title }}</h5>
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="card-title text-lg">{{ title }}</h5>
+        <div class="icons d-flex align-items-center">
+          <i class="bx bx-trash me-1 cursor-pointer" @click="handleDelete(index, colors.length)"></i>
+          <i class="bx bx-edit cursor-pointer"></i>
+        </div>
+      </div>
       <p class="card-text text-muted">{{ description }}</p>
     </div>
     <div class="card-body p-0">
@@ -26,8 +32,13 @@
 
 <script>
 import notificationService from '@renderer/service/notificationService.js'
+import SystemController from '@renderer/controller/SystemController.js'
 export default {
   props: {
+    index: {
+      type: Number,
+      required: true
+    },
     colors: {
       type: Array,
       required: true
@@ -69,6 +80,9 @@ export default {
         .catch((err) => {
           console.error('Erro ao copiar o texto: ', err)
         })
+    },
+    handleDelete(index, count) {
+      SystemController.deletePalette(index, count)
     }
   }
 }
@@ -124,5 +138,25 @@ export default {
   height: 50px;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.bx{
+  font-size: 20px;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+}
+
+.bx-trash:hover{
+  background-color: rgba(255, 107, 107, 0.884);
+  border-radius: 15px;
+}
+
+.bx-edit:hover{
+  background-color: rgba(107, 220, 255, 0.884);
+  border-radius: 15px;
 }
 </style>

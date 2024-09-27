@@ -103,8 +103,8 @@ const store = createStore({
     },
     ADD_PALETTE(state, payload) {
       state.colorCount += payload.count
-      state.palettesStorage = payload.palettes
-
+      state.palettesStorage = payload.palettesStorage
+      
       const logEntry = {
         type: 'COR', // Tipo de log, por exemplo, 'COR'
         description: `Uma paleta foi adicionada com sucesso! Com ${payload.count} cores adicionadas.`
@@ -113,7 +113,7 @@ const store = createStore({
     },
     REMOVE_PALETTE(state, payload) {
       state.colorCount -= payload.count
-      state.palettesStorage = payload.palettes
+      state.palettesStorage = payload.palettesStorage
 
       const logEntry = {
         type: 'COR', // Tipo de log, por exemplo, 'COR'
