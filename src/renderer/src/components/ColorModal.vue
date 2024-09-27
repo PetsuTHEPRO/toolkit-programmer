@@ -39,7 +39,6 @@
                   placeholder="Ex: Descricão da Paleta de Cores"
                 />
               </div>
-              
               <div class="mb-3">
                 <label class="form-label">Cores da Paleta</label>
                 <br />

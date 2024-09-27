@@ -127,7 +127,6 @@ export default {
       this.$emit('close')
     },
     submitLink() {
-      // Lógica para adicionar o link
       SystemController.addFont(this.fontData)
 
       // Limpa o formulário após adicionar o link
@@ -138,7 +137,6 @@ export default {
         url: ''
       }
 
-      // Lógica para fechar o modal
       this.closeModal()
     }
   }

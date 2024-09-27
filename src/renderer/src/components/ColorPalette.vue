@@ -4,7 +4,10 @@
       <div class="d-flex justify-content-between align-items-center">
         <h5 class="card-title text-lg">{{ title }}</h5>
         <div class="icons d-flex align-items-center">
-          <i class="bx bx-trash me-1 cursor-pointer" @click="handleDelete(index, colors.length)"></i>
+          <i
+            class="bx bx-trash me-1 cursor-pointer"
+            @click="handleDelete(index, colors.length)"
+          ></i>
           <i class="bx bx-edit cursor-pointer"></i>
         </div>
       </div>
@@ -74,8 +77,8 @@ export default {
       navigator.clipboard
         .writeText(color)
         .then(() => {
-          this.copiedColor = color.toUpperCase() // Exibe o código copiado
-          notificationService.success('Código da cor copiada com sucesso!')()
+          this.copiedColor = color.toUpperCase()
+          notificationService.success('Código da cor copiada com sucesso!')
         })
         .catch((err) => {
           console.error('Erro ao copiar o texto: ', err)

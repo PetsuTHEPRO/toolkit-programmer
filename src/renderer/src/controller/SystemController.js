@@ -39,89 +39,43 @@ class SystemController {
   static updateDiaryRoutine() {
     const day = new Date().getDate()
     let dailyRoutine = store.getters['getDiaryRoutine']
-    console.log("BUGADA", dailyRoutine[day])
 
-    if (dailyRoutine[day] === undefined) {
-      dailyRoutine[day] = 1
-    } else {
-      dailyRoutine[day] += 1
-    }
+    dailyRoutine[day] = (dailyRoutine[day] || 0) + 1
 
     store.commit('SET_DIARY_ROUTINE', dailyRoutine)
     this.saveSystem()
   }
 
-  static updateColor(change) {
-    const data = JSON.parse(change)
-    store.commit('ADD_COLOR_COUNT', { type: 'color', data })
-    notification.success('Cor adicionada com sucesso!')
-    this.updateDiaryRoutine()
-    this.saveSystem()
+  static addLink(change) {
+    this.addToStorage('ADD_LINK', 'Link adicionado com sucesso!', change)
   }
 
-  static addLink(change) {
-    let linksStorage = store.getters['getLinksStorage']
-    linksStorage.push(change)
-    store.commit('ADD_LINK', linksStorage)
-    notification.success('Link adicionado com sucesso!')
-    this.updateDiaryRoutine()
-    this.saveSystem()
+  static deleteLink(index) {
+    this.deleteFromStorage('REMOVE_LINK', 'Link removido com sucesso!', index)
   }
-  static deleteLink(change) {
-    let linksStorage = store.getters['getLinksStorage']
-    linksStorage.splice(change, 1)
-    store.commit('REMOVE_LINK', linksStorage)
-    notification.success('Link removido com sucesso!')
-    this.updateDiaryRoutine()
-    this.saveSystem()
-  }
+
   static addFont(change) {
-    let fontsStorage = store.getters['getFontsStorage']
-    fontsStorage.push(change)
-    store.commit('ADD_FONT', fontsStorage)
-    notification.success('Fonte adicionada com sucesso!')
-    this.updateDiaryRoutine()
-    this.saveSystem()
+    this.addToStorage('ADD_FONT', 'Fonte adicionada com sucesso!', change)
   }
-  static deleteFont(change) {
-    let fontsStorage = store.getters['getFontsStorage']
-    fontsStorage.splice(change, 1)
-    store.commit('REMOVE_FONT', fontsStorage)
-    notification.success('Fonte removida com sucesso!')
-    this.updateDiaryRoutine()
-    this.saveSystem()
+
+  static deleteFont(index) {
+    this.deleteFromStorage('REMOVE_FONT', 'Fonte removida com sucesso!', index)
   }
+
   static addFramework(change) {
-    let frameworksStorage = store.getters['getFrameworksStorage']
-    frameworksStorage.push(change)
-    store.commit('ADD_FRAMEWORK', frameworksStorage)
-    notification.success('Framework adicionado com sucesso!')
-    this.updateDiaryRoutine()
-    this.saveSystem()
+    this.addToStorage('ADD_FRAMEWORK', 'Framework adicionado com sucesso!', change)
   }
-  static deleteFramework(change) {
-    let frameworksStorage = store.getters['getFrameworksStorage']
-    frameworksStorage.splice(change, 1)
-    store.commit('REMOVE_FRAMEWORK', frameworksStorage)
-    notification.success('Framework removido com sucesso!')
-    this.updateDiaryRoutine()
-    this.saveSystem()
+
+  static deleteFramework(index) {
+    this.deleteFromStorage('REMOVE_FRAMEWORK', 'Framework removido com sucesso!', index)
   }
+
   static addImage(change) {
-    let imagesStorage = store.getters['getImagesStorage']
-    imagesStorage.push(change)
-    store.commit('ADD_IMAGE', imagesStorage)
-    notification.success('Imagem adicionada com sucesso!')
-    this.updateDiaryRoutine()
-    this.saveSystem()
+    this.addToStorage('ADD_IMAGE', 'Imagem adicionada com sucesso!', change)
   }
-  static deleteImage(change) {
-    let imagesStorage = store.getters['getImagesStorage']
-    imagesStorage.splice(change, 1)
-    store.commit('REMOVE_IMAGE', imagesStorage)
-    notification.success('Imagem removida com sucesso!')
-    this.updateDiaryRoutine()
-    this.saveSystem()
+
+  static deleteImage(index) {
+    this.deleteFromStorage('REMOVE_IMAGE', 'Imagem removida com sucesso!', index)
   }
 
   static addPalette(change) {
@@ -134,13 +88,8 @@ class SystemController {
     this.saveSystem()
   }
 
-  static deletePalette(change, count) {
-    let palettesStorage = store.getters['getPalettesStorage']
-    palettesStorage.splice(change, 1)
-    store.commit('REMOVE_PALETTE', { palettesStorage, count })
-    notification.success('Paleta removida com sucesso!')
-    this.updateDiaryRoutine()
-    this.saveSystem()
+  static deletePalette(index) {
+    this.deleteFromStorage('REMOVE_PALETTE', 'Paleta removida com sucesso!', index)
   }
   static clearMessagesLog() {
     store.commit('CLEAR_LOG')
@@ -200,6 +149,34 @@ class SystemController {
     window.api.saveFrameworks(JSON.stringify(frameworks))
     window.api.saveImages(JSON.stringify(images))
     window.api.savePalettes(JSON.stringify(palettes))
+  }
+
+  // Métodos auxiliares para adicionar e remover dados
+  static addToStorage(mutation, message, change) {
+    let getMutation =
+      mutation.replace('ADD_', '').charAt(0).toUpperCase() +
+      mutation.replace('ADD_', '').slice(1).toLowerCase()
+    let storage = store.getters[`get${getMutation}sStorage`]
+    storage.push(change)
+    store.commit(mutation, storage)
+
+    notification.success(message)
+    this.updateDiaryRoutine()
+    this.saveSystem()
+  }
+
+  static deleteFromStorage(mutation, message, index) {
+    let getMutation =
+      mutation.replace('REMOVE_', '').charAt(0).toUpperCase() +
+      mutation.replace('REMOVE_', '').slice(1).toLowerCase()
+
+    let storage = store.getters[`get${getMutation}sStorage`]
+    storage.splice(index, 1)
+    store.commit(mutation, storage)
+
+    notification.success(message)
+    this.updateDiaryRoutine()
+    this.saveSystem()
   }
 }
 
