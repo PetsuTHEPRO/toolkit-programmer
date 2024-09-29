@@ -56,13 +56,14 @@
 
               <!-- Input para a descrição do material -->
               <div class="mb-3">
-                <label for="materialDescription" class="form-label">Descrição</label>
-                <textarea
-                  id="materialDescription"
-                  v-model="iconeData.description"
+                <label for="iconUsage" class="form-label">Exemplo do Código</label>
+                <input
+                  type="text"
+                  id="iconUsage"
+                  v-model="iconeData.usage"
                   class="form-control"
-                  placeholder="Digite a descrição do material"
-                ></textarea>
+                  placeholder="Digite o exemplo do código do icone"
+                />
               </div>
 
               <!-- Input para upload de imagem -->
@@ -89,7 +90,7 @@
           <div class="modal-footer">
             <slot name="footer">
               <button type="button" class="btn btn-secondary" @click="closeModal">Cancelar</button>
-              <button type="button" class="btn btn-primary" @click="submitImage">Adicionar</button>
+              <button type="button" class="btn btn-primary" @click="submitIcone">Adicionar</button>
             </slot>
           </div>
         </div>
@@ -100,6 +101,7 @@
 </template>
 
 <script>
+import SystemController from '../controller/SystemController'
 import notificationService from '@renderer/service/notificationService.js'
 
 export default {
@@ -111,11 +113,10 @@ export default {
   },
   data() {
     return {
-      iconeError: false,
       iconeData: {
         name: '',
         library: '',
-        description: '',
+        usage: '',
         link: '',
         iconeFile: null, // Armazena o arquivo de imagem
         iconeFileName: '', // Armazena o arquivo de imagem
@@ -151,6 +152,7 @@ export default {
               } else {
                 // Atualiza os dados do ícone após validar a imagem
                 this.iconeData.iconeFile = file
+                console.log("FILE: ", file.name)
                 this.iconeData.iconeFileName = file.name
                 this.iconeData.iconePreviewUrl = reader.result // URL de pré-visualização
               }
@@ -161,24 +163,34 @@ export default {
       }
     },
 
-    async submitImage() {
+    async submitIcone() {
       if (!this.iconeData.iconeFile) {
-        alert('Por favor, faça upload de uma imagem.')
+        alert('Por favor, faça upload de um Icone.')
         return
       }
 
       try {
         // Envia a imagem e os dados para o backend
         const imageBuffer = await this.readFileAsArrayBuffer(this.iconeData.iconeFile)
-        await window.api.uploadImage(new Uint8Array(imageBuffer), this.iconeData.iconeFileName)
+        await window.api.uploadIcon(new Uint8Array(imageBuffer), this.iconeData.iconeFileName)
 
         // Emitir os dados do material para o componente pai
-        this.$emit('submit', { ...this.iconeData })
+        this.iconeData = {
+          name: this.iconeData.name,
+          usage: this.iconeData.usage,
+          library: this.iconeData.library,
+          link: this.iconeData.link,
+          path: '../assets/icons/' + this.iconeData.iconeFileName
+        }
+
+        SystemController.addIcon(this.iconeData)
 
         // Limpar os campos e fechar o modal
         this.iconeData = {
           name: '',
-          description: '',
+          usage: '',
+          library: '',
+          link: '',
           iconeFile: null,
           iconeFileName: '',
           iconePreviewUrl: ''

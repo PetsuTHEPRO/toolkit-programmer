@@ -34,7 +34,7 @@ export default {
   },
   methods: {
     getDayStyle(activity) {
-      const colors = ['#d3d3d3', '#e0b3ff', '#d580ff', '#b84dff', '#8000ff']
+      const colors = ['#EBEDF0', '#e0b3ff', '#d580ff', '#b84dff', '#8000ff']
       return {
         backgroundColor: colors[this.getIntensity(activity)],
         width: '30px',
@@ -70,8 +70,6 @@ export default {
       for (let i = 1; i <= daysInMonth; i++) {
         this.data[i] = 0
       }
-
-      console.log("Problema", this.data)
 
       if (resertCalendar !== month + 1) {
         SystemController.resetCalendar(month + 1)

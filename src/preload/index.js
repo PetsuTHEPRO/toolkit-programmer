@@ -10,12 +10,14 @@ const api = {
   loadFonts: () => ipcRenderer.sendSync('load-fonts'),
   loadFrameworks: () => ipcRenderer.sendSync('load-frameworks'),
   loadImages: () => ipcRenderer.sendSync('load-images'),
+  loadIcons: () => ipcRenderer.sendSync('load-icons'),
   loadPalettes: () => ipcRenderer.sendSync('load-palettes'),
   saveSystemInfo: (systemInfo) => ipcRenderer.invoke('save-system-info', systemInfo),
   saveLinks: (links) => ipcRenderer.invoke('save-links', links),
   saveFonts: (fonts) => ipcRenderer.invoke('save-fonts', fonts),
   saveFrameworks: (frameworks) => ipcRenderer.invoke('save-frameworks', frameworks),
   saveImages: (images) => ipcRenderer.invoke('save-images', images),
+  saveIcons: (icons) => ipcRenderer.invoke('save-icons', icons),
   savePalettes: (palettes) => ipcRenderer.invoke('save-palettes', palettes)
 }
 

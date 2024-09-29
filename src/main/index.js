@@ -98,6 +98,11 @@ ipcMain.on('load-images', (event) => {
   event.returnValue = images
 })
 
+ipcMain.on('load-icons', (event) => {
+  let icons = fileManager.loadIcons()
+  event.returnValue = icons
+})
+
 ipcMain.on('load-palettes', (event) => {
   let palettes = fileManager.loadPalettes()
   event.returnValue = palettes
@@ -125,6 +130,11 @@ ipcMain.handle('save-frameworks', async (event, frameworks) => {
 
 ipcMain.handle('save-images', async (event, images) => {
   fileManager.saveImages(images)
+  return true
+})
+
+ipcMain.handle('save-icons', async (event, icons) => {
+  fileManager.saveIcons(icons)
   return true
 })
 

@@ -76,9 +76,7 @@
     <div v-if="visible" class="modal-backdrop fade show"></div>
   </div>
 </template>
-
 <script>
-
 import SystemController from '../controller/SystemController'
 
 export default {
@@ -141,8 +139,8 @@ export default {
 
       try {
         // Envia a imagem e os dados para o backend
-        const imageBuffer = await this.readFileAsArrayBuffer(this.imagemData.imageFile);
-        await window.api.uploadImage(new Uint8Array(imageBuffer), this.imagemData.imageFileName);
+        const imageBuffer = await this.readFileAsArrayBuffer(this.imagemData.imageFile)
+        await window.api.uploadImage(new Uint8Array(imageBuffer), this.imagemData.imageFileName)
 
         this.imageData = {
           name: this.imagemData.name,
@@ -164,18 +162,18 @@ export default {
           imageFileName: '',
           imagePreviewUrl: ''
         };
-        this.closeModal();
+        this.closeModal()
       } catch (error) {
-        console.error('Erro ao fazer upload da imagem:', error);
-        alert('Erro ao fazer upload da imagem.');
+        console.error('Erro ao fazer upload da imagem:', error)
+        alert('Erro ao fazer upload da imagem.')
       }
     },
     readFileAsArrayBuffer(file) {
       return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsArrayBuffer(file);
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result)
+        reader.onerror = reject
+        reader.readAsArrayBuffer(file)
       });
     }
   }

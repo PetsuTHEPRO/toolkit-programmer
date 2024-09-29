@@ -19,6 +19,7 @@ const store = createStore({
     fontsStorage: [],
     frameworksStorage: [],
     imagesStorage: [],
+    iconsStorage: [],
     palettesStorage: []
   },
   mutations: {
@@ -88,6 +89,26 @@ const store = createStore({
       }
       this.commit('ADD_LOG_MESSAGE', logEntry)
     },
+    ADD_ICONS_STORAGE(state, icons){
+      state.iconsStorage = icons
+
+      const logEntry = {
+        type: 'ICONE', // Tipo de log, por exemplo, 'COR'
+        description: `Um icone foi adicionado com sucesso.`
+      }
+
+      this.commit('ADD_LOG_MESSAGE', logEntry)
+    },
+    REMOVE_ICONS_STORAGE(state, icons){
+      state.iconsStorage = icons
+
+      const logEntry = {
+        type: 'ICONE', // Tipo de log, por exemplo, 'COR'
+        description: `Um icone foi removido com sucesso.`
+      }
+
+      this.commit('ADD_LOG_MESSAGE', logEntry)
+    },
     ADD_IMAGE(state, images) {
       state.imagesStorage = images
       // Cria uma mensagem de log
@@ -150,6 +171,9 @@ const store = createStore({
     },
     SET_IMAGES_STORAGE(state, images) {
       state.imagesStorage = images
+    },
+    SET_ICONS_STORAGE(state, icons) {
+      state.iconsStorage = icons
     },
     SET_PALETTES_STORAGE(state, palettes) {
       state.palettesStorage = palettes
@@ -225,6 +249,7 @@ const store = createStore({
     getFontsStorage: (state) => state.fontsStorage,
     getFrameworksStorage: (state) => state.frameworksStorage,
     getImagesStorage: (state) => state.imagesStorage,
+    getIconsStorage: (state) => state.iconsStorage,
     getPalettesStorage: (state) => state.palettesStorage,
     getCurrentCalendar: (state) => state.currentMonth,
     isSidebarOpen: state => state.sidebarOpen,

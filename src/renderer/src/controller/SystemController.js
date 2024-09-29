@@ -8,6 +8,7 @@ class SystemController {
     let fonts = window.api.loadFonts()
     let frameworks = window.api.loadFrameworks()
     let images = window.api.loadImages()
+    let icons = window.api.loadIcons()
     let palettes = window.api.loadPalettes()
 
     const data = JSON.parse(systemInfo)
@@ -20,6 +21,7 @@ class SystemController {
     store.commit('SET_FONTS_STORAGE', JSON.parse(fonts))
     store.commit('SET_FRAMEWORKS_STORAGE', JSON.parse(frameworks))
     store.commit('SET_IMAGES_STORAGE', JSON.parse(images))
+    store.commit('SET_ICONS_STORAGE', JSON.parse(icons))
     store.commit('SET_PALETTES_STORAGE', JSON.parse(palettes))
     this.saveSystem()
   }
@@ -78,6 +80,14 @@ class SystemController {
     this.deleteFromStorage('REMOVE_IMAGE', 'Imagem removida com sucesso!', index)
   }
 
+  static addIcon(change) {
+    this.addToStorage('ADD_ICON', 'Ícone adicionado com sucesso!', change)
+  }
+
+  static deleteIcon(index) {
+    this.deleteFromStorage('REMOVE_ICON', 'Ícone removido com sucesso!', index)
+  }
+
   static addPalette(change) {
     let palettesStorage = store.getters['getPalettesStorage']
     let count = change.colors.length
@@ -123,6 +133,10 @@ class SystemController {
     return store.getters['getImagesStorage']
   }
 
+  static getIconStorage() {
+    return store.getters['getIconsStorage']
+  }
+
   static getPaletteStorage() {
     return store.getters['getPalettesStorage']
   }
@@ -141,6 +155,7 @@ class SystemController {
     let fonts = store.getters['getFontsStorage']
     let frameworks = store.getters['getFrameworksStorage']
     let images = store.getters['getImagesStorage']
+    let icons = store.getters['getIconsStorage']
     let palettes = store.getters['getPalettesStorage']
 
     window.api.saveSystemInfo(JSON.stringify(systemInfo))
@@ -148,6 +163,7 @@ class SystemController {
     window.api.saveFonts(JSON.stringify(fonts))
     window.api.saveFrameworks(JSON.stringify(frameworks))
     window.api.saveImages(JSON.stringify(images))
+    window.api.saveIcons(JSON.stringify(icons))
     window.api.savePalettes(JSON.stringify(palettes))
   }
 

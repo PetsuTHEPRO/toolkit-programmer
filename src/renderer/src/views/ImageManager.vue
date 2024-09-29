@@ -63,57 +63,89 @@ import ModalIcon from '@renderer/components/IconModal.vue'
           </div>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h2>Icons</h2>
-          <div class="d-flex">
-            <button
-              type="button"
-              class="btn btn-outline-primary me-2 d-flex align-items-center"
-              @click="showModal[1] = true"
-            >
-              <i class="bx bx-upload me-1"></i>
-              Upload
-            </button>
-            <button type="button" class="btn btn-outline-primary d-flex align-items-center">
-              <i class="bx bx-plus-circle me-1"></i>
-              Ver mais
-            </button>
-          </div>
-        </div>
-
-        <!-- Grid de Cards de Imagens -->
-
-        <div class="container py-4">
-          <div class="row g-3">
-            <!-- Repetindo os ícones dinamicamente -->
-            <div
-              v-for="(icon, index) in icons"
-              :key="index"
-              class="col-12 d-flex align-items-center gap-4"
-            >
-              <div
-                class="d-flex align-items-center justify-content-center rounded-lg bg-primary text-primary-foreground"
-                style="width: 48px; height: 48px"
+        <!-- Card dos Icones -->
+        <div class="card mb-5">
+          <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="card-title">Icones Recentes</h5>
+            <div class="d-flex">
+              <button
+                type="button"
+                class="btn btn-outline-primary me-2 d-flex align-items-center"
+                @click="showModal[1] = true"
               >
-                <!-- Renderizando o ícone dinamicamente -->
-              </div>
-              <div class="text-sm font-medium">{{ icon.name }}</div>
-              <div class="text-muted">{{ icon.framework }}</div>
-              <code class="text-muted">&lt;i :class="{{ icon.class }}"&gt;&lt;/i&gt;</code>
-              <a :href="icon.link" class="text-decoration-none">Ver no {{ icon.framework }}</a>
+                <i class="bx bx-upload me-1"></i>
+                Upload
+              </button>
+              <!-- Alterar aqui(Mudar para Página Galeria de Icones) -->
+              <router-link
+                :to="{ name: 'gallery' }"
+                class="btn btn-outline-primary d-flex align-items-center"
+              >
+                <i class="bx bx-plus-circle me-1"></i>
+                Ver mais
+              </router-link>
             </div>
+          </div>
 
-            <!-- Modal Component -->
-            <Modal :visible="showModal[0]" @close="onCloseImageModal">
-              <template #title>Adicionar Imagem</template>
-            </Modal>
-
-            <!-- Modal Component -->
-            <ModalIcon :visible="showModal[1]" @close="showModal[1] = false">
-              <template #title>Adicionar Icone</template>
-            </ModalIcon>
+          <div class="card-body py-0">
+            <div class="overflow-auto" style="max-height: 400px">
+              <!-- Grid de Cards de Imagens -->
+              <div v-if="icons.length === 0" class="text-center text-gray my-3">
+                Nenhum icone encontrado.
+              </div>
+              <div v-else class="row m-0">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th class="w-25">Icon</th>
+                      <th>Name</th>
+                      <th>Library</th>
+                      <th class="d-none d-md-table-cell">Usage Example</th>
+                      <th class="text-end">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(icon, index) in icons" :key="icon.index">
+                      <td class="d-flex justify-content-center">
+                        <img
+                          :src="getImageSrc(icon.path)"
+                          alt="Icon"
+                          style="max-height: 64px; max-width: 64px"
+                        />
+                      </td>
+                      <td class="fw-medium align-middle">{{ icon.name }}</td>
+                      <td class="align-middle">{{ icon.library }}</td>
+                      <td class="d-none d-md-table-cell align-middle">
+                        <code class="px-2 py-1 bg-muted rounded">{{ icon.usage }}</code>
+                      </td>
+                      <td class="text-end align-middle">
+                        <button class="btn btn-sm btn-danger me-2" @click="deleteIcon(index)">
+                          <i class="bx bx-trash"></i>
+                        </button>
+                        <button class="btn btn-sm btn-warning me-2" @click="editIcon(index)">
+                          <i class="bx bx-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-primary" @click="setSelectedIcon(icon.url)">
+                          <i class="bx bx-link-external"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
+
+        <!-- Modal Component -->
+        <Modal :visible="showModal[0]" @close="onCloseImageModal">
+          <template #title>Adicionar Imagem</template>
+        </Modal>
+
+        <!-- Modal Component -->
+        <ModalIcon :visible="showModal[1]" @close="onCloseIconModal">
+          <template #title>Adicionar Icone</template>
+        </ModalIcon>
       </div>
     </div>
   </div>
@@ -128,23 +160,7 @@ export default {
     return {
       showModal: [false, false],
       images: [],
-      // Lista de ícones com suas CDNs e dados
-      icons: [
-        {
-          name: 'Smile Icon',
-          framework: 'Boxicons',
-          class: 'bx bx-smile',
-          link: 'https://boxicons.com/',
-          cdn: 'https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'
-        },
-        {
-          name: 'Heart Icon',
-          framework: 'Bootstrap Icons',
-          class: 'bi bi-tencent-qq',
-          link: 'https://icons.getbootstrap.com/',
-          cdn: 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'
-        }
-      ]
+      icons: []
     }
   },
   computed: {
@@ -153,6 +169,7 @@ export default {
   created() {
     SystemController.updateSystem()
     this.updateRecentImages()
+    this.updateRecentIcons()
   },
   methods: {
     getImageSrc(imagePath) {
@@ -164,16 +181,31 @@ export default {
         this.images = imagesDefault.slice(-3)
       }
     },
+    updateRecentIcons() {
+      let iconsDefault = SystemController.getIconStorage()
+      if (iconsDefault.length > 0) {
+        this.icons = iconsDefault.slice(-5)
+      }else{
+        this.icons = []
+      }
+    },
     onCloseImageModal() {
       this.showModal[0] = false
       this.updateRecentImages()
+    },
+    onCloseIconModal() {
+      this.showModal[1] = false
+      this.updateRecentIcons()
+    },
+    deleteIcon(index) {
+      SystemController.deleteIcon(index)
+      this.updateRecentIcons()
     }
   }
 }
 </script>
 
 <style scoped>
-
 .card {
   border-radius: 8px;
   overflow: hidden;

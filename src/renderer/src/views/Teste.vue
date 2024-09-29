@@ -49,7 +49,7 @@
 
         <div class="d-flex justify-content-center mt-4">
           <router-link
-            to="/dashboard"
+            to="/"
             class="btn btn-lg btn-purple-500 hover-scale mx-2 d-flex align-items-center justify-content-center"
           >
             <i class="bx bx-right-arrow-alt me-2"></i>

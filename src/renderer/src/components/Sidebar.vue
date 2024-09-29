@@ -115,7 +115,12 @@ export default {
             { text: 'Videos', icon: 'bx bx-video', rota: '' },
             { text: 'Links', icon: 'bx bx-link', rota: 'link' }
           ]
-        }
+        },
+        {
+          text: 'Teste',
+          icon: 'bx bx-check-circle',
+          rota: 'teste'
+        },
       ]
     }
   },
