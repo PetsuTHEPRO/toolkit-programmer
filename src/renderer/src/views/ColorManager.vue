@@ -47,24 +47,25 @@ import ColorModal from '../components/ColorModal.vue'
               Adicionar
             </button>
           </div>
-          <div class="card-body py-0">
-            <div class="overflow-auto" style="max-height: 400px">
-              <ul class="list-unstyled">
+          <div class="card-body p-0">
+            <div class="overflow-auto px-2" style="max-height: 790px">
+              <ul class="list-unstyled row mx-0">
                 <li v-if="currentItems.length === 0" class="text-center text-gray mt-3">
                   Nenhuma paleta encontrada.
                 </li>
-                <div v-for="(palette, index) in palettes" :key="index" class="col-md-4 mt-4">
+                <div v-for="(palette, index) in currentItems" :key="index" class="col-md-4 mt-4">
                   <ColorPalette
                     :index="index"
                     :colors="palette.colors"
                     :title="palette.name"
                     :description="palette.description"
+                    @edit-palette="handleEditPalette"
                   />
                 </div>
               </ul>
             </div>
           </div>
-          <div class="card-footer d-flex justify-content-between">
+          <div class="card-footer d-flex justify-content-between mt-2">
             <button class="btn btn-outline-primary" :disabled="currentPage === 1" @click="prevPage">
               <i class="bi bi-chevron-left me-2"></i> Anterior
             </button>
@@ -77,7 +78,13 @@ import ColorModal from '../components/ColorModal.vue'
               Próxima <i class="bi bi-chevron-right ms-2"></i>
             </button>
           </div>
-          <ColorModal :visible="showModal" @close="showModal = false"></ColorModal>
+          <ColorModal
+            :key="idPalette"
+            :visible="showModal"
+            :paletteId="idPalette"
+            @close="onClosePaletteModal"
+          >
+          </ColorModal>
         </div>
       </div>
     </div>
@@ -97,6 +104,7 @@ export default {
     return {
       showModal: false,
       palettes: [],
+      idPalette: -1,
       currentPage: 1,
       itemsPerPage: 9,
       searchTerm: ''
@@ -122,7 +130,8 @@ export default {
     }
   },
   created() {
-    this.palettes = SystemController.getPaletteStorage()
+    SystemController.updateSystem()
+    this.palettes = SystemController.getStorage('palettesStorage')
   },
   methods: {
     handleSearch() {
@@ -140,6 +149,16 @@ export default {
     },
     clearSearch() {
       this.searchTerm = ''
+    },
+    onClosePaletteModal() {
+      this.showModal = false
+      SystemController.updateSystem()
+      this.palettes = SystemController.getStorage('palettesStorage')
+      this.idPalette = -1
+    },
+    handleEditPalette(index) {
+      this.idPalette = index
+      this.showModal = true
     }
   }
 }

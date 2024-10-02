@@ -68,15 +68,10 @@ import LinkModal from '@renderer/components/LinkModal.vue'
                     Open Link
                     <i class="bx bx-box-arrow-up-right"></i>
                   </a>
-                  <a
-                    :href="item.link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="btn btn-warning me-2"
-                  >
+                  <button class="btn btn-warning me-2" @click="editLink(index)">
                     Editar
                     <i class="bx bx-box-arrow-up-right"></i>
-                  </a>
+                  </button>
                   <a class="btn btn-danger" @click="handleDelete(index)">
                     Delete
                     <i class="bx bx-box-arrow-up-right"></i>
@@ -104,7 +99,12 @@ import LinkModal from '@renderer/components/LinkModal.vue'
               </button>
             </div>
             <!-- Modal -->
-            <LinkModal :visible="showModal" @close="showModal = false"> </LinkModal>
+            <LinkModal
+              :key="idLink"
+              :linkId="idLink"
+              :visible="showModal"
+              @close="onCloseLinkModal"
+            ></LinkModal>
           </div>
         </div>
       </div>
@@ -120,6 +120,7 @@ export default {
     return {
       showModal: false,
       items: [],
+      idLink: -1,
       searchTerm: '',
       currentPage: 1,
       itemsPerPage: 5
@@ -145,7 +146,7 @@ export default {
   },
   created() {
     SystemController.updateSystem()
-    this.items = SystemController.getLinkStorage()
+    this.items = SystemController.getStorage('linksStorage')
   },
   methods: {
     handleSearch() {
@@ -163,6 +164,15 @@ export default {
     },
     handleDelete(index) {
       SystemController.deleteLink(index)
+    },
+    onCloseLinkModal() {
+      this.showModal = false
+      this.links = SystemController.getStorage('linksStorage')
+      this.idLink = -1
+    },
+    editLink(index) {
+      this.idLink = index
+      this.showModal = true
     }
   }
 }

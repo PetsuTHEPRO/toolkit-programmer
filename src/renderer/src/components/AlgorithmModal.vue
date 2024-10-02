@@ -12,30 +12,58 @@
         <div class="modal-content bg-dark text-white">
           <div class="modal-header">
             <h5 id="modalTitle" class="modal-title">
-              <slot name="title">{{ algorithmData.name }}</slot>
+              <slot name="title">Adicionar Algoritmo</slot>
             </h5>
             <button type="button" class="btn-close" aria-label="Close" @click="closeModal"></button>
           </div>
           <div class="modal-body">
             <slot name="body">
               <div class="mb-3">
-                <span class="form-label fw-bold">Explicação</span>
-                <p style="overflow-x: hidden" class="text-light mt-2">
-                  {{ algorithmData.explanation }}
-                </p>
+                <label for="name" class="form-label">Nome do Algoritmo</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  v-model="algorithmData.name"
+                  placeholder="Digite o nome do algoritmo"
+                  required
+                />
               </div>
-
               <div class="mb-3">
-                <span class="form-label fw-bold">Código( {{ algorithmData.language }} ):</span>
-                <pre class="bg-light text-black p-3 mt-3 rounded d-flex">
-                  <code>{{ algorithmData.code }}</code>
-              </pre>
+                <label for="explanation" class="form-label">Explicação</label>
+                <textarea
+                  class="form-control"
+                  id="explanation"
+                  v-model="algorithmData.explanation"
+                  placeholder="Explique como o algoritmo funciona"
+                  required
+                ></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="language" class="form-label">Linguagem</label>
+                <select class="form-select" id="language" v-model="algorithmData.language" required>
+                  <option value="" disabled>Selecione a linguagem</option>
+                  <option v-for="lang in programmingLanguages" :key="lang" :value="lang">
+                    {{ lang }}
+                  </option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="code" class="form-label">Código</label>
+                <textarea
+                  class="form-control font-mono"
+                  id="code"
+                  v-model="algorithmData.code"
+                  placeholder="Cole o código do algoritmo aqui"
+                  required
+                ></textarea>
               </div>
             </slot>
           </div>
           <div class="modal-footer">
             <slot name="footer">
               <button type="button" class="btn btn-secondary" @click="closeModal">Cancelar</button>
+              <button type="button" class="btn btn-primary" @click="submitAlgorithm">Adicionar</button>
             </slot>
           </div>
         </div>
@@ -46,24 +74,42 @@
 </template>
 
 <script>
+import SystemController from '../controller/SystemController'
 export default {
   props: {
     visible: {
       type: Boolean,
       default: false
     },
-    algorithmData: {
-      type: Object,
-      default: () => {}
+    programmingLanguages: {
+      type: Array,
+      default: () => []
     }
   },
-  data() {},
+  data() {
+    return {
+      algorithmData: {
+        name: '',
+        explanation: '',
+        language: '',
+        code: ''
+      }
+    }
+  },
   methods: {
     closeModal() {
       this.$emit('close')
     },
-    submitImage() {
-      this.$emit('submit', this.algorithmData)
+    submitAlgorithm() {
+      SystemController.addAlgorithm(this.algorithmData)
+
+      this.algorithmData = {
+        name: '',
+        explanation: '',
+        language: '',
+        code: ''
+      }
+
       this.closeModal()
     }
   }

@@ -3,27 +3,40 @@ import notification from '../service/notificationService'
 
 class SystemController {
   static updateSystem() {
-    let systemInfo = window.api.loadSystemInfo()
-    let links = window.api.loadLinks()
-    let fonts = window.api.loadFonts()
-    let frameworks = window.api.loadFrameworks()
-    let images = window.api.loadImages()
-    let icons = window.api.loadIcons()
-    let palettes = window.api.loadPalettes()
+    // Carregar os dados do sistema e armazená-los em variáveis
+    const storageItems = {
+      links: 'linksStorage',
+      fonts: 'fontsStorage',
+      frameworks: 'frameworksStorage',
+      algorithms: 'algorithmsStorage',
+      images: 'imagesStorage',
+      icons: 'iconsStorage',
+      palettes: 'palettesStorage'
+    }
 
+    // Carregar systemInfo e fazer os commits relacionados ao estado do sistema
+    let systemInfo = window.api.loadSystemInfo()
     const data = JSON.parse(systemInfo)
-    store.commit('SET_COLOR_COUNT', data.colorCount)
-    store.commit('SET_LINK_COUNT', data.linkCount)
-    store.commit('SET_FONT_COUNT', data.fontCount)
-    store.commit('SET_LOG', data.log)
-    store.commit('SET_DIARY_ROUTINE', data.routineDaily)
-    store.commit('SET_LINKS_STORAGE', JSON.parse(links))
-    store.commit('SET_FONTS_STORAGE', JSON.parse(fonts))
-    store.commit('SET_FRAMEWORKS_STORAGE', JSON.parse(frameworks))
-    store.commit('SET_IMAGES_STORAGE', JSON.parse(images))
-    store.commit('SET_ICONS_STORAGE', JSON.parse(icons))
-    store.commit('SET_PALETTES_STORAGE', JSON.parse(palettes))
+
+    // Usar a mutação genérica para atualizar o estado
+    store.commit('SET_STATE_PROPERTY', { key: 'colorCount', value: data.colorCount })
+    store.commit('SET_STATE_PROPERTY', { key: 'linkCount', value: data.linkCount })
+    store.commit('SET_STATE_PROPERTY', { key: 'fontCount', value: data.fontCount })
+    store.commit('SET_STATE_PROPERTY', { key: 'log', value: data.log })
+    store.commit('SET_STATE_PROPERTY', { key: 'dailyRoutine', value: data.routineDaily })
+
+    // Iterar pelos dados de armazenamento e fazer os commits usando a mutação genérica
+    for (const [key, storageKey] of Object.entries(storageItems)) {
+      let loadedData = window.api[`load${key.charAt(0).toUpperCase() + key.slice(1)}`]()
+      store.commit('SET_STATE_PROPERTY', { key: storageKey, value: JSON.parse(loadedData) })
+    }
+
+    // Salvar o sistema atualizado
     this.saveSystem()
+  }
+
+  static downloadImage(imageBuffer) {
+    window.api.downloadImage(imageBuffer)
   }
 
   static resetCalendar(currentMonth) {
@@ -40,7 +53,7 @@ class SystemController {
 
   static updateDiaryRoutine() {
     const day = new Date().getDate()
-    let dailyRoutine = store.getters['getDiaryRoutine']
+    let dailyRoutine = store.getters['getSistemaState']
 
     dailyRoutine[day] = (dailyRoutine[day] || 0) + 1
 
@@ -49,57 +62,84 @@ class SystemController {
   }
 
   static addLink(change) {
-    this.addToStorage('ADD_LINK', 'Link adicionado com sucesso!', change)
+    this.addToStorage('linksStorage', 'Link adicionado com sucesso!', change)
+  }
+
+  static editLink(change) {
+    this.editFromStorage('linksStorage', 'Link editado com sucesso!', change)
   }
 
   static deleteLink(index) {
-    this.deleteFromStorage('REMOVE_LINK', 'Link removido com sucesso!', index)
+    this.deleteFromStorage('linksStorage', 'Link removido com sucesso!', index)
   }
 
   static addFont(change) {
-    this.addToStorage('ADD_FONT', 'Fonte adicionada com sucesso!', change)
+    this.addToStorage('fontsStorage', 'Fonte adicionada com sucesso!', change)
+  }
+
+  static editFont(change) {
+    this.editFromStorage('fontsStorage', 'Fonte editada com sucesso!', change)
   }
 
   static deleteFont(index) {
-    this.deleteFromStorage('REMOVE_FONT', 'Fonte removida com sucesso!', index)
+    this.deleteFromStorage('fontsStorage', 'Fonte removida com sucesso!', index)
   }
 
   static addFramework(change) {
-    this.addToStorage('ADD_FRAMEWORK', 'Framework adicionado com sucesso!', change)
+    this.addToStorage('frameworksStorage', 'Framework adicionado com sucesso!', change)
+  }
+
+  static editFramework(change) {
+    this.editFromStorage('frameworksStorage', 'Framework editado com sucesso!', change)
   }
 
   static deleteFramework(index) {
-    this.deleteFromStorage('REMOVE_FRAMEWORK', 'Framework removido com sucesso!', index)
+    this.deleteFromStorage('frameworksStorage', 'Framework removido com sucesso!', index)
+  }
+
+  static addAlgorithm(change) {
+    this.addToStorage('algorithmsStorage', 'Algoritmo adicionado com sucesso!', change)
+  }
+
+  static deleteAlgorithm(index) {
+    this.deleteFromStorage('algorithmsStorage', 'Algoritmo removido com sucesso!', index)
   }
 
   static addImage(change) {
-    this.addToStorage('ADD_IMAGE', 'Imagem adicionada com sucesso!', change)
+    this.addToStorage('imagesStorage', 'Imagem adicionada com sucesso!', change)
+  }
+
+  static editImage(change) {
+    this.editFromStorage('imagesStorage', 'Imagem editada com sucesso!', change)
   }
 
   static deleteImage(index) {
-    this.deleteFromStorage('REMOVE_IMAGE', 'Imagem removida com sucesso!', index)
+    this.deleteFromStorage('imagesStorage', 'Imagem removida com sucesso!', index)
   }
 
   static addIcon(change) {
-    this.addToStorage('ADD_ICON', 'Ícone adicionado com sucesso!', change)
+    this.addToStorage('iconsStorage', 'Ícone adicionado com sucesso!', change)
+  }
+
+  static editIcon(change) {
+    this.editFromStorage('iconsStorage', 'Ícone editado com sucesso!', change)
   }
 
   static deleteIcon(index) {
-    this.deleteFromStorage('REMOVE_ICON', 'Ícone removido com sucesso!', index)
+    this.deleteFromStorage('iconsStorage', 'Ícone removido com sucesso!', index)
   }
 
   static addPalette(change) {
-    let palettesStorage = store.getters['getPalettesStorage']
     let count = change.colors.length
-    palettesStorage.push(change)
-    store.commit('ADD_PALETTE', { palettesStorage, count })
-    notification.success('Paleta adicionada com sucesso!')
-    this.updateDiaryRoutine()
-    this.saveSystem()
+    this.addToStorage('palettesStorage', 'Paleta adicionada com sucesso!', change, count)
   }
 
-  static deletePalette(index) {
-    this.deleteFromStorage('REMOVE_PALETTE', 'Paleta removida com sucesso!', index)
+  static editPalette(change) {
+    this.editFromStorage('palettesStorage', 'Paleta editada com sucesso!', change)
+  }
+
+  static deletePalette(index, count) {
+    this.deleteFromStorage('palettesStorage', 'Paleta removida com sucesso!', index, count)
   }
   static clearMessagesLog() {
     store.commit('CLEAR_LOG')
@@ -117,28 +157,8 @@ class SystemController {
     return store.getters['getFontCount']
   }
 
-  static getLinkStorage() {
-    return store.getters['getLinksStorage']
-  }
-
-  static getFontStorage() {
-    return store.getters['getFontsStorage']
-  }
-
-  static getFrameworkStorage() {
-    return store.getters['getFrameworksStorage']
-  }
-
-  static getImageStorage() {
-    return store.getters['getImagesStorage']
-  }
-
-  static getIconStorage() {
-    return store.getters['getIconsStorage']
-  }
-
-  static getPaletteStorage() {
-    return store.getters['getPalettesStorage']
+  static getStorage(storageKey) {
+    return store.getters['getStorage'](storageKey)
   }
 
   static getMessagesLog() {
@@ -150,46 +170,48 @@ class SystemController {
   }
 
   static saveSystem() {
-    let systemInfo = store.getters['getSistemaState']
-    let links = store.getters['getLinksStorage']
-    let fonts = store.getters['getFontsStorage']
-    let frameworks = store.getters['getFrameworksStorage']
-    let images = store.getters['getImagesStorage']
-    let icons = store.getters['getIconsStorage']
-    let palettes = store.getters['getPalettesStorage']
+    const storageItems = {
+      links: 'getStorage',
+      fonts: 'getStorage',
+      frameworks: 'getStorage',
+      algorithms: 'getStorage',
+      images: 'getStorage',
+      icons: 'getStorage',
+      palettes: 'getStorage'
+    }
 
-    window.api.saveSystemInfo(JSON.stringify(systemInfo))
-    window.api.saveLinks(JSON.stringify(links))
-    window.api.saveFonts(JSON.stringify(fonts))
-    window.api.saveFrameworks(JSON.stringify(frameworks))
-    window.api.saveImages(JSON.stringify(images))
-    window.api.saveIcons(JSON.stringify(icons))
-    window.api.savePalettes(JSON.stringify(palettes))
+    // Salva as informações do sistema
+    window.api.saveSystemInfo(JSON.stringify(store.getters['getSistemaState']))
+
+    // Itera sobre os itens de armazenamento e salva cada um
+    for (const [key] of Object.entries(storageItems)) {
+      const data = this.getStorage(key + 'Storage')
+      window.api[`save${key.charAt(0).toUpperCase() + key.slice(1)}`](JSON.stringify(data)) // Salva os dados
+    }
   }
 
   // Métodos auxiliares para adicionar e remover dados
-  static addToStorage(mutation, message, change) {
-    let getMutation =
-      mutation.replace('ADD_', '').charAt(0).toUpperCase() +
-      mutation.replace('ADD_', '').slice(1).toLowerCase()
-    let storage = store.getters[`get${getMutation}sStorage`]
+  static addToStorage(storageKey, message, change, count) {
+    let storage = this.getStorage(storageKey)
     storage.push(change)
-    store.commit(mutation, storage)
+    store.commit('ADD_ITEM', { storageKey, storage, count })
 
     notification.success(message)
     this.updateDiaryRoutine()
     this.saveSystem()
   }
 
-  static deleteFromStorage(mutation, message, index) {
-    let getMutation =
-      mutation.replace('REMOVE_', '').charAt(0).toUpperCase() +
-      mutation.replace('REMOVE_', '').slice(1).toLowerCase()
+  static deleteFromStorage(storageKey, message, change, count) {
+    let storage = this.getStorage(storageKey)
+    storage.splice(change, 1)
+    store.commit('REMOVE_ITEM', { storageKey, storage, count })
 
-    let storage = store.getters[`get${getMutation}sStorage`]
-    storage.splice(index, 1)
-    store.commit(mutation, storage)
-
+    notification.success(message)
+    this.updateDiaryRoutine()
+    this.saveSystem()
+  }
+  static editFromStorage(storageKey, message, change) {
+    store.commit('EDIT_ITEM', { storageKey, change })
     notification.success(message)
     this.updateDiaryRoutine()
     this.saveSystem()

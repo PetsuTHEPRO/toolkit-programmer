@@ -1,7 +1,6 @@
 import { createStore } from 'vuex'
 
 const store = createStore({
-  // store/modules/sistema.js
   state: {
     sidebarOpen: true,
     submenus: {
@@ -18,6 +17,7 @@ const store = createStore({
     linksStorage: [],
     fontsStorage: [],
     frameworksStorage: [],
+    algorithmsStorage: [],
     imagesStorage: [],
     iconsStorage: [],
     palettesStorage: []
@@ -27,233 +27,136 @@ const store = createStore({
       state.currentMonth = month
       state.dailyRoutine = {}
     },
-    ADD_LINK(state, links) {
-      state.linkCount += 1
-      state.linksStorage = links
-      // Cria uma mensagem de log
-      const logEntry = {
-        type: 'LINK', // Tipo de log, por exemplo, 'COR'
-        description: `Um link foi adicionado com sucesso. Total de links: [${state.linkCount}].`
+
+    // Função genérica para adicionar item
+    ADD_ITEM(state, { storageKey, items, countKey }) {
+      state.storageKey = items
+      if (countKey) {
+        state[countKey] += 1
       }
 
-      // Adiciona a mensagem ao log
-      this.commit('ADD_LOG_MESSAGE', logEntry)
+      const type = storageKey.replace('sStorage', '').toUpperCase()
+      const genderMale = type == 'FONT' || type == 'IMAGE' || type == 'PALETTE' ? true : false
+      this.commit('ADD_LOG_MESSAGE', {
+        type: type,
+        description: `${genderMale ? 'Uma' : 'Um'} ${type.toLowerCase()} foi adicionad${genderMale ? 'a' : 'o'} com sucesso.`
+      })
     },
-    REMOVE_LINK(state, links) {
-      state.linkCount -= 1
-      state.linksStorage = links
 
-      const logEntry = {
-        type: 'LINK', // Tipo de log, por exemplo, 'COR'
-        description: `Um link foi removido com sucesso. Total de links: [${state.linkCount}].`
+    // Função genérica para remover item
+    REMOVE_ITEM(state, { storageKey, items, countKey }) {
+      state.storageKey = items
+      if (countKey) {
+        state[countKey] -= 1
       }
-      this.commit('ADD_LOG_MESSAGE', logEntry)
+      const type = storageKey.replace('sStorage', '').toUpperCase()
+      const genderMale = type == 'FONT' || type == 'IMAGE' || type == 'PALETTE' ? true : false
+      this.commit('ADD_LOG_MESSAGE', {
+        type: type,
+        description: `${genderMale ? 'Uma' : 'Um'} ${type.toLowerCase()} foi removid${genderMale ? 'a' : 'o'} com sucesso.`
+      })
     },
-    ADD_FONT(state, fonts) {
-      state.fontCount += 1
-      state.fontsStorage = fonts
-      // Cria uma mensagem de log
-      const logEntry = {
-        type: 'FONTE',
-        description: `Uma fonte foi adicionado com sucesso. Total de fonts: [${state.fontCount}].`
+
+    EDIT_ITEM(state, { storageKey, change }) {
+      for (let index = 0; index < state[storageKey].length; index++) {
+        if (index === change.id) {
+          state[storageKey][index] = { ...state[storageKey][index], ...change }
+          break
+        }
       }
+      this.commit('ADD_LOG_MESSAGE', {
+        type: storageKey.toUpperCase(),
+        description: `Um item foi editado com sucesso.`
+      })
+    },
 
-      this.commit('ADD_LOG_MESSAGE', logEntry)
-    },
-    REMOVE_FONT(state, fonts) {
-      state.fontCount -= 1
-      state.fontsStorage = fonts
-
-      const logEntry = {
-        type: 'FONTE', // Tipo de log, por exemplo, 'COR'
-        description: `Uma fonte foi removida com sucesso. Total de fonts: [${state.fontCount}].`
-      }
-      this.commit('ADD_LOG_MESSAGE', logEntry)
-    },
-    ADD_FRAMEWORK(state, frameworks) {
-      state.frameworksStorage = frameworks
-      // Cria uma mensagem de log
-      const logEntry = {
-        type: 'FRAMEWORK',
-        description: `Uma framework foi adicionado com sucesso.`
-      }
-
-      this.commit('ADD_LOG_MESSAGE', logEntry)
-    },
-    REMOVE_FRAMEWORK(state, frameworks) {
-      state.frameworksStorage = frameworks
-
-      const logEntry = {
-        type: 'FRAMEWORK', // Tipo de log, por exemplo, 'COR'
-        description: `Um framework foi removido com sucesso.`
-      }
-      this.commit('ADD_LOG_MESSAGE', logEntry)
-    },
-    ADD_ICONS_STORAGE(state, icons){
-      state.iconsStorage = icons
-
-      const logEntry = {
-        type: 'ICONE', // Tipo de log, por exemplo, 'COR'
-        description: `Um icone foi adicionado com sucesso.`
-      }
-
-      this.commit('ADD_LOG_MESSAGE', logEntry)
-    },
-    REMOVE_ICONS_STORAGE(state, icons){
-      state.iconsStorage = icons
-
-      const logEntry = {
-        type: 'ICONE', // Tipo de log, por exemplo, 'COR'
-        description: `Um icone foi removido com sucesso.`
-      }
-
-      this.commit('ADD_LOG_MESSAGE', logEntry)
-    },
-    ADD_IMAGE(state, images) {
-      state.imagesStorage = images
-      // Cria uma mensagem de log
-      const logEntry = {
-        type: 'IMAGEM',
-        description: `Uma imagem foi adicionada com sucesso.`
-      }
-
-      this.commit('ADD_LOG_MESSAGE', logEntry)
-    },
-    REMOVE_IMAGE(state, images) {
-      state.imagesStorage = images
-
-      const logEntry = {
-        type: 'IMAGEM', // Tipo de log, por exemplo, 'COR'
-        description: `Uma imagem foi removida com sucesso.`
-      }
-      this.commit('ADD_LOG_MESSAGE', logEntry)
-    },
-    ADD_PALETTE(state, payload) {
-      state.colorCount += payload.count
-      state.palettesStorage = payload.palettesStorage
-      
-      const logEntry = {
-        type: 'COR', // Tipo de log, por exemplo, 'COR'
-        description: `Uma paleta foi adicionada com sucesso! Com ${payload.count} cores adicionadas.`
-      }
-      this.commit('ADD_LOG_MESSAGE', logEntry)
-    },
-    REMOVE_PALETTE(state, payload) {
-      state.colorCount -= payload.count
-      state.palettesStorage = payload.palettesStorage
-
-      const logEntry = {
-        type: 'COR', // Tipo de log, por exemplo, 'COR'
-        description: `Uma paleta foi removida com sucesso!  Com ${payload.count} cores removidas.`
-      }
-      this.commit('ADD_LOG_MESSAGE', logEntry)
-    },
-    CLEAR_LOG(state){
-      state.log = []
-    },
-    SET_COLOR_COUNT(state, count) {
-      state.colorCount = count
-    },
-    SET_LINK_COUNT(state, count) {
-      state.linkCount = count
-    },
-    SET_FONT_COUNT(state, count) {
-      state.fontCount = count
-    },
-    SET_LINKS_STORAGE(state, links) {
-      state.linksStorage = links
-    },
-    SET_FONTS_STORAGE(state, fonts) {
-      state.fontsStorage = fonts
-    },
-    SET_FRAMEWORKS_STORAGE(state, frameworks) {
-      state.frameworksStorage = frameworks
-    },
-    SET_IMAGES_STORAGE(state, images) {
-      state.imagesStorage = images
-    },
-    SET_ICONS_STORAGE(state, icons) {
-      state.iconsStorage = icons
-    },
-    SET_PALETTES_STORAGE(state, palettes) {
-      state.palettesStorage = palettes
-    },
-    SET_LOG(state, log) {
-      state.log = log
-    },
-    SET_DIARY_ROUTINE(state, routine) {
-      state.dailyRoutine = routine
-    },
+    // Função genérica para adicionar mensagens de log
     ADD_LOG_MESSAGE(state, { type, description }) {
-      const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ') // Formato YYYY-MM-DD HH:mm:ss
+      const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ')
       const logEntry = { timestamp, type, description }
-
       state.log.unshift(logEntry)
       if (state.log.length > 20) {
         state.log.pop()
       }
     },
+
+    CLEAR_LOG(state) {
+      state.log = []
+    },
+
     TOGGLE_SIDEBAR(state) {
       state.sidebarOpen = !state.sidebarOpen
     },
+
     TOGGLE_SUBMENU(state, submenu) {
       state.submenus[submenu] = !state.submenus[submenu]
     },
+
     SET_SIDEBAR(state, isOpen) {
       state.sidebarOpen = isOpen
     },
+
     SET_SUBMENU(state, { submenu, isOpen }) {
       state.submenus[submenu] = isOpen
+    },
+    SET_STATE_PROPERTY(state, { key, value }) {
+      state[key] = value
     }
   },
+
   actions: {
-    updateColorCount({ commit }, count) {
-      commit('SET_COLOR_COUNT', count)
+    updateCount({ commit }, { count, key }) {
+      commit('SET_COUNT', { count, key })
     },
-    updateLinkCount({ commit }, count) {
-      commit('SET_LINK_COUNT', count)
+
+    updateStateProperty({ commit }, { key, value }) {
+      commit('SET_STATE_PROPERTY', { key, value });
     },
-    updateFontCount({ commit }, count) {
-      commit('SET_FONT_COUNT', count)
+
+    addItem({ commit }, payload) {
+      commit('ADD_ITEM', payload)
     },
-    update({ commit }, log) {
-      commit('SET_LOG', log)
+
+    removeItem({ commit }, payload) {
+      commit('REMOVE_ITEM', payload)
     },
+
+    editItem({ commit }, payload) {
+      commit('EDIT_ITEM', payload)
+    },
+
     addLogMessage({ commit }, { type, description }) {
       commit('ADD_LOG_MESSAGE', { type, description })
     },
+
     toggleSidebar({ commit }) {
       commit('TOGGLE_SIDEBAR')
     },
+
     toggleSubmenu({ commit }, submenu) {
       commit('TOGGLE_SUBMENU', submenu)
     }
   },
+
   getters: {
     getColorCount: (state) => state.colorCount,
     getLinkCount: (state) => state.linkCount,
     getFontCount: (state) => state.fontCount,
     getLog: (state) => state.log,
-    getDiaryRoutine: (state) => state.dailyRoutine,
     getSistemaState: (state) => {
       return {
         colorCount: state.colorCount,
         linkCount: state.linkCount,
         fontCount: state.fontCount,
         log: state.log,
-        routineDaily: state.dailyRoutine,
+        dailyRoutine: state.dailyRoutine,
         currentMonth: state.currentMonth
       }
     },
-    getLinksStorage: (state) => state.linksStorage,
-    getFontsStorage: (state) => state.fontsStorage,
-    getFrameworksStorage: (state) => state.frameworksStorage,
-    getImagesStorage: (state) => state.imagesStorage,
-    getIconsStorage: (state) => state.iconsStorage,
-    getPalettesStorage: (state) => state.palettesStorage,
-    getCurrentCalendar: (state) => state.currentMonth,
-    isSidebarOpen: state => state.sidebarOpen,
-    isSubmenuOpen: state => submenu => state.submenus[submenu]
+    getDiaryRoutine: (state) => state.dailyRoutine,
+    getStorage: (state) => (storageKey) => state[storageKey],
+    isSidebarOpen: (state) => state.sidebarOpen,
+    isSubmenuOpen: (state) => (submenu) => state.submenus[submenu]
   }
 })
 

@@ -12,7 +12,7 @@
         <div class="modal-content bg-dark text-white">
           <div class="modal-header">
             <h5 class="modal-title" id="modalTitle">
-              <slot name="title">Adicionar Link</slot>
+              <div name="title">{{ !linkEdit ? 'Adicionar Link' : 'Editar Link' }}</div>
             </h5>
             <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
           </div>
@@ -57,7 +57,9 @@
           <div class="modal-footer">
             <slot name="footer">
               <button type="button" class="btn btn-secondary" @click="closeModal">Cancelar</button>
-              <button type="button" class="btn btn-primary" @click="submitLink">Adicionar</button>
+              <button type="button" class="btn btn-primary" @click="submitLink">
+                {{ !linkEdit ? 'Adicionar' : 'Editar' }}
+              </button>
             </slot>
           </div>
         </div>
@@ -75,6 +77,10 @@ export default {
     visible: {
       type: Boolean,
       default: false
+    },
+    linkId: {
+      type: Number,
+      default: -1
     }
   },
   data() {
@@ -83,6 +89,17 @@ export default {
         name: '',
         description: '',
         link: ''
+      },
+      linkEdit: null
+    }
+  },
+  created() {
+    if (this.linkId !== -1) {
+      this.linkEdit = SystemController.getStorage('linksStorage')[this.linkId]
+      this.linkData = {
+        name: this.linkEdit.name,
+        description: this.linkEdit.description,
+        link: this.linkEdit.link
       }
     }
   },
@@ -91,8 +108,18 @@ export default {
       this.$emit('close')
     },
     submitLink() {
-      // Lógica para adicionar o link
-      SystemController.addLink(this.linkData)
+      if (this.linkEdit) {
+        this.linkEdit = {
+          id: this.linkId,
+          name: this.linkData.name,
+          description: this.linkData.description,
+          link: this.linkData.link
+        }
+
+        SystemController.editLink(this.linkEdit)
+      } else {
+        SystemController.addLink(this.linkData)
+      }
 
       // Limpa o formulário após adicionar o link
       this.linkData = {

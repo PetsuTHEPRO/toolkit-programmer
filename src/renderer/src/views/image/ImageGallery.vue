@@ -104,11 +104,12 @@ export default {
       return this.filteredImages.slice(indexOfFirstItem, indexOfLastItem)
     },
     totalPages() {
-      return Math.ceil(this.filteredImages.length / this.imagesPerPage)
+      let totalPages = Math.ceil(this.filteredImages.length / this.imagesPerPage)
+      return totalPages === 0 ? 1 : totalPages
     }
   },
   created() {
-    this.images = SystemController.getImageStorage()
+    this.images = SystemController.getStorage('imagesStorage')
   },
   methods: {
     getImageSrc(imagePath) {
@@ -124,8 +125,8 @@ export default {
         this.currentPage++
       }
     },
+
     handleOpenImage(index) {
-      console.log('entrou, la ele', index)
       this.$router.push({ name: 'preview', params: { id: index } })
     }
   }

@@ -103,17 +103,21 @@ export default {
     getLogTypeColor(type) {
       switch (type) {
         case 'COR':
-          return 'text-danger'
+          return 'text-cor'
         case 'LINK':
-          return 'text-primary'
-        case 'FONTE':
-          return 'text-success'
-        case 'LANG':
-          return 'text-warning'
+          return 'text-link'
+        case 'FONT':
+          return 'text-font'
+        case 'ICON':
+          return 'text-icon'
         case 'IMAGEM':
-          return 'text-info'
+          return 'text-image'
+        case 'ALGORITHM':
+          return 'text-algorithm'
+        case 'FRAMEWORK':
+          return 'text-framework'
         default:
-          return 'text-secondary'
+          return 'text-secondary' // Cinza padrão
       }
     }
   }
@@ -121,16 +125,44 @@ export default {
 </script>
 
 <style>
-.close-menu{
+.close-menu {
   margin-left: 90px !important;
   transition: margin-left 0.3s ease-in-out;
 }
 
-.open-menu{
+.open-menu {
   margin-left: 230px !important;
   transition: margin-left 0.3s ease-in-out;
 }
 body {
   background-color: #f8f9fa;
+}
+
+.text-cor {
+  color: #ff5733;
+}
+
+.text-link {
+  color: #ffc107;
+}
+
+.text-font {
+  color: #28a745;
+}
+
+.text-icon {
+  color: #17a2b8;
+}
+
+.text-image {
+  color: #007bff;
+}
+
+.text-algorithm {
+  color: #dc3545;
+}
+
+.text-framework {
+  color: #6c757d;
 }
 </style>

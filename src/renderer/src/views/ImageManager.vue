@@ -66,8 +66,20 @@ import ModalIcon from '@renderer/components/IconModal.vue'
         <!-- Card dos Icones -->
         <div class="card mb-5">
           <div class="card-header d-flex align-items-center justify-content-between">
-            <h5 class="card-title">Icones Recentes</h5>
-            <div class="d-flex">
+            <h5 class="card-title mx-3">Icones</h5>
+            <!-- Search Bar -->
+            <div class="input-group">
+              <input
+                v-model="searchTerm"
+                type="text"
+                class="form-control"
+                placeholder="Pesquisar icons..."
+              />
+              <button class="btn btn-outline-secondary" type="button">
+                <i class="bx bx-search"></i>
+              </button>
+            </div>
+            <div class="d-flex ms-3">
               <button
                 type="button"
                 class="btn btn-outline-primary me-2 d-flex align-items-center"
@@ -76,19 +88,11 @@ import ModalIcon from '@renderer/components/IconModal.vue'
                 <i class="bx bx-upload me-1"></i>
                 Upload
               </button>
-              <!-- Alterar aqui(Mudar para Página Galeria de Icones) -->
-              <router-link
-                :to="{ name: 'gallery' }"
-                class="btn btn-outline-primary d-flex align-items-center"
-              >
-                <i class="bx bx-plus-circle me-1"></i>
-                Ver mais
-              </router-link>
             </div>
           </div>
 
           <div class="card-body py-0">
-            <div class="overflow-auto" style="max-height: 400px">
+            <div class="overflow-auto" style="max-height: 420px">
               <!-- Grid de Cards de Imagens -->
               <div v-if="icons.length === 0" class="text-center text-gray my-3">
                 Nenhum icone encontrado.
@@ -105,7 +109,7 @@ import ModalIcon from '@renderer/components/IconModal.vue'
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(icon, index) in icons" :key="icon.index">
+                    <tr v-for="(icon, index) in currentItems" :key="icon.index">
                       <td class="d-flex justify-content-center">
                         <img
                           :src="getImageSrc(icon.path)"
@@ -125,13 +129,32 @@ import ModalIcon from '@renderer/components/IconModal.vue'
                         <button class="btn btn-sm btn-warning me-2" @click="editIcon(index)">
                           <i class="bx bx-edit"></i>
                         </button>
-                        <button class="btn btn-sm btn-primary" @click="setSelectedIcon(icon.url)">
+                        <a class="btn btn-sm btn-primary" :href="icon.link" target="_blank">
                           <i class="bx bx-link-external"></i>
-                        </button>
+                        </a>
                       </td>
                     </tr>
                   </tbody>
                 </table>
+
+                <!-- Controle de Paginação -->
+                <div class="d-flex justify-content-between my-2">
+                  <button
+                    class="btn btn-outline-primary"
+                    :disabled="currentPage === 1"
+                    @click="handlePrevPage"
+                  >
+                    Anterior
+                  </button>
+                  <span>Página {{ currentPage }} de {{ totalPages }}</span>
+                  <button
+                    class="btn btn-outline-primary"
+                    :disabled="currentPage === totalPages"
+                    @click="handleNextPage"
+                  >
+                    Próxima
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -143,9 +166,7 @@ import ModalIcon from '@renderer/components/IconModal.vue'
         </Modal>
 
         <!-- Modal Component -->
-        <ModalIcon :visible="showModal[1]" @close="onCloseIconModal">
-          <template #title>Adicionar Icone</template>
-        </ModalIcon>
+        <ModalIcon :visible="showModal[1]" :icon="idIcon" :key="idIcon" @close="onCloseIconModal"></ModalIcon>
       </div>
     </div>
   </div>
@@ -160,33 +181,45 @@ export default {
     return {
       showModal: [false, false],
       images: [],
-      icons: []
+      icons: [],
+      searchTerm: '',
+      idIcon: -1,
+      currentPage: 1,
+      itemsPerPage: 5
     }
   },
   computed: {
-    ...mapGetters(['isSidebarOpen'])
+    ...mapGetters(['isSidebarOpen']),
+    filteredIcons() {
+      return this.icons.filter(
+        (item) =>
+          item.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          item.library.toLowerCase().includes(this.searchTerm.toLowerCase())
+      )
+    },
+    currentItems() {
+      const indexOfLastItem = this.currentPage * this.itemsPerPage
+      const indexOfFirstItem = indexOfLastItem - this.itemsPerPage
+      return this.filteredIcons.slice(indexOfFirstItem, indexOfLastItem)
+    },
+    totalPages() {
+      let totalPages = Math.ceil(this.filteredIcons.length / this.itemsPerPage)
+      return totalPages === 0 ? 1 : totalPages
+    }
   },
   created() {
     SystemController.updateSystem()
     this.updateRecentImages()
-    this.updateRecentIcons()
+    this.icons = SystemController.getStorage('iconsStorage')
   },
   methods: {
     getImageSrc(imagePath) {
       return new URL(imagePath, import.meta.url).href
     },
     updateRecentImages() {
-      let imagesDefault = SystemController.getImageStorage()
+      let imagesDefault = SystemController.getStorage('imagesStorage')
       if (imagesDefault.length > 0) {
         this.images = imagesDefault.slice(-3)
-      }
-    },
-    updateRecentIcons() {
-      let iconsDefault = SystemController.getIconStorage()
-      if (iconsDefault.length > 0) {
-        this.icons = iconsDefault.slice(-5)
-      }else{
-        this.icons = []
       }
     },
     onCloseImageModal() {
@@ -195,11 +228,27 @@ export default {
     },
     onCloseIconModal() {
       this.showModal[1] = false
-      this.updateRecentIcons()
+      this.idIcon = -1
+      this.icons = SystemController.getStorage('iconsStorage')
     },
     deleteIcon(index) {
       SystemController.deleteIcon(index)
-      this.updateRecentIcons()
+      this.icons = SystemController.getStorage('iconsStorage')
+    },
+    editIcon(index) {
+      this.idIcon = index
+      this.showModal[1] = true
+    },
+    // Funções para controle de página
+    handlePrevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--
+      }
+    },
+    handleNextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++
+      }
     }
   }
 }

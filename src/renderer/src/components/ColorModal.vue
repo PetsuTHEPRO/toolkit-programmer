@@ -12,7 +12,7 @@
         <div class="modal-content bg-dark text-white">
           <div class="modal-header">
             <h5 id="modalTitle" class="modal-title">
-              <slot name="title">Adicionar Paleta de Cores</slot>
+              <div name="title">{{ !paletteEdit ? 'Adicionar Paleta' : 'Editar Paleta' }}</div>
             </h5>
             <button type="button" class="btn-close" aria-label="Close" @click="closeModal"></button>
           </div>
@@ -78,7 +78,7 @@
           <div class="modal-footer">
             <slot name="footer">
               <button type="button" class="btn btn-secondary" @click="closeModal">Cancelar</button>
-              <button type="button" class="btn btn-primary" @click="submitLink">Adicionar</button>
+              <button type="button" class="btn btn-primary" @click="submitPalette">Adicionar</button>
             </slot>
           </div>
         </div>
@@ -96,6 +96,10 @@ export default {
     visible: {
       type: Boolean,
       default: false
+    },
+    paletteId: {
+      type: Number,
+      default: -1
     }
   },
   data() {
@@ -104,6 +108,17 @@ export default {
         name: '',
         description: '',
         colors: []
+      },
+      paletteEdit: null
+    }
+  },
+  created() {
+    if (this.paletteId !== -1) {
+      this.paletteEdit = SystemController.getStorage('palettesStorage')[this.paletteId]
+      this.paletteData = {
+        name: this.paletteEdit.name,
+        description: this.paletteEdit.description,
+        colors: this.paletteEdit.colors
       }
     }
   },
@@ -111,10 +126,20 @@ export default {
     closeModal() {
       this.$emit('close')
     },
-    submitLink() {
-      SystemController.addPalette(this.paletteData)
+    submitPalette() {
+      if (this.paletteEdit) {
+        this.paletteEdit = {
+          id: this.paletteId,
+          name: this.paletteData.name,
+          description: this.paletteData.description,
+          colors: this.paletteData.colors
+        }
 
-      // Limpa o formulário após adicionar o link
+        SystemController.editPalette(this.paletteEdit)
+      } else {
+        SystemController.addPalette(this.paletteData)
+      }
+
       this.paletteData = {
         name: '',
         description: '',

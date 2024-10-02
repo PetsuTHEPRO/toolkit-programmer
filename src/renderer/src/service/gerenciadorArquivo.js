@@ -6,6 +6,17 @@ import path from 'path'
 const filePath = path.join(__dirname, '../../src/renderer/src/data')
 
 export default {
+  downloadImage(image, path) {
+    // Aqui você pode escrever a imagem no caminho escolhido
+    fs.writeFileSync(path, Buffer.from(image), (err) => {
+      if (err) {
+        console.error('Erro ao salvar a imagem:', err)
+        alert('Erro ao salvar a imagem.')
+        return
+      }
+      alert('Imagem salva com sucesso!')
+    })
+  },
   // Função para carregar os links do arquivo
   loadSystemInfo() {
     if (fs.existsSync(filePath)) {
@@ -36,6 +47,14 @@ export default {
   loadFrameworks() {
     if (fs.existsSync(filePath)) {
       const data = fs.readFileSync(filePath + '/frameworkStorage.txt', 'utf-8')
+      return JSON.parse(data)
+    } else {
+      return [] // Se o arquivo não existir, retorna uma lista vazia
+    }
+  },
+  loadAlgorithms() {
+    if (fs.existsSync(filePath)) {
+      const data = fs.readFileSync(filePath + '/algorithmStorage.txt', 'utf-8')
       return JSON.parse(data)
     } else {
       return [] // Se o arquivo não existir, retorna uma lista vazia
@@ -81,6 +100,13 @@ export default {
     fs.writeFileSync(
       filePath + '/frameworkStorage.txt',
       JSON.stringify(frameworks, null, 2),
+      'utf-8'
+    )
+  },
+  saveAlgorithms(algorithms) {
+    fs.writeFileSync(
+      filePath + '/algorithmStorage.txt',
+      JSON.stringify(algorithms, null, 2),
       'utf-8'
     )
   },

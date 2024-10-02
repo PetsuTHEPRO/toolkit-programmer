@@ -82,9 +82,9 @@ export default {
       role: 'Student',
       menuItems: [
         {
-          text: 'Home',
-          icon: 'bx bx-home',
-          rota: 'home'
+          text: 'Dashboard',
+          icon: 'bx bx-pie-chart-alt-2',
+          rota: 'dashboard'
         },
         {
           text: 'Resources',

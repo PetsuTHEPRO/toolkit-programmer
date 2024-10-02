@@ -61,7 +61,7 @@ import FontModal from '@renderer/components/FontModal.vue'
                     <!-- Thumbnail -->
                     <div class="col-2">
                       <img
-                        src="https://placehold.co/150x150"
+                        :src="getImageSrc(item.path)"
                         alt="Thumbnail"
                         class="img-thumbnail me-3"
                         style="width: 150px; height: 150px"
@@ -92,15 +92,10 @@ import FontModal from '@renderer/components/FontModal.vue'
                         >
                           Copy Import
                         </button>
-                        <a
-                          :href="item.link"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          class="btn btn-warning me-2"
-                        >
+                        <button class="btn btn-warning me-2" @click="editFont(index)">
                           Editar
                           <i class="bx bx-box-arrow-up-right"></i>
-                        </a>
+                        </button>
                         <a class="btn btn-danger" @click="handleDelete(index)">
                           Delete
                           <i class="bx bx-box-arrow-up-right"></i>
@@ -131,7 +126,13 @@ import FontModal from '@renderer/components/FontModal.vue'
               </button>
             </div>
             <!-- Modal -->
-            <FontModal :visible="showModal" @close="showModal = false"> </FontModal>
+            <FontModal
+              :key="idFont"
+              :fontId="idFont"
+              :visible="showModal"
+              @close="onCloseFontModal"
+            >
+            </FontModal>
           </div>
         </div>
       </div>
@@ -147,6 +148,7 @@ export default {
     return {
       showModal: false,
       items: [],
+      idFont: -1,
       searchTerm: '',
       currentPage: 1,
       itemsPerPage: 5
@@ -172,9 +174,21 @@ export default {
   },
   created() {
     SystemController.updateSystem()
-    this.items = SystemController.getFontStorage()
+    this.items = SystemController.getStorage('fontsStorage')
   },
   methods: {
+    getImageSrc(imagePath) {
+      return new URL(imagePath, import.meta.url).href
+    },
+    onCloseFontModal() {
+      this.showModal = false
+      this.fonts = SystemController.getStorage('fontsStorage')
+      this.idFont = -1
+    },
+    editFont(index) {
+      this.idFont = index
+      this.showModal = true
+    },
     handleSearch() {
       this.currentPage = 1 // Reset to first page on new search
     },

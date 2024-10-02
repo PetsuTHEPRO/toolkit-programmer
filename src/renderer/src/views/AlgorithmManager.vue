@@ -7,124 +7,90 @@ import Sidebar from '@renderer/components/Sidebar.vue'
   <div class="container-fluid d-flex p-0">
     <Sidebar />
     <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
+      <!-- Título da Página -->
       <div class="col">
-        <!-- Título da Página -->
         <nav aria-label="breadcrumb" class="mt-3">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page">Algoritmos</li>
+            <li class="breadcrumb-item active" aria-current="page">Algoritmo</li>
           </ol>
         </nav>
-
-        <div class="card mb-6">
-          <div class="card-header">
-            <h5 class="card-title">Adicionar Novo Algoritmo</h5>
+        <div class="card mt-5 mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title">Pesquisar Algoritmos</h5>
           </div>
+
           <div class="card-body">
-            <form @submit.prevent="handleSubmit" class="space-y-4">
-              <div class="mb-3">
-                <label for="name" class="form-label">Nome do Algoritmo</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="name"
-                  v-model="newAlgorithm.name"
-                  placeholder="Digite o nome do algoritmo"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label for="image" class="form-label">URL da Imagem (opcional)</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="image"
-                  v-model="newAlgorithm.image"
-                  placeholder="https://exemplo.com/imagem.jpg"
-                />
-              </div>
-              <div class="mb-3">
-                <label for="explanation" class="form-label">Explicação</label>
-                <textarea
-                  class="form-control"
-                  id="explanation"
-                  v-model="newAlgorithm.explanation"
-                  placeholder="Explique como o algoritmo funciona"
-                  required
-                ></textarea>
-              </div>
-              <div class="mb-3">
-                <label for="language" class="form-label">Linguagem</label>
-                <select class="form-select" id="language" v-model="newAlgorithm.language" required>
-                  <option value="" disabled>Selecione a linguagem</option>
-                  <option v-for="lang in programmingLanguages" :key="lang" :value="lang">
-                    {{ lang }}
-                  </option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label for="code" class="form-label">Código</label>
-                <textarea
-                  class="form-control font-mono"
-                  id="code"
-                  v-model="newAlgorithm.code"
-                  placeholder="Cole o código do algoritmo aqui"
-                  required
-                ></textarea>
-              </div>
-              <button type="submit" class="btn btn-primary">
-                <i class="bx bx-plus mr-2"></i>
-                Adicionar Algoritmo
+            <div class="input-group">
+              <input
+                v-model="searchTerm"
+                type="text"
+                class="form-control"
+                placeholder="Digite o nome ou descrição do link"
+                @input="handleSearch"
+              />
+              <button class="btn btn-outline-secondary" type="button">
+                <i class="bx bx-search"></i>
               </button>
-            </form>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-md-4" v-for="algorithm in currentAlgorithms" :key="algorithm.id">
-            <div class="card mb-4">
-              <div class="card-header">
-                <h5 class="card-title d-flex align-items-center">
-                  <i class="bx bx-code mr-2"></i>
-                  {{ algorithm.name }}
-                </h5>
-              </div>
-              <div class="card-body">
-                <p class="text-sm text-gray-600 truncate">{{ algorithm.explanation }}</p>
-                <p class="text-sm font-medium mt-2">Linguagem: {{ algorithm.language }}</p>
-                <button class="btn btn-link" @click="openDialog(algorithm)">Ver Detalhes</button>
-              </div>
             </div>
           </div>
         </div>
 
-        <div
-          v-if="algorithms.length > algorithmsPerPage"
-          class="mt-6 d-flex justify-content-between"
-        >
-          <button
-            @click="handlePrevPage"
-            :disabled="currentPage === 1"
-            class="btn btn-outline-secondary"
-          >
-            <i class="bx bx-chevron-left"></i> Anterior
-          </button>
-          <span class="text-sm font-medium"> Página {{ currentPage }} de {{ totalPages }} </span>
-          <button
-            @click="handleNextPage"
-            :disabled="currentPage === totalPages"
-            class="btn btn-outline-secondary"
-          >
-            Próxima <i class="bx bx-chevron-right"></i>
-          </button>
+        <div class="card mb-2">
+          <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="card-title">Lista de Algoritmos</h5>
+            <button
+              type="button"
+              class="btn btn-outline-primary me-2 d-flex align-items-center"
+              @click="showModal = true"
+            >
+              <i class="bx bx-plus-circle me-1"></i>
+              Adicionar
+            </button>
+          </div>
+          <div v-if="algorithms.length === 0" class="card-body py-0">
+            <div class="overflow-auto" style="max-height: 400px">
+              <ul class="list-unstyled">
+                <li class="text-center text-gray mt-3">Nenhum algorithm encontrado.</li>
+              </ul>
+            </div>
+          </div>
         </div>
 
-        <!-- Modal -->
-        <AlgorithmModal
-          :visible="showModal"
-          :algorithmData="selectedAlgorithm"
-          @close="showModal = false"
-        >
-        </AlgorithmModal>
+        <div class="row g-4 mb-4">
+          <div v-for="algorithm in currentAlgorithms" :key="algorithm.index" class="col-4">
+            <div class="card d-flex flex-column">
+              <div class="card-header d-flex align-items-center">
+                <h5 class="card-title">{{ algorithm.name }}</h5>
+              </div>
+              <div class="card-body">
+                <p class="card-text">{{ algorithm.explanation }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div
+            v-if="filteredAlgorithms.length > algorithmsPerPage"
+            class="my-4 d-flex align-items-center justify-content-between"
+          >
+            <button
+              class="btn btn-outline-secondary"
+              @click="handlePrevPage"
+              :disabled="currentPage === 1"
+            >
+              Anterior
+            </button>
+            <span class="text-sm font-medium"> Página {{ currentPage }} de {{ totalPages }} </span>
+            <button
+              class="btn btn-outline-secondary"
+              @click="handleNextPage"
+              :disabled="currentPage === totalPages"
+            >
+              Próxima
+            </button>
+          </div>
+          <!-- Modal -->
+          <AlgorithmModal :visible="showModal" :programmingLanguages="programmingLanguages" @close="showModal = false"> </AlgorithmModal>
+        </div>
       </div>
     </div>
   </div>
@@ -132,21 +98,15 @@ import Sidebar from '@renderer/components/Sidebar.vue'
 
 <script>
 import { mapGetters } from 'vuex'
+import SystemController from '../controller/SystemController'
 
 export default {
   data() {
     return {
       showModal: false,
-      newAlgorithm: {
-        name: '',
-        image: '',
-        explanation: '',
-        language: '',
-        code: ''
-      },
+      searchTerm: '',
       algorithms: [],
       currentPage: 1,
-      selectedAlgorithm: null,
       algorithmsPerPage: 6,
       programmingLanguages: [
         'JavaScript',
@@ -162,53 +122,32 @@ export default {
   },
   computed: {
     ...mapGetters(['isSidebarOpen']),
+    filteredAlgorithms() {
+      return this.algorithms.filter(
+        (algorithm) =>
+          algorithm.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          algorithm.description.toLowerCase().includes(this.searchTerm.toLowerCase())
+      )
+    },
     currentAlgorithms() {
       const indexOfLastAlgorithm = this.currentPage * this.algorithmsPerPage
       const indexOfFirstAlgorithm = indexOfLastAlgorithm - this.algorithmsPerPage
-      return this.algorithms.slice(indexOfFirstAlgorithm, indexOfLastAlgorithm)
+      return this.filteredAlgorithms.slice(indexOfFirstAlgorithm, indexOfLastAlgorithm)
     },
     totalPages() {
-      return Math.ceil(this.algorithms.length / this.algorithmsPerPage)
+      return Math.ceil(this.filteredAlgorithms.length / this.algorithmsPerPage)
     }
   },
+  created() {
+    SystemController.updateSystem()
+    this.algorithms = SystemController.getStorage('algorithmsStorage')
+  },
   methods: {
-    handleSubmit() {
-      if (
-        this.newAlgorithm.name &&
-        this.newAlgorithm.explanation &&
-        this.newAlgorithm.language &&
-        this.newAlgorithm.code
-      ) {
-        const newAlgorithm = {
-          id: Date.now(),
-          name: this.newAlgorithm.name,
-          image: this.newAlgorithm.image,
-          explanation: this.newAlgorithm.explanation,
-          language: this.newAlgorithm.language,
-          code: this.newAlgorithm.code
-        }
-        this.algorithms.push(newAlgorithm) // Adiciona o novo algoritmo ao array
-        this.resetForm()
-      }
-    },
-    resetForm() {
-      this.newAlgorithm = {
-        name: '',
-        image: '',
-        explanation: '',
-        language: '',
-        code: ''
-      }
-    },
     handlePrevPage() {
       this.currentPage = Math.max(this.currentPage - 1, 1)
     },
     handleNextPage() {
       this.currentPage = Math.min(this.currentPage + 1, this.totalPages)
-    },
-    openDialog(algorithm) {
-      this.selectedAlgorithm = algorithm
-      this.showModal = true // Mostra o modal
     }
   }
 }

@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -69,6 +69,34 @@ function createWindow() {
   }
 }
 
+ipcMain.handle('download-image', async (event, imageBuffer) => {
+  // Exibe o diálogo de salvar arquivo e aguarda a resposta
+  // Opções para o diálogo de salvar
+  const options = {
+    title: 'Salvar Imagem',
+    defaultPath: join(uploadsPath, 'imagem.png'),
+    buttonLabel: 'Salvar',
+    filters: [
+      { name: 'Imagens', extensions: ['jpg', 'jpeg', 'png', 'gif'] },
+      { name: 'Todos os Arquivos', extensions: ['*'] }
+    ]
+  }
+
+  const result = await dialog.showSaveDialog(options)
+
+  // Verifica se o usuário não cancelou a operação
+  if (!result.canceled && result.filePath) {
+    const uploadsPath = result.filePath
+    // Aqui você pode escrever a imagem no caminho escolhido
+    fileManager.downloadImage(imageBuffer, uploadsPath)
+  } else {
+    console.log('Salvamento cancelado.')
+    return false
+  }
+
+  return true
+})
+
 // Comunicação IPC para carregar os links no frontend
 ipcMain.on('load-system-info', (event) => {
   let systemInfo = fileManager.loadSystemInfo()
@@ -91,6 +119,11 @@ ipcMain.on('load-fonts', (event) => {
 ipcMain.on('load-frameworks', (event) => {
   let frameworks = fileManager.loadFrameworks()
   event.returnValue = frameworks
+})
+
+ipcMain.on('load-algorithms', (event) => {
+  let algorithms = fileManager.loadAlgorithms()
+  event.returnValue = algorithms
 })
 
 ipcMain.on('load-images', (event) => {
@@ -128,6 +161,11 @@ ipcMain.handle('save-frameworks', async (event, frameworks) => {
   return true
 })
 
+ipcMain.handle('save-algorithms', async (event, algorithms) => {
+  fileManager.saveAlgorithms(algorithms)
+  return true
+})
+
 ipcMain.handle('save-images', async (event, images) => {
   fileManager.saveImages(images)
   return true
@@ -153,6 +191,12 @@ ipcMain.handle('upload-image', async (event, imageBuffer, fileName) => {
 // Manipulador IPC para upload de icon
 ipcMain.handle('upload-icon', async (event, imageBuffer, fileName) => {
   const filePath = join(uploadsIconsPath, fileName)
+  fs.writeFileSync(filePath, Buffer.from(imageBuffer))
+  return filePath
+})
+
+ipcMain.handle('upload-image-font', async (event, imageBuffer, fileName) => {
+  const filePath = join(uploadsPath + '/fontStorage', fileName)
   fs.writeFileSync(filePath, Buffer.from(imageBuffer))
   return filePath
 })

@@ -12,7 +12,7 @@
         <div class="modal-content bg-dark text-white">
           <div class="modal-header">
             <h5 class="modal-title" id="modalTitle">
-              <slot name="title">Adicionar Framework</slot>
+              <div name="title">{{ !frameworkEdit ? 'Adicionar Framework' : 'Editar Framework' }}</div>
             </h5>
             <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
           </div>
@@ -69,7 +69,7 @@
           <div class="modal-footer">
             <slot name="footer">
               <button type="button" class="btn btn-secondary" @click="closeModal">Cancelar</button>
-              <button type="button" class="btn btn-primary" @click="submitLink">Adicionar</button>
+              <button type="button" class="btn btn-primary" @click="submitFramework">Adicionar</button>
             </slot>
           </div>
         </div>
@@ -87,6 +87,10 @@ export default {
     visible: {
       type: Boolean,
       default: false
+    },
+    idFramework: {
+      type: Number,
+      default: -1
     }
   },
   data() {
@@ -96,6 +100,18 @@ export default {
         description: '',
         installation: '',
         documentationLink: ''
+      },
+      frameworkEdit: null
+    }
+  },
+  created() {
+    if (this.idFramework !== -1) {
+      this.frameworkEdit = SystemController.getStorage('frameworksStorage')[this.idFramework]
+      this.frameworkData = {
+        name: this.frameworkEdit.name,
+        description: this.frameworkEdit.description,
+        installation: this.frameworkEdit.installation,
+        documentationLink: this.frameworkEdit.documentationLink
       }
     }
   },
@@ -103,10 +119,21 @@ export default {
     closeModal() {
       this.$emit('close')
     },
-    submitLink() {
+    submitFramework() {
       // Lógica para adicionar o link
-      SystemController.addFramework(this.frameworkData)
+      if (this.frameworkEdit) {
+        this.frameworkEdit = {
+          id: this.idFramework,
+          name: this.frameworkData.name,
+          description: this.frameworkData.description,
+          installation: this.frameworkData.installation,
+          documentationLink: this.frameworkData.documentationLink
+        }
 
+        SystemController.editFramework(this.frameworkEdit)
+      } else {
+        SystemController.addFramework(this.frameworkData)
+      }
       // Limpa o formulário após adicionar o link
       this.frameworkData = {
         name: '',

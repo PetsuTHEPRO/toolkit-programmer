@@ -8,7 +8,7 @@
             class="bx bx-trash me-1 cursor-pointer"
             @click="handleDelete(index, colors.length)"
           ></i>
-          <i class="bx bx-edit cursor-pointer"></i>
+          <i class="bx bx-edit cursor-pointer" @click="editPalette(index)"></i>
         </div>
       </div>
       <p class="card-text text-muted">{{ description }}</p>
@@ -55,6 +55,11 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      idPalette: -1
+    }
+  },
   methods: {
     // Função para determinar a cor do texto com base na cor de fundo
     getTextColor(color) {
@@ -86,6 +91,9 @@ export default {
     },
     handleDelete(index, count) {
       SystemController.deletePalette(index, count)
+    },
+    editPalette(index) {
+      this.$emit('edit-palette', index)
     }
   }
 }

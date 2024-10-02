@@ -12,7 +12,7 @@
         <div class="modal-content bg-dark text-white">
           <div class="modal-header">
             <h5 class="modal-title" id="modalTitle">
-              <slot name="title">Adicionar Material</slot>
+              <slot name="title">{{ !imageEdit ? 'Adicionar Imagem' : 'Editar Imagem' }}</slot>
             </h5>
             <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
           </div>
@@ -25,6 +25,7 @@
                   type="text"
                   id="materialName"
                   v-model="imagemData.name"
+                  :disabled="editarImagem"
                   class="form-control"
                   placeholder="Digite o nome do material"
                 />
@@ -42,14 +43,14 @@
               </div>
 
               <!-- Input para upload de imagem -->
-              <div class="mb-3">
+              <div v-if="!imageEdit" class="mb-3">
                 <label for="materialImage" class="form-label">Imagem</label>
                 <input
-                  type="file"
                   id="materialImage"
-                  @change="handleFileUpload"
+                  type="file"
                   class="form-control"
                   accept="image/*"
+                  @change="handleFileUpload"
                 />
               </div>
               <div class="image-preview d-flex align-items-center justify-content-center">
@@ -66,7 +67,7 @@
             <slot name="footer">
               <button type="button" class="btn btn-secondary" @click="closeModal">Cancelar</button>
               <button type="button" class="btn btn-primary" @click="submitImage">
-                Adicionar
+                {{ !imageEdit ? 'Adicionar' : 'Editar' }}
               </button>
             </slot>
           </div>
@@ -84,14 +85,18 @@ export default {
     visible: {
       type: Boolean,
       default: false
+    },
+    image: {
+      type: Object,
+      default: null
     }
   },
   data() {
     return {
       imagemData: {
-        name: '',
+        name: !this.image ? '' : this.image.name,
         fileName: '',
-        description: '',
+        description: !this.image ? '' : this.image.description,
         size: '',
         format: '',
         width: '',
@@ -99,7 +104,8 @@ export default {
         imageFile: null,
         imageFileName: '',
         imagePreviewUrl: ''
-      }
+      },
+      imageEdit: this.image
     }
   },
   methods: {
@@ -126,47 +132,57 @@ export default {
           img.onload = () => {
             this.imagemData.width = img.width // Largura da imagem
             this.imagemData.height = img.height // Altura da imagem
-          };
+          }
         }
         reader.readAsDataURL(file) // Lê o arquivo como Data URL
       }
     },
     async submitImage() {
-      if (!this.imagemData.imageFile) {
-        alert('Por favor, faça upload de uma imagem.')
-        return
-      }
-
-      try {
-        // Envia a imagem e os dados para o backend
-        const imageBuffer = await this.readFileAsArrayBuffer(this.imagemData.imageFile)
-        await window.api.uploadImage(new Uint8Array(imageBuffer), this.imagemData.imageFileName)
-
-        this.imageData = {
+      if (this.imageEdit) {
+        this.imageEdit = {
+          ...this.imageEdit,
           name: this.imagemData.name,
-          fileName: this.imagemData.imageFileName,
-          description: this.imagemData.description,
-          width: this.imagemData.width,
-          height: this.imagemData.height,
-          size: this.imagemData.size,
-          format: this.imagemData.format,
-          path: '../assets/images/' + this.imagemData.imageFileName
+          description: this.imagemData.description
         }
-        SystemController.addImage(this.imageData)
 
-        // Limpar os campos e fechar o modal
-        this.imagemData = {
-          name: '',
-          description: '',
-          imageFile: null,
-          imageFileName: '',
-          imagePreviewUrl: ''
-        };
-        this.closeModal()
-      } catch (error) {
-        console.error('Erro ao fazer upload da imagem:', error)
-        alert('Erro ao fazer upload da imagem.')
+        SystemController.editImage(this.imageEdit)
+      } else {
+        if (!this.imagemData.imageFile) {
+          alert('Por favor, faça upload de uma imagem.')
+          return
+        }
+
+        try {
+          const imageBuffer = await this.readFileAsArrayBuffer(this.imagemData.imageFile)
+          await window.api.uploadImage(new Uint8Array(imageBuffer), this.imagemData.imageFileName)
+
+          this.imageData = {
+            name: this.imagemData.name,
+            fileName: this.imagemData.imageFileName,
+            description: this.imagemData.description,
+            width: this.imagemData.width,
+            height: this.imagemData.height,
+            size: this.imagemData.size,
+            format: this.imagemData.format,
+            path: '../assets/images/' + this.imagemData.imageFileName
+          }
+
+          SystemController.addImage(this.imageData)
+        } catch (error) {
+          console.error('Erro ao fazer upload da imagem:', error)
+          alert('Erro ao fazer upload da imagem.')
+        }
       }
+
+      this.imagemData = {
+        name: '',
+        description: '',
+        imageFile: null,
+        imageFileName: '',
+        imagePreviewUrl: ''
+      }
+
+      this.closeModal()
     },
     readFileAsArrayBuffer(file) {
       return new Promise((resolve, reject) => {
@@ -174,7 +190,7 @@ export default {
         reader.onload = () => resolve(reader.result)
         reader.onerror = reject
         reader.readAsArrayBuffer(file)
-      });
+      })
     }
   }
 }

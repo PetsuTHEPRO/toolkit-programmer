@@ -16,7 +16,7 @@ import FrameworkModal from '../components/FrameworkModal.vue'
         </nav>
         <div class="card mt-5 mb-4">
           <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="card-title">Pesquisar Links</h5>
+            <h5 class="card-title">Pesquisar Framework</h5>
           </div>
 
           <div class="card-body">
@@ -25,7 +25,7 @@ import FrameworkModal from '../components/FrameworkModal.vue'
                 v-model="searchTerm"
                 type="text"
                 class="form-control"
-                placeholder="Digite o nome ou descrição do link"
+                placeholder="Digite o nome ou descrição do framework"
                 @input="handleSearch"
               />
               <button class="btn btn-outline-secondary" type="button">
@@ -59,8 +59,16 @@ import FrameworkModal from '../components/FrameworkModal.vue'
         <div class="row g-4 mb-4">
           <div v-for="(framework, index) in currentFrameworks" :key="framework.index" class="col-4">
             <div class="card d-flex flex-column">
-              <div class="card-header d-flex align-items-center">
+              <div class="card-header d-flex align-items-center justify-content-between">
                 <h5 class="card-title">{{ framework.name }}</h5>
+                <div class="btn-group">
+                  <button class="btn btn-warning" @click="editFramework(index)">
+                    <i class="bx bx-pencil"></i>
+                  </button>
+                  <button class="btn btn-danger" @click="handleDelete(index)">
+                    <i class="bx bx-trash"></i>
+                  </button>
+                </div>
               </div>
               <div class="card-body p-0 my-2 ms-1">
                 <div id="myTab" class="nav nav-tabs" role="tablist">
@@ -161,7 +169,13 @@ import FrameworkModal from '../components/FrameworkModal.vue'
           </button>
         </div>
         <!-- Modal -->
-        <FrameworkModal :visible="showModal" @close="showModal = false"> </FrameworkModal>
+        <FrameworkModal
+          :key="idFramework"
+          :visible="showModal"
+          :idFramework="idFramework"
+          @close="onCloseFrameworkModal"
+        >
+        </FrameworkModal>
       </div>
     </div>
   </div>
@@ -177,6 +191,7 @@ export default {
       showModal: false,
       searchTerm: '',
       currentPage: 1,
+      idFramework: -1,
       frameworksPerPage: 6,
       frameworks: []
     }
@@ -201,7 +216,7 @@ export default {
   },
   created() {
     SystemController.updateSystem()
-    this.frameworks = SystemController.getFrameworkStorage()
+    this.frameworks = SystemController.getStorage('frameworksStorage')
   },
   methods: {
     handlePrevPage() {
@@ -209,6 +224,18 @@ export default {
     },
     handleNextPage() {
       this.currentPage = Math.min(this.currentPage + 1, this.totalPages)
+    },
+    handleDelete(index) {
+      SystemController.deleteFramework(index)
+    },
+    onCloseFrameworkModal() {
+      this.showModal = false
+      this.frameworks = SystemController.getStorage('frameworksStorage')
+      this.idFramework = -1
+    },
+    editFramework(index) {
+      this.idFramework = index
+      this.showModal = true
     }
   }
 }
