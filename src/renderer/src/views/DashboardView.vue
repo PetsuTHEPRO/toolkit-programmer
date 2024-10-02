@@ -102,7 +102,7 @@ export default {
     },
     getLogTypeColor(type) {
       switch (type) {
-        case 'COR':
+        case 'PALETTE':
           return 'text-cor'
         case 'LINK':
           return 'text-link'

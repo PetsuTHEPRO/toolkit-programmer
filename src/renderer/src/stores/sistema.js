@@ -27,33 +27,84 @@ const store = createStore({
       state.currentMonth = month
       state.dailyRoutine = {}
     },
-
+    ADD_COUNT(state, payload) {
+      const { storageKey, count } = payload
+      switch (storageKey) {
+        case 'palettesStorage':
+          state.colorCount += count
+          break
+        case 'linksStorage':
+          state.linkCount += count
+          break
+        case 'fontsStorage':
+          state.fontCount += count
+          break
+      }
+    },
+    REMOVE_COUNT(state, payload) {
+      const { storageKey, count } = payload
+      switch (storageKey) {
+        case 'palettesStorage':
+          if (state.colorCount === 0) {
+            break
+          }
+          state.colorCount -= count
+          break
+        case 'linksStorage':
+          if (state.linkCount === 0) {
+            break
+          }
+          state.linkCount -= count
+          break
+        case 'fontsStorage':
+          if (state.fontCount === 0) {
+            break
+          }
+          state.fontCount -= count
+          break
+      }
+    },
     // Função genérica para adicionar item
-    ADD_ITEM(state, { storageKey, items, countKey }) {
+    ADD_ITEM(state, { storageKey, items, count }) {
       state.storageKey = items
-      if (countKey) {
-        state[countKey] += 1
+
+      if (count) {
+        this.commit('ADD_COUNT', { storageKey, count })
       }
 
+      // Extrai o tipo removendo o sufixo 'sStorage'
       const type = storageKey.replace('sStorage', '').toUpperCase()
-      const genderMale = type == 'FONT' || type == 'IMAGE' || type == 'PALETTE' ? true : false
+
+      // Define o gênero com base no tipo
+      const isFemale = ['FONT', 'IMAGE', 'PALETTE'].includes(type)
+      const article = isFemale ? 'Uma' : 'Um'
+      const suffix = isFemale ? 'a' : 'o'
+
+      // Adiciona a mensagem de log
       this.commit('ADD_LOG_MESSAGE', {
         type: type,
-        description: `${genderMale ? 'Uma' : 'Um'} ${type.toLowerCase()} foi adicionad${genderMale ? 'a' : 'o'} com sucesso.`
+        description: `${article} ${type.toLowerCase()} foi adicionad${suffix} com sucesso.${count ? ` [Quantidade de itens adicionados: ${count}]` : ''}`
       })
     },
 
     // Função genérica para remover item
-    REMOVE_ITEM(state, { storageKey, items, countKey }) {
+    REMOVE_ITEM(state, { storageKey, items, count }) {
       state.storageKey = items
-      if (countKey) {
-        state[countKey] -= 1
+      if (count) {
+        this.commit('REMOVE_COUNT', { storageKey, count })
       }
+      // Extrai o tipo removendo o sufixo 'sStorage'
       const type = storageKey.replace('sStorage', '').toUpperCase()
-      const genderMale = type == 'FONT' || type == 'IMAGE' || type == 'PALETTE' ? true : false
+
+      // Define o gênero com base no tipo
+      const isFemale = ['FONT', 'IMAGE', 'PALETTE'].includes(type)
+      const article = isFemale ? 'Uma' : 'Um'
+      const suffix = isFemale ? 'a' : 'o'
+
+      // Adiciona a mensagem de log
       this.commit('ADD_LOG_MESSAGE', {
         type: type,
-        description: `${genderMale ? 'Uma' : 'Um'} ${type.toLowerCase()} foi removid${genderMale ? 'a' : 'o'} com sucesso.`
+        description: `${article} ${type.toLowerCase()} foi removid${suffix} com sucesso.${count ? ` [Quantidade de itens removidos: ${count}]` : ''}`
       })
     },
 

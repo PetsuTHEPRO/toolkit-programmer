@@ -62,7 +62,8 @@ class SystemController {
   }
 
   static addLink(change) {
-    this.addToStorage('linksStorage', 'Link adicionado com sucesso!', change)
+    const count = 1
+    this.addToStorage('linksStorage', 'Link adicionado com sucesso!', change, count)
   }
 
   static editLink(change) {
@@ -70,11 +71,13 @@ class SystemController {
   }
 
   static deleteLink(index) {
-    this.deleteFromStorage('linksStorage', 'Link removido com sucesso!', index)
+    const count = 1
+    this.deleteFromStorage('linksStorage', 'Link removido com sucesso!', index, count)
   }
 
   static addFont(change) {
-    this.addToStorage('fontsStorage', 'Fonte adicionada com sucesso!', change)
+    const count = 1
+    this.addToStorage('fontsStorage', 'Fonte adicionada com sucesso!', change, count)
   }
 
   static editFont(change) {
@@ -82,7 +85,8 @@ class SystemController {
   }
 
   static deleteFont(index) {
-    this.deleteFromStorage('fontsStorage', 'Fonte removida com sucesso!', index)
+    const count = 1
+    this.deleteFromStorage('fontsStorage', 'Fonte removida com sucesso!', index, count)
   }
 
   static addFramework(change) {
@@ -131,6 +135,7 @@ class SystemController {
 
   static addPalette(change) {
     let count = change.colors.length
+    console.log("ADD PALETTE", count)
     this.addToStorage('palettesStorage', 'Paleta adicionada com sucesso!', change, count)
   }
 
