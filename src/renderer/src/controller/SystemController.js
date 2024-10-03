@@ -17,13 +17,14 @@ class SystemController {
     // Carregar systemInfo e fazer os commits relacionados ao estado do sistema
     let systemInfo = window.api.loadSystemInfo()
     const data = JSON.parse(systemInfo)
-
+    console.log("Data:", data)
     // Usar a mutação genérica para atualizar o estado
     store.commit('SET_STATE_PROPERTY', { key: 'colorCount', value: data.colorCount })
     store.commit('SET_STATE_PROPERTY', { key: 'linkCount', value: data.linkCount })
     store.commit('SET_STATE_PROPERTY', { key: 'fontCount', value: data.fontCount })
     store.commit('SET_STATE_PROPERTY', { key: 'log', value: data.log })
-    store.commit('SET_STATE_PROPERTY', { key: 'dailyRoutine', value: data.routineDaily })
+    store.commit('SET_STATE_PROPERTY', { key: 'dailyRoutine', value: data.dailyRoutine })
+    store.commit('SET_STATE_PROPERTY', { key: 'currentMonth', value: data.currentMonth })
 
     // Iterar pelos dados de armazenamento e fazer os commits usando a mutação genérica
     for (const [key, storageKey] of Object.entries(storageItems)) {
@@ -52,12 +53,15 @@ class SystemController {
   }
 
   static updateDiaryRoutine() {
+    // Obtém a data atual
     const day = new Date().getDate()
-    let dailyRoutine = store.getters['getSistemaState']
-
+    // Obtém a rotina diária atual do estado (ou cria uma rotina vazia se undefined)
+    let dailyRoutine = this.getDiaryRoutine() || {}
+    // Verifica se já existe uma entrada para o dia atual, caso contrário inicializa
     dailyRoutine[day] = (dailyRoutine[day] || 0) + 1
-
-    store.commit('SET_DIARY_ROUTINE', dailyRoutine)
+    // Faz commit para atualizar o estado do Vuex
+    store.commit('SET_STATE_PROPERTY', { key: 'dailyRoutine', value: dailyRoutine });
+    // Salva o sistema atualizado
     this.saveSystem()
   }
 
@@ -135,7 +139,6 @@ class SystemController {
 
   static addPalette(change) {
     let count = change.colors.length
-    console.log("ADD PALETTE", count)
     this.addToStorage('palettesStorage', 'Paleta adicionada com sucesso!', change, count)
   }
 
@@ -186,6 +189,7 @@ class SystemController {
     }
 
     // Salva as informações do sistema
+    console.log("ASD", store.getters['getSistemaState'])
     window.api.saveSystemInfo(JSON.stringify(store.getters['getSistemaState']))
 
     // Itera sobre os itens de armazenamento e salva cada um

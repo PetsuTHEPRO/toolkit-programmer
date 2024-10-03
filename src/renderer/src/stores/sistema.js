@@ -152,6 +152,10 @@ const store = createStore({
     },
     SET_STATE_PROPERTY(state, { key, value }) {
       state[key] = value
+    },
+    SET_DIARY_ROUTINE(state, dailyRoutine) {
+      state.dailyRoutine = dailyRoutine
+      console.log("STATE", state)
     }
   },
 
@@ -161,7 +165,7 @@ const store = createStore({
     },
 
     updateStateProperty({ commit }, { key, value }) {
-      commit('SET_STATE_PROPERTY', { key, value });
+      commit('SET_STATE_PROPERTY', { key, value })
     },
 
     addItem({ commit }, payload) {
@@ -205,6 +209,7 @@ const store = createStore({
       }
     },
     getDiaryRoutine: (state) => state.dailyRoutine,
+    getCurrentCalendar: (state) => state.currentMonth,
     getStorage: (state) => (storageKey) => state[storageKey],
     isSidebarOpen: (state) => state.sidebarOpen,
     isSubmenuOpen: (state) => (submenu) => state.submenus[submenu]
