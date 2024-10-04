@@ -57,10 +57,13 @@ import Sidebar from '@renderer/components/Sidebar.vue'
         </div>
 
         <div class="row g-4 mb-4">
-          <div v-for="algorithm in currentAlgorithms" :key="algorithm.index" class="col-4">
+          <div v-for="(algorithm, index) in currentAlgorithms" :key="algorithm.index" class="col-4">
             <div class="card d-flex flex-column">
-              <div class="card-header d-flex align-items-center">
+              <div class="card-header d-flex align-items-center justify-content-between">
                 <h5 class="card-title">{{ algorithm.name }}</h5>
+                <button class="btn btn-outline-primary ms-2" @click="handleOpenAlogithm(index)">
+                  Abrir
+                </button>
               </div>
               <div class="card-body">
                 <p class="card-text">{{ algorithm.explanation }}</p>
@@ -108,16 +111,7 @@ export default {
       algorithms: [],
       currentPage: 1,
       algorithmsPerPage: 6,
-      programmingLanguages: [
-        'JavaScript',
-        'Python',
-        'Java',
-        'C++',
-        'Ruby',
-        'Go',
-        'Rust',
-        'TypeScript'
-      ]
+      programmingLanguages: ['JavaScript', 'Python', 'Java', 'Ruby', 'Go', 'Rust']
     }
   },
   computed: {
@@ -148,6 +142,9 @@ export default {
     },
     handleNextPage() {
       this.currentPage = Math.min(this.currentPage + 1, this.totalPages)
+    },
+    handleOpenAlogithm(index) {
+      this.$router.push({ name: 'algorithmPreview', params: { id: index } })
     }
   }
 }

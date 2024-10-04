@@ -1,81 +1,116 @@
+<script setup>
+import { ref } from 'vue'
+import { VuePDF, usePDF } from '@tato30/vue-pdf'
+
+// Referência para a página atual
+const page = ref(1)
+
+// Referência para o arquivo PDF carregado
+const pdfFile = ref(null)
+
+// Carrega o PDF com a função usePDF
+const { pdf, pages } = usePDF(pdfFile)
+
+// Estado para controlar o nível de zoom
+const zoom = ref(1.2) // 1 = 100%
+
+// Função para lidar com a mudança do input de arquivo
+const handleFileUpload = (event) => {
+  const file = event.target.files[0]
+  if (file && file.type === 'application/pdf') {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      // Carrega o PDF a partir do arquivo selecionado
+      pdfFile.value = e.target.result
+      page.value = 1 // Reseta a página para 1 após o upload
+    }
+    reader.readAsArrayBuffer(file) // Lê o arquivo como ArrayBuffer
+  }
+}
+
+// Métodos para aumentar e diminuir o zoom
+const zoomIn = () => {
+  if (zoom.value <= 1.7) {
+    zoom.value += 0.1 // Aumenta o zoom em 10%
+  }
+}
+
+const zoomOut = () => {
+  if (zoom.value >= 0.75) {
+    zoom.value -= 0.1 // Diminui o zoom em 10% (mínimo de 20%)
+  }
+}
+
+const zoomReset = () => {
+  zoom.value = 1.2
+}
+</script>
+
 <template>
-  <div class="min-vh-100 bg-gradient bg-purple-900 text-white">
-    <!-- Navbar -->
-    <nav class="bg-purple-800 py-3">
-      <div class="container d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center text-decoration-none">
-          <i class="bx bx-code-alt text-purple-300" style="font-size: 32px"></i>
-          <span class="ms-2 fs-4 fw-bold text-white">Programmer's Toolkit</span>
-        </div>
-        <a
-          href="https://github.com/petsuTHEPRO"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="btn btn-outline-light d-flex align-items-center justify-content-center"
-        >
-          <i class="bx bxl-github me-2" style="font-size: 20px"></i>
-          GitHub
-        </a>
+  <div class="container mx-auto p-4 max-w-4xl">
+    <div class="card shadow-lg">
+      <div class="card-header">
+        <h5 class="card-title text-center">Visualizador de PDF</h5>
       </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div
-      class="d-flex flex-column align-items-center justify-content-center min-vh-100 position-relative pt-5"
-    >
-      <!-- Background Image -->
-      <div
-        class="position-absolute top-0 bottom-0 start-0 end-0"
-        style="
-          background-image: url('https://picsum.photos/1912/1080');
-          background-size: cover;
-          background-position: center;
-          filter: blur(5px) brightness(0.5);
-        "
-      ></div>
-      <!-- Card -->
-      <div
-        class="w-75 z-1 bg-purple-800 bg-opacity-30 backdrop-blur-lg rounded-3 p-5 text-center mb-5"
-      >
-        <div class="d-flex justify-content-center align-items-center mb-4">
-          <i class="bx bx-code-alt text-purple-300" style="font-size: 48px"></i>
-          <h1 class="ms-3 display-5 text-white bounce-animation">Programmer's Toolkit</h1>
+      <div class="card-body">
+        <div class="mb-4">
+          <input
+            id="pdfFile"
+            type="file"
+            accept="application/pdf"
+            class="form-control-file"
+            @change="handleFileUpload"
+          />
         </div>
-        <p class="fs-4 text-purple-100">
-          Bem-vindo ao seu arsenal definitivo de desenvolvimento! Aqui você tem o poder de
-          armazenar, organizar e acessar rapidamente todos os recursos essenciais para sua jornada
-          de programação.
-        </p>
-
-        <div class="d-flex justify-content-center mt-4">
-          <router-link
-            to="/"
-            class="btn btn-lg btn-purple-500 hover-scale mx-2 d-flex align-items-center justify-content-center"
+        <div class="d-flex justify-content-center">
+          <div
+            class="border rounded overflow-hidden bg-white shadow-inner"
+            style="width: 800px; height: 1000px"
           >
-            <i class="bx bx-right-arrow-alt me-2"></i>
-            Começar Agora
-          </router-link>
-          <a
-            href="https://www.ko-fi.com/petermenezes"
-            target="_blank"
-            class="btn btn-lg btn-purple-400 hover-scale mx-2 d-flex align-items-center justify-content-center"
-          >
-            <i class="bx bx-heart me-2"></i>
-            Doar
-          </a>
-          <a
-            href="https://github.com/petsuTHEPRO/toolkit-programmer/blob/master/README.md"
-            target="_blank"
-            class="btn btn-lg btn-purple-600 hover-scale mx-2 d-flex align-items-center justify-content-center"
-          >
-            <i class="bx bx-book-open me-2"></i>
-            Documentação
-          </a>
+            <div
+              v-if="!pdf"
+              class="w-100 h-100 d-flex flex-column align-items-center justify-content-center text-secondary"
+            >
+              <svg class="w-16 h-16 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <p class="h5 fw-bold">Visualização de PDF</p>
+              <p class="small">Este é o local para visualizar o conteúdo do PDF</p>
+            </div>
+            <VuePDF v-else :pdf="pdf" :page="page" :scale="zoom" />
+          </div>
         </div>
-
-        <p class="mt-4 text-purple-200">
-          Armazene imagens, ícones, fontes, trechos de código, frameworks e muito mais!
-        </p>
+      </div>
+      <div class="card-footer d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <button
+            class="btn btn-outline-secondary btn-sm me-2"
+            @click="page = page > 1 ? page - 1 : page"
+          >
+            <span class="bx bx-chevron-left"></span>
+          </button>
+          <span>Página {{ page }} de {{ pages }}</span>
+          <button
+            class="btn btn-outline-secondary btn-sm ms-2"
+            @click="page = page < pages ? page + 1 : page"
+          >
+            <span class="bx bx-chevron-right"></span>
+          </button>
+        </div>
+        <div class="d-flex align-items-center">
+          <button class="btn btn-outline-secondary btn-sm me-2" @click="zoomOut">
+            <span class="bx bx-zoom-out"></span>
+          </button>
+          <button @click="zoomReset" class="btn btn-sm">{{ (zoom * 100 - 20).toFixed(0) }}%</button>
+          <button class="btn btn-outline-secondary btn-sm ms-2" @click="zoomIn">
+            <span class="bx bx-zoom-in"></span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -83,88 +118,10 @@
 
 <script>
 export default {
-  data() {
-    return {}
-  }
+  name: 'PdfViewer'
 }
 </script>
 
-<style>
-.hover-scale {
-  transition: transform 0.3s ease-in-out;
-}
-
-.hover-scale:hover {
-  transform: scale(1.05);
-}
-
-.btn-purple-600 {
-  background-color: #3b82f6; /* Um tom de roxo correspondente ao valor 600 do Tailwind CSS */
-  color: #ffffff; /* Cor do texto, branco para contraste */
-  padding: 0.5rem 1rem; /* Adiciona um pouco de espaço interno */
-  border: none; /* Remove bordas padrão */
-  border-radius: 0.375rem; /* Bordas arredondadas */
-  cursor: pointer; /* Muda o cursor para indicar que é clicável */
-  transition: background-color 0.3s; /* Efeito de transição para o fundo */
-}
-
-.btn-purple-600:hover {
-  background-color: #2563eb; /* Cor ao passar o mouse */
-}
-
-.btn-purple-500 {
-  background-color: #22c55e; /* Um tom de roxo correspondente ao valor 500 do Tailwind CSS */
-  color: #ffffff; /* Cor do texto, branco para contraste */
-  padding: 0.5rem 1rem; /* Adiciona um pouco de espaço interno */
-  border: none; /* Remove bordas padrão */
-  border-radius: 0.375rem; /* Bordas arredondadas */
-  cursor: pointer; /* Muda o cursor para indicar que é clicável */
-  transition: background-color 0.3s; /* Efeito de transição para o fundo */
-}
-
-.btn-purple-500:hover {
-  background-color: #16a34a; /* Cor ao passar o mouse */
-}
-
-.btn-purple-400 {
-  background-color: #ec4899; /* Um tom de roxo correspondente ao valor 400 do Tailwind CSS */
-  color: #ffffff; /* Cor do texto, branco para contraste */
-  padding: 0.5rem 1rem; /* Adiciona um pouco de espaço interno */
-  border: none; /* Remove bordas padrão */
-  border-radius: 0.375rem; /* Bordas arredondadas */
-  cursor: pointer; /* Muda o cursor para indicar que é clicável */
-  transition: background-color 0.3s; /* Efeito de transição para o fundo */
-}
-
-.btn-purple-400:hover {
-  background-color: #db2777; /* Cor ao passar o mouse */
-}
-
-.bg-purple-800 {
-  background-color: rgba(94, 43, 145, 0.5); /* Cor roxa com 30% de opacidade */
-  color: #ffffff; /* Texto branco */
-  padding: 1rem;
-  border-radius: 0.375rem; /* Bordas arredondadas */
-}
-
-.bg-purple-900 {
-  background-color: rgba(94, 43, 145); /* Cor roxa com 50% de opacidade */
-  color: #ffffff; /* Texto branco */
-}
-
-/* Animação de subir e descer */
-@keyframes bounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-/* Aplicar a animação ao título */
-.bounce-animation {
-  animation: bounce 2s infinite ease-in-out;
-}
+<style scoped>
+/* Estilos adicionais, se necessário */
 </style>

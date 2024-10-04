@@ -101,7 +101,14 @@ export default {
       this.$emit('close')
     },
     submitAlgorithm() {
-      SystemController.addAlgorithm(this.algorithmData)
+      const algorithmData = {
+        name: this.algorithmData.name,
+        explanation: this.algorithmData.explanation,
+        code: {
+          [this.algorithmData.language]: this.algorithmData.code
+        }
+      }
+      SystemController.addAlgorithm(algorithmData)
 
       this.algorithmData = {
         name: '',

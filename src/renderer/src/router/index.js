@@ -70,6 +70,14 @@ const router = createRouter({
       component: () => import('../views/AlgorithmManager.vue')
     },
     {
+      path: '/algorithmPreview/:id',
+      name: 'algorithmPreview',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../components/AlgorithmPreview.vue')
+    },
+    {
       path: '/font',
       name: 'font',
       // route level code-splitting
