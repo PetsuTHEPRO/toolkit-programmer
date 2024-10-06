@@ -1,1 +1,1 @@
-"[]"
+"[{\"name\":\"Vue I18n\",\"description\":\"É uma biblioteca mais recomendada para internacionalização é o Vue I18n. Ela permite a tradução fácil de textos.\",\"installation\":\"npm install vue-i18n@10\",\"documentationLink\":\"https://vue-i18n.intlify.dev/guide/introduction.html\",\"id\":0}]"

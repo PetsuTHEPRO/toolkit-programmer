@@ -115,9 +115,17 @@ const store = createStore({
           break
         }
       }
+      // Extrai o tipo removendo o sufixo 'sStorage'
+      const type = storageKey.replace('sStorage', '').toUpperCase()
+
+      // Define o gênero com base no tipo
+      const isFemale = ['FONT', 'IMAGE', 'PALETTE'].includes(type)
+      const article = isFemale ? 'Uma' : 'Um'
+      const suffix = isFemale ? 'a' : 'o'
+
       this.commit('ADD_LOG_MESSAGE', {
-        type: storageKey.toUpperCase(),
-        description: `Um item foi editado com sucesso.`
+        type: type,
+        description: `${article} ${type.toLowerCase()} foi editad${suffix} com sucesso.`
       })
     },
 

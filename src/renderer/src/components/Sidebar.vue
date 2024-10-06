@@ -18,6 +18,7 @@
           <div v-if="item.children">
             <span
               class="nav-link d-flex align-items-center my-1"
+              :class="{ activo: isSubmenuOpen(item.text) }"
               style="cursor: pointer"
               @click="toggleSubmenu(item.text)"
             >
@@ -30,7 +31,7 @@
               ></i>
             </span>
             <ul v-if="isSubmenuOpen(item.text) && isSidebarOpen" class="nav flex-column ms-0">
-              <li v-for="subItem in item.children" :key="subItem.text" class="nav-item">
+              <li v-for="subItem in item.children" :key="subItem.text" class="nav-item" :class="{linkActual: isActive(subItem.rota)}">
                 <router-link
                   v-if="subItem.rota"
                   :to="{ name: subItem.rota }"
@@ -56,6 +57,7 @@
             v-else-if="item.rota"
             :to="{ name: item.rota }"
             class="nav-link d-flex align-items-center my-1"
+            :class="{ linkActual: isActive(item.rota) }"
           >
             <i :class="item.icon"></i>
             <span v-if="isSidebarOpen" class="ms-2">{{ item.text }}</span>
@@ -129,6 +131,10 @@ export default {
   },
   methods: {
     ...mapActions(['toggleSidebar', 'toggleSubmenu']),
+    isActive(routeName) {
+      console.log("Rotas:", this.$route.name, routeName)
+      return this.$route.name === routeName
+    }
   }
 }
 </script>
@@ -138,7 +144,8 @@ export default {
   position: fixed;
   width: 220px;
   min-height: 100vh;
-  background-color: #1d1d21;
+  background-color: #1E1E1E;
+  border-right: 2px solid #292929;
   color: white;
   overflow: hidden;
   transition: width 0.3s ease-in-out;
@@ -162,8 +169,18 @@ export default {
   color: white;
 }
 
+.activo{
+  color: #2363bd !important;
+}
+
 .sidebar .nav-link:hover {
-  background-color: #495057;
+  background-color: #292929;
+}
+
+.sidebar .linkActual {
+  background-color: #292929;
+  border-right: 3px solid #1668DC;
+  cursor: default;
 }
 
 .sidebar .bx {

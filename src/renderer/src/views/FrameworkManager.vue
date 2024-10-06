@@ -11,7 +11,7 @@ import FrameworkModal from '../components/FrameworkModal.vue'
       <div class="col">
         <nav aria-label="breadcrumb" class="mt-3">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page">Framework</li>
+            <li class="breadcrumb-item active" aria-current="page" style="color: #e4e4e4">Framework</li>
           </ol>
         </nav>
         <div class="card mt-5 mb-4">
@@ -47,7 +47,7 @@ import FrameworkModal from '../components/FrameworkModal.vue'
               Adicionar
             </button>
           </div>
-          <div v-if="frameworks.length === 0" class="card-body py-0">
+          <div v-if="frameworks.length === 0" class="card-body card-element py-0">
             <div class="overflow-auto" style="max-height: 400px">
               <ul class="list-unstyled">
                 <li class="text-center text-gray mt-3">Nenhum framework/API encontrado.</li>
@@ -70,7 +70,7 @@ import FrameworkModal from '../components/FrameworkModal.vue'
                   </button>
                 </div>
               </div>
-              <div class="card-body p-0 my-2 ms-1">
+              <div class="card-body card-element p-0 py-2 ps-1">
                 <div id="myTab" class="nav nav-tabs" role="tablist">
                   <button
                     :id="`description-tab-${index}`"

@@ -1,1 +1,1 @@
-"[]"
+"[{\"name\":\"Dashboard Paleta\",\"description\":\"Cores Pastel utilizadas no dashboard.\",\"colors\":[\"#DBEAFE\",\"#DCFCE7\",\"#F3E8FF\",\"#FCE7F3\"]},{\"name\":\"Dashboard Paleta Fonte\",\"description\":\"Essa paleta de cores é para as fontes do dashboard, utilizado no fundo da paleta principal.\",\"colors\":[\"#1E40AF\",\"#166333\",\"#6B21A7\",\"#9D174D\"]}]"

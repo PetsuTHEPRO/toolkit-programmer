@@ -43,7 +43,7 @@ export default {
   },
   methods: {
     getDayStyle(activity) {
-      const colors = ['#EBEDF0', '#e0b3ff', '#d580ff', '#b84dff', '#8000ff']
+      const colors = ['#161B22', '#39D353', '#26A641', '#006D32', '#0E4429']
       return {
         backgroundColor: colors[this.getIntensity(activity)],
         width: '30px',
@@ -128,6 +128,7 @@ export default {
 .calendar-day {
   display: inline-block;
   position: relative;
+  color: white;
 }
 
 .sr-only {

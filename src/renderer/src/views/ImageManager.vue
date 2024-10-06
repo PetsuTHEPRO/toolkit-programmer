@@ -12,7 +12,7 @@ import ModalIcon from '@renderer/components/IconModal.vue'
         <!-- Título da Página -->
         <nav aria-label="breadcrumb" class="mt-3">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page">Imagens</li>
+            <li class="breadcrumb-item active" aria-current="page" style="color: #e4e4e4">Imagens</li>
           </ol>
         </nav>
 
@@ -39,7 +39,7 @@ import ModalIcon from '@renderer/components/IconModal.vue'
             </div>
           </div>
 
-          <div class="card-body py-0">
+          <div class="card-body card-element py-0">
             <div class="overflow-auto" style="max-height: 400px">
               <!-- Grid de Cards de Imagens -->
               <div v-if="images.length === 0" class="text-center text-gray my-3">
@@ -53,7 +53,7 @@ import ModalIcon from '@renderer/components/IconModal.vue'
                       class="card-img-top"
                       :alt="image.fileName"
                     />
-                    <div class="card-body">
+                    <div class="card-body card-element">
                       <p class="card-text">{{ image.description }}</p>
                     </div>
                   </div>
@@ -91,7 +91,7 @@ import ModalIcon from '@renderer/components/IconModal.vue'
             </div>
           </div>
 
-          <div class="card-body py-0">
+          <div class="card-body card-element py-0">
             <div class="overflow-auto" style="max-height: 420px">
               <!-- Grid de Cards de Imagens -->
               <div v-if="icons.length === 0" class="text-center text-gray my-3">

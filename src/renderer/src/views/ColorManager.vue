@@ -10,7 +10,7 @@ import ColorModal from '../components/ColorModal.vue'
       <div class="col">
         <nav aria-label="breadcrumb" class="my-3">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page">Color Palette</li>
+            <li class="breadcrumb-item active" aria-current="page" style="color: #e4e4e4">Color Palette</li>
           </ol>
         </nav>
 
@@ -47,7 +47,7 @@ import ColorModal from '../components/ColorModal.vue'
               Adicionar
             </button>
           </div>
-          <div class="card-body p-0">
+          <div class="card-body card-element p-0">
             <div class="overflow-auto px-2" style="max-height: 790px">
               <ul class="list-unstyled row mx-0">
                 <li v-if="currentItems.length === 0" class="text-center text-gray mt-3">
@@ -171,4 +171,5 @@ export default {
 .max-w-4xl {
   max-width: 56rem;
 }
+
 </style>

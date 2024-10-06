@@ -62,6 +62,14 @@ const router = createRouter({
       component: () => import('../views/LinkManager.vue')
     },
     {
+      path: '/article',
+      name: 'article',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/ArticleManager.vue')
+    },
+    {
       path: '/algorithm',
       name: 'algorithm',
       // route level code-splitting

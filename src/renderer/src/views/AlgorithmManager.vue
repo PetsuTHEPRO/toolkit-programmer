@@ -11,7 +11,7 @@ import Sidebar from '@renderer/components/Sidebar.vue'
       <div class="col">
         <nav aria-label="breadcrumb" class="mt-3">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page">Algoritmo</li>
+            <li class="breadcrumb-item active" aria-current="page" style="color: #e4e4e4">Algoritmo</li>
           </ol>
         </nav>
         <div class="card mt-5 mb-4">
@@ -65,7 +65,7 @@ import Sidebar from '@renderer/components/Sidebar.vue'
                   Abrir
                 </button>
               </div>
-              <div class="card-body">
+              <div class="card-body card-element">
                 <p class="card-text">{{ algorithm.explanation }}</p>
               </div>
             </div>
@@ -156,4 +156,5 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 </style>

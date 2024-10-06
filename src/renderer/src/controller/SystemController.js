@@ -17,7 +17,6 @@ class SystemController {
     // Carregar systemInfo e fazer os commits relacionados ao estado do sistema
     let systemInfo = window.api.loadSystemInfo()
     const data = JSON.parse(systemInfo)
-    console.log("Data:", data)
     // Usar a mutação genérica para atualizar o estado
     store.commit('SET_STATE_PROPERTY', { key: 'colorCount', value: data.colorCount })
     store.commit('SET_STATE_PROPERTY', { key: 'linkCount', value: data.linkCount })
@@ -189,7 +188,6 @@ class SystemController {
     }
 
     // Salva as informações do sistema
-    console.log("ASD", store.getters['getSistemaState'])
     window.api.saveSystemInfo(JSON.stringify(store.getters['getSistemaState']))
 
     // Itera sobre os itens de armazenamento e salva cada um

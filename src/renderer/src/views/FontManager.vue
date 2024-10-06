@@ -10,7 +10,7 @@ import FontModal from '@renderer/components/FontModal.vue'
       <div class="col">
         <nav aria-label="breadcrumb" class="mt-3">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page">Fonte</li>
+            <li class="breadcrumb-item active" aria-current="page" style="color: #e4e4e4">Fonte</li>
           </ol>
         </nav>
 
@@ -46,7 +46,7 @@ import FontModal from '@renderer/components/FontModal.vue'
               Adicionar
             </button>
           </div>
-          <div class="card-body py-0">
+          <div class="card-body card-element py-0">
             <div class="overflow-auto" style="max-height: 400px">
               <ul class="list-unstyled">
                 <li v-if="currentItems.length === 0" class="text-center text-gray mt-3">
@@ -71,12 +71,12 @@ import FontModal from '@renderer/components/FontModal.vue'
                       <h3 class="h6 font-semibold mt-2">{{ item.name }}</h3>
                       <p class="text-muted mt-1 my-0">font-family: {{ item.family }}</p>
                       <p v-if="item.uploadType === 'import'" class="text-muted my-0 break-text">
-                        {{ item.url }}
+                        {{ item.link }}
                       </p>
                       <div class="buttons mt-2">
                         <a
                           v-if="item.uploadType === 'link'"
-                          :href="item.url"
+                          :href="item.link"
                           target="_blank"
                           rel="noopener noreferrer"
                           class="btn btn-primary me-2"
@@ -84,11 +84,10 @@ import FontModal from '@renderer/components/FontModal.vue'
                           Open Link
                         </a>
 
-                        <!-- Botão para copiar o conteúdo da variável item.url, mostrado se uploadType for 'import' -->
                         <button
                           v-else
                           class="btn btn-success me-2"
-                          @click="copyToClipboard(item.url)"
+                          @click="copyToClipboard(item.link)"
                         >
                           Copy Import
                         </button>
@@ -143,6 +142,7 @@ import FontModal from '@renderer/components/FontModal.vue'
 <script>
 import { mapGetters } from 'vuex'
 import SystemController from '../controller/SystemController'
+import notificationService from '../service/notificationService'
 export default {
   data() {
     return {
@@ -175,6 +175,7 @@ export default {
   created() {
     SystemController.updateSystem()
     this.items = SystemController.getStorage('fontsStorage')
+    console.log("items:", this.items)
   },
   methods: {
     getImageSrc(imagePath) {
@@ -206,10 +207,11 @@ export default {
       SystemController.deleteFont(index)
     },
     copyToClipboard(text) {
+      console.log("Texto:", text)
       navigator.clipboard
         .writeText(text)
         .then(() => {
-          alert('Conteúdo copiado com sucesso!')
+          notificationService.success("Copiado para Área de Transferencia!")
         })
         .catch((err) => {
           console.error('Erro ao copiar:', err)
