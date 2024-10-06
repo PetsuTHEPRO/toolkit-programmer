@@ -11,7 +11,8 @@ class SystemController {
       algorithms: 'algorithmsStorage',
       images: 'imagesStorage',
       icons: 'iconsStorage',
-      palettes: 'palettesStorage'
+      palettes: 'palettesStorage',
+      articles: 'articlesStorage'
     }
 
     // Carregar systemInfo e fazer os commits relacionados ao estado do sistema
@@ -112,6 +113,14 @@ class SystemController {
     this.deleteFromStorage('algorithmsStorage', 'Algoritmo removido com sucesso!', index)
   }
 
+  static addArticle(change) {
+    this.addToStorage('articlesStorage', 'Artigo adicionado com sucesso!', change)
+  }
+
+  static deleteArticle(index) {
+    this.deleteFromStorage('articlesStorage', 'Artigo removido com sucesso!', index)
+  }
+
   static addImage(change) {
     this.addToStorage('imagesStorage', 'Imagem adicionada com sucesso!', change)
   }
@@ -184,7 +193,8 @@ class SystemController {
       algorithms: 'getStorage',
       images: 'getStorage',
       icons: 'getStorage',
-      palettes: 'getStorage'
+      palettes: 'getStorage',
+      articles: 'getStorage'
     }
 
     // Salva as informações do sistema

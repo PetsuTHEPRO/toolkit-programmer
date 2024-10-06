@@ -1,7 +1,7 @@
 <script setup>
 import Sidebar from '@renderer/components/Sidebar.vue'
-import Modal from '@renderer/components/ImageModal.vue'
-import ModalIcon from '@renderer/components/IconModal.vue'
+import Modal from '@renderer/components/modals/ImageModal.vue'
+import ModalIcon from '@renderer/components/modals/IconModal.vue'
 </script>
 
 <template>

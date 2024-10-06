@@ -1,6 +1,6 @@
 <script setup>
 import Sidebar from './Sidebar.vue'
-import ImageModal from './ImageModal.vue'
+import ImageModal from './modals/ImageModal.vue'
 </script>
 
 <template>

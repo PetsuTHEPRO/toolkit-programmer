@@ -1,6 +1,6 @@
 <script setup>
-import Sidebar from '../components/Sidebar.vue'
-import ColorModal from '../components/ColorModal.vue'
+import Sidebar from '@renderer/components/Sidebar.vue'
+import ColorModal from '@renderer/components/modals/ColorModal.vue'
 </script>
 
 <template>

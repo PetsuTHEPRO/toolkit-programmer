@@ -103,7 +103,7 @@
 </template>
 
 <script>
-import SystemController from '../controller/SystemController'
+import SystemController from '../../controller/SystemController'
 import notificationService from '@renderer/service/notificationService.js'
 
 export default {

@@ -1,6 +1,6 @@
 <script setup>
 import Sidebar from '../components/Sidebar.vue'
-import FrameworkModal from '../components/FrameworkModal.vue'
+import FrameworkModal from '../components/modals/FrameworkModal.vue'
 </script>
 
 <template>

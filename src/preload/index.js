@@ -7,6 +7,7 @@ const api = {
   uploadIcon: (imageBuffer, fileName) => ipcRenderer.invoke('upload-icon', imageBuffer, fileName),
   uploadImageFont: (imageBuffer, fileName) =>
     ipcRenderer.invoke('upload-image-font', imageBuffer, fileName),
+  uploadPdf: (pdfBuffer, fileName) => ipcRenderer.invoke('upload-pdf', pdfBuffer, fileName),
   loadSystemInfo: () => ipcRenderer.sendSync('load-system-info'),
   loadLinks: () => ipcRenderer.sendSync('load-links'),
   loadFonts: () => ipcRenderer.sendSync('load-fonts'),
@@ -15,6 +16,7 @@ const api = {
   loadImages: () => ipcRenderer.sendSync('load-images'),
   loadIcons: () => ipcRenderer.sendSync('load-icons'),
   loadPalettes: () => ipcRenderer.sendSync('load-palettes'),
+  loadArticles: () => ipcRenderer.sendSync('load-articles'),
   saveSystemInfo: (systemInfo) => ipcRenderer.invoke('save-system-info', systemInfo),
   saveLinks: (links) => ipcRenderer.invoke('save-links', links),
   saveFonts: (fonts) => ipcRenderer.invoke('save-fonts', fonts),
@@ -23,6 +25,7 @@ const api = {
   saveImages: (images) => ipcRenderer.invoke('save-images', images),
   saveIcons: (icons) => ipcRenderer.invoke('save-icons', icons),
   savePalettes: (palettes) => ipcRenderer.invoke('save-palettes', palettes),
+  saveArticles: (articles) => ipcRenderer.invoke('save-articles', articles),
   downloadImage: (imageBuffer) => ipcRenderer.invoke('download-image', imageBuffer)
 }
 

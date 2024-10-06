@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import SystemController from '../controller/SystemController'
+import SystemController from '../../controller/SystemController'
 
 export default {
   props: {

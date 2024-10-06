@@ -9,6 +9,19 @@ import fileManager from '../../src/renderer/src/service/gerenciadorArquivo'
 
 const uploadsPath = join(__dirname, '../../src/renderer/src/assets/images')
 const uploadsIconsPath = join(__dirname, '../../src/renderer/src/assets/icons')
+const uploadsPdfPath = join(__dirname, '../../src/renderer/src/assets/pdfs')
+
+try{
+  // Verifica se a pasta existe e cria se não existir
+  if (!fs.existsSync(uploadsPdfPath)) {
+    fs.mkdirSync(uploadsPdfPath, { recursive: true })
+    console.log('Pasta criada com sucesso:', uploadsPdfPath)
+  } else {
+    console.log('A pasta já existe:', uploadsPdfPath)
+  }
+} catch (error) {
+  console.error('Erro ao criar a pasta:', error)
+}
 
 try {
   // Verifica se a pasta existe e cria se não existir
@@ -109,6 +122,11 @@ ipcMain.on('load-links', (event) => {
   event.returnValue = links
 })
 
+ipcMain.on('load-articles', (event) => {
+  let articles = fileManager.loadArticles()
+  event.returnValue = articles
+})
+
 // Comunicação IPC para carregar os links no frontend
 ipcMain.on('load-fonts', (event) => {
   let fonts = fileManager.loadFonts()
@@ -148,6 +166,11 @@ ipcMain.handle('save-system-info', async (event, systemInfo) => {
 
 ipcMain.handle('save-links', async (event, links) => {
   fileManager.saveLinks(links)
+  return true
+})
+
+ipcMain.handle('save-articles', async (event, articles) => {
+  fileManager.saveArticles(articles)
   return true
 })
 
@@ -198,6 +221,12 @@ ipcMain.handle('upload-icon', async (event, imageBuffer, fileName) => {
 ipcMain.handle('upload-image-font', async (event, imageBuffer, fileName) => {
   const filePath = join(uploadsPath + '/fontStorage', fileName)
   fs.writeFileSync(filePath, Buffer.from(imageBuffer))
+  return filePath
+})
+
+ipcMain.handle('upload-pdf', async (event, pdfBuffer, fileName) => {
+  const filePath = join(uploadsPdfPath, fileName)
+  fs.writeFileSync(filePath, Buffer.from(pdfBuffer))
   return filePath
 })
 

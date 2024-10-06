@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { VuePDF, usePDF } from '@tato30/vue-pdf'
 
+
 // Referência para a página atual
 const page = ref(1)
 
@@ -10,7 +11,7 @@ const pdfFile = ref(null)
 
 // Carrega o PDF com a função usePDF
 const { pdf, pages } = usePDF(pdfFile)
-
+console.log("Pages", pages)
 // Estado para controlar o nível de zoom
 const zoom = ref(1.2) // 1 = 100%
 

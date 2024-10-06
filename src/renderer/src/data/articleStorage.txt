@@ -1,0 +1,1 @@
+"[{\"name\":\"Banco de dados\",\"description\":\"Banco de dados Descrição\",\"pdfFileName\":\"Banco de dados.pdf\",\"pdfSize\":\"709.47 KB\",\"path\":\"../../assets/pdfs/Banco de dados.pdf\"},{\"name\":\"Explicação\",\"description\":\"Artigo Descrição\",\"pdfFileName\":\"Explicação Código.pdf\",\"pdfSize\":\"489.24 KB\",\"path\":\"../../assets/pdfs/Explicação Código.pdf\"}]"

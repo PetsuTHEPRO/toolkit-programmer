@@ -20,7 +20,8 @@ const store = createStore({
     algorithmsStorage: [],
     imagesStorage: [],
     iconsStorage: [],
-    palettesStorage: []
+    palettesStorage: [],
+    articlesStorage: []
   },
   mutations: {
     RESET_CALENDAR(state, month) {

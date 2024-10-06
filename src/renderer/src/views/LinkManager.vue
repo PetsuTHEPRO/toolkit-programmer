@@ -1,6 +1,6 @@
 <script setup>
 import Sidebar from '@renderer/components/Sidebar.vue'
-import LinkModal from '@renderer/components/LinkModal.vue'
+import LinkModal from '@renderer/components/modals/LinkModal.vue'
 </script>
 
 <template>

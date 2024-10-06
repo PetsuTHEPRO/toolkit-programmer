@@ -1,6 +1,6 @@
 <script setup>
 import Sidebar from '@renderer/components/Sidebar.vue'
-import FontModal from '@renderer/components/FontModal.vue'
+import FontModal from '@renderer/components/modals/FontModal.vue'
 </script>
 
 <template>

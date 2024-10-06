@@ -122,8 +122,8 @@
 </template>
 
 <script>
-import SystemController from '../controller/SystemController'
-import notificationService from '../service/notificationService'
+import SystemController from '../../controller/SystemController'
+import notificationService from '../../service/notificationService'
 
 export default {
   props: {

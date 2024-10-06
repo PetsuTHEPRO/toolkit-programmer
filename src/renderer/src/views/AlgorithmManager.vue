@@ -1,5 +1,5 @@
 <script setup>
-import AlgorithmModal from '@renderer/components/AlgorithmModal.vue'
+import AlgorithmModal from '@renderer/components/modals/AlgorithmModal.vue'
 import Sidebar from '@renderer/components/Sidebar.vue'
 </script>
 

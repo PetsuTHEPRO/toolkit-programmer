@@ -113,7 +113,7 @@ export default {
           icon: 'bx bx-brain',
           rota: '',
           children: [
-            { text: 'Articles', icon: 'bx bx-book-open', rota: '' },
+            { text: 'Articles', icon: 'bx bx-book-open', rota: 'article' },
             { text: 'Videos', icon: 'bx bx-video', rota: '' },
             { text: 'Links', icon: 'bx bx-link', rota: 'link' }
           ]
@@ -132,7 +132,6 @@ export default {
   methods: {
     ...mapActions(['toggleSidebar', 'toggleSubmenu']),
     isActive(routeName) {
-      console.log("Rotas:", this.$route.name, routeName)
       return this.$route.name === routeName
     }
   }

@@ -36,6 +36,14 @@ export default {
       return [] // Se o arquivo não existir, retorna uma lista vazia
     }
   },
+  loadArticles() {
+    if (fs.existsSync(filePath)) {
+      const data = fs.readFileSync(filePath + '/articleStorage.txt', 'utf-8')
+      return JSON.parse(data)
+    } else {
+      return [] // Se o arquivo não existir, retorna uma lista vazia
+    }
+  },
   loadFonts() {
     if (fs.existsSync(filePath)) {
       const data = fs.readFileSync(filePath + '/fontStorage.txt', 'utf-8')
@@ -95,6 +103,9 @@ export default {
   },
   saveFonts(fonts) {
     fs.writeFileSync(filePath + '/fontStorage.txt', JSON.stringify(fonts, null, 2), 'utf-8')
+  },
+  saveArticles(articles) {
+    fs.writeFileSync(filePath + '/articleStorage.txt', JSON.stringify(articles, null, 2), 'utf-8')
   },
   saveFrameworks(frameworks) {
     fs.writeFileSync(
