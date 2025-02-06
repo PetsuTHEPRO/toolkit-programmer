@@ -14,25 +14,17 @@ import Sidebar from '@renderer/components/Sidebar.vue'
             <li class="breadcrumb-item active" aria-current="page" style="color: #e4e4e4">Artigo</li>
           </ol>
         </nav>
-        <div class="card mt-5 mb-4">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="card-title">Pesquisar Artigos</h5>
-          </div>
-
-          <div class="card-body">
-            <div class="input-group">
-              <input
-                v-model="searchTerm"
-                type="text"
-                class="form-control"
-                placeholder="Digite o nome ou descrição do link"
-                @input="handleSearch"
-              />
-              <button class="btn btn-outline-secondary" type="button">
-                <i class="bx bx-search"></i>
-              </button>
-            </div>
-          </div>
+        <div class="input-group my-5">
+          <input
+            v-model="searchTerm"
+            type="text"
+            class="form-control search py-4"
+            placeholder="Type here..."
+            @input="handleSearch"
+          />
+          <button class="btn btn-outline-secondary search d-flex align-items-center p-4" style="background-color: #727DDC; color: white;" type="button">
+            <i class="bx bx-search fs-4" style="font-weight: bold"></i>
+          </button>
         </div>
 
         <div class="card mb-2">
@@ -40,7 +32,7 @@ import Sidebar from '@renderer/components/Sidebar.vue'
             <h5 class="card-title">Lista de Artigos</h5>
             <button
               type="button"
-              class="btn btn-outline-primary me-2 d-flex align-items-center"
+              class="btn-system btn-adicionar me-2 d-flex align-items-center"
               @click="showModal = true"
             >
               <i class="bx bx-plus-circle me-1"></i>
@@ -61,8 +53,9 @@ import Sidebar from '@renderer/components/Sidebar.vue'
             <div class="card d-flex flex-column">
               <div class="card-header d-flex align-items-center justify-content-between">
                 <h5 class="card-title">{{ article.name }}</h5>
-                <button class="btn btn-outline-primary ms-2" @click="handleOpenArticle(index)">
+                <button class="btn-system btn-link ms-2 d-flex align-items-center" @click="handleOpenArticle(index)">
                   Abrir
+                  <i class="bx bx-link-external ms-1"></i>
                 </button>
               </div>
               <div class="card-body card-element">
@@ -149,11 +142,113 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .truncate {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.btn-system {
+  display: inline-block;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.btn-control {
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 25px;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  transition: all 0.2s;
+  animation: bn13bouncy 5s infinite linear;
+}
+
+.btn-control:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.btn-adicionar {
+  background-color: rgba(0, 0, 0, 0);
+  padding: 0.65em 1.6em;
+  margin: 0 0.3em 0.3em 0;
+  border-radius: 25px;
+  border: 2px solid #22c55e;
+  color: #22c55e;
+  transition: all 0.2s;
+  animation: bn13bouncy 5s infinite linear;
+}
+
+.btn-adicionar:hover {
+  background-color: #22c55e;
+  color: #000000;
+}
+
+.btn-link {
+  background-color: #a855f7;
+  border: 2px solid #a855f7;
+  padding: 0.5em 1em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-link:hover {
+  background-color: #9333ea;
+  color: white;
+}
+
+@keyframes bn13bouncy {
+  0% {
+    top: 0em;
+  }
+  40% {
+    top: 0em;
+  }
+  43% {
+    top: -0.9em;
+  }
+  46% {
+    top: 0em;
+  }
+  48% {
+    top: -0.4em;
+  }
+  50% {
+    top: 0em;
+  }
+  100% {
+    top: 0em;
+  }
+}
+
+.card-header {
+  background-color: #141414;
+  color: white;
+}
+
+
+.search{
+  font-family: 'Poppins', sans-serif;
+  border-radius: 20px;
+  border: none;
+  height: 40px;
+  background-color: #3D444D;
+  color: white;
+}
+
+.search:focus{
+  background-color: #3D444D;
+  color: white;
+}
+
+.search::-webkit-input-placeholder{
+  color: #B1B4B8;
 }
 
 </style>

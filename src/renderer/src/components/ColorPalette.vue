@@ -106,6 +106,11 @@ export default {
   overflow: visible;
 }
 
+.card-header {
+  background-color: #141414;
+  color: white;
+}
+
 .h-24 {
   height: 6rem;
 }
@@ -144,6 +149,7 @@ export default {
 
 .card-text{
   display: -webkit-box;
+  color: #A2A89D !important;
   -webkit-line-clamp: 2; /* Limita para 2 linhas */
   -webkit-box-orient: vertical;
   height: 50px;

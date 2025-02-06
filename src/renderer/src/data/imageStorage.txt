@@ -1,1 +1,1 @@
-"[{\"name\":\"Layout de Site da MUI - Theme Dark\",\"fileName\":\"Captura de tela de 2024-10-05 04-17-28.png\",\"description\":\"É um layout que estou pegando para fazer o theme dark and light desse aplicativo.\",\"width\":1298,\"height\":585,\"size\":\"142.19 KB\",\"format\":\"png\",\"path\":\"../assets/images/Captura de tela de 2024-10-05 04-17-28.png\"}]"
+"[]"

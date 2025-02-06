@@ -14,25 +14,20 @@ import ColorModal from '@renderer/components/modals/ColorModal.vue'
           </ol>
         </nav>
 
-        <div class="card mb-5 p-0">
-          <div class="card-header">
-            <h5 class="card-title">Galeria de Paletas de Cores</h5>
-          </div>
-          <div class="card-body">
-            <!-- Barra de Pesquisa -->
-            <div class="input-group mb-3">
-              <input
-                v-model="searchTerm"
-                type="text"
-                class="form-control"
-                placeholder="Pesquisar paletas..."
-                @input="handleSearch"
-              />
-              <button class="btn btn-outline-secondary" type="button" @click="clearSearch">
-                Limpar
-              </button>
-            </div>
-          </div>
+        <div class="input-group my-5">
+          <input
+            v-model="searchTerm"
+            type="text"
+            class="form-control search py-4"
+            placeholder="Type here..."
+            @input="handleSearch"
+          />
+          <button
+            class="btn btn-outline-secondary search d-flex align-items-center p-4"
+            style="background-color: #727DDC; color: white;" type="button"
+          >
+            <i class="bx bx-search fs-4" style="font-weight: bold"></i>
+          </button>
         </div>
 
         <div class="card mb-5 p-0">
@@ -40,7 +35,7 @@ import ColorModal from '@renderer/components/modals/ColorModal.vue'
             <h5 class="card-title">Lista das Paletas</h5>
             <button
               type="button"
-              class="btn btn-outline-primary me-2 d-flex align-items-center"
+              class="btn-system btn-adicionar me-2 d-flex align-items-center"
               @click="showModal = true"
             >
               <i class="bx bx-plus-circle me-1"></i>
@@ -65,17 +60,17 @@ import ColorModal from '@renderer/components/modals/ColorModal.vue'
               </ul>
             </div>
           </div>
-          <div class="card-footer d-flex justify-content-between mt-2">
-            <button class="btn btn-outline-primary" :disabled="currentPage === 1" @click="prevPage">
-              <i class="bi bi-chevron-left me-2"></i> Anterior
+          <div class="card-footer d-flex align-items-center justify-content-between">
+            <button class="btn btn-control d-flex align-items-center" :disabled="currentPage === 1" @click="prevPage">
+              <i class="bx bx-chevron-left me-2"></i> Anterior
             </button>
             <span>Página {{ currentPage }} de {{ totalPages }}</span>
             <button
-              class="btn btn-outline-primary"
+              class="btn btn-control d-flex align-items-center"
               :disabled="currentPage === totalPages"
               @click="nextPage"
             >
-              Próxima <i class="bi bi-chevron-right ms-2"></i>
+              Próxima <i class="bx bx-chevron-right fs-5"></i>
             </button>
           </div>
           <ColorModal
@@ -164,12 +159,104 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .min-vh-100 {
   min-height: 100vh;
 }
 .max-w-4xl {
   max-width: 56rem;
+}
+
+.btn-system {
+  display: inline-block;
+  padding: 0.65em 1.6em;
+  margin: 0 0.3em 0.3em 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.btn-control {
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 25px;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  transition: all 0.2s;
+  animation: bn13bouncy 5s infinite linear;
+}
+
+.btn-control:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.text-muted {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.btn-adicionar {
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 25px;
+  border: 2px solid #22c55e;
+  color: #22c55e;
+  transition: all 0.2s;
+  animation: bn13bouncy 5s infinite linear;
+}
+
+.btn-adicionar:hover {
+  background-color: #22c55e;
+  color: #000000;
+}
+
+.card-header, .card-footer {
+  background-color: #141414;
+  color: white;
+}
+
+@keyframes bn13bouncy {
+  0% {
+    top: 0em;
+  }
+  40% {
+    top: 0em;
+  }
+  43% {
+    top: -0.9em;
+  }
+  46% {
+    top: 0em;
+  }
+  48% {
+    top: -0.4em;
+  }
+  50% {
+    top: 0em;
+  }
+  100% {
+    top: 0em;
+  }
+}
+
+.search{
+  font-family: 'Poppins', sans-serif;
+  border-radius: 20px;
+  border: none;
+  height: 40px;
+  background-color: #3D444D;
+  color: white;
+}
+
+.search:focus{
+  background-color: #3D444D;
+  color: white;
+}
+
+.search::-webkit-input-placeholder{
+  color: #B1B4B8;
 }
 
 </style>

@@ -149,7 +149,14 @@ const store = createStore({
     },
 
     TOGGLE_SUBMENU(state, submenu) {
-      state.submenus[submenu] = !state.submenus[submenu]
+
+      for (let key in state.submenus) {
+        if(key !== submenu){
+          state.submenus[key] = false
+        }else{
+          state.submenus[submenu] = !state.submenus[submenu]
+        }
+      }
     },
 
     SET_SIDEBAR(state, isOpen) {

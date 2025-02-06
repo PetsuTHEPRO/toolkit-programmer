@@ -10,10 +10,10 @@ import ImageModal from './modals/ImageModal.vue'
       <nav aria-label="breadcrumb" class="mt-3">
         <ol class="breadcrumb">
           <li class="breadcrumb-item">
-            <router-link :to="{ name: 'image' }"> Imagens </router-link>
+            <router-link :to="{ name: 'image' }" class="breadcrumb-link"> Imagens </router-link>
           </li>
           <li class="breadcrumb-item">
-            <router-link :to="{ name: 'gallery' }"> Galeria </router-link>
+            <router-link :to="{ name: 'gallery' }" class="breadcrumb-link"> Galeria </router-link>
           </li>
           <li class="breadcrumb-item active" aria-current="page">{{ image.name }}</li>
         </ol>
@@ -35,7 +35,7 @@ import ImageModal from './modals/ImageModal.vue'
             <div class="mb-4">
               <h2 class="fs-2 fw-bold mb-4">{{ image.name }}</h2>
               <h3 class="fs-5 fw-bold">Image Specifications</h3>
-              <div class="text-muted">
+              <div>
                 <p><strong>Size:</strong> {{ image.width }} x {{ image.height }}</p>
                 <p><strong>Format:</strong> {{ image.format }}</p>
                 <p><strong>File Size:</strong> {{ image.size }}</p>
@@ -43,33 +43,33 @@ import ImageModal from './modals/ImageModal.vue'
             </div>
             <div class="mb-4">
               <h3 class="fs-5 fw-semibold">Description</h3>
-              <p class="text-muted">{{ image.description }}</p>
+              <p>{{ image.description }}</p>
             </div>
-            <div class="d-flex gap-2">
+            <div class="d-flex align-items-center justify-content-between">
               <a
                 v-if="image.path"
                 :href="image.path"
                 target="_blank"
-                class="btn btn-outline-primary"
+                class="btn-system btn-link d-flex align-items-center"
               >
-                <i class="bi bi-share"></i>
+                <i class="bx bx-share me-2"></i>
                 Abrir Imagem
               </a>
 
-              <button class="btn btn-outline-primary" @click="downloadImage(image)">
-                <i class="bi bi-download"></i>
+              <button class="btn-system btn-copy d-flex align-items-center" @click="downloadImage(image)">
+                <i class="bx bx-download me-2"></i>
                 Download
               </button>
 
               <!-- Botão para Editar -->
-              <button class="btn btn-outline-warning" @click="editImage()">
-                <i class="bi bi-pencil"></i>
+              <button class="btn-system btn-editar d-flex align-items-center" @click="editImage()">
+                <i class="bx bx-edit me-2"></i>
                 Editar
               </button>
 
               <!-- Botão para Excluir -->
-              <button class="btn btn-outline-danger" @click="deleteImage(image)">
-                <i class="bi bi-trash"></i>
+              <button class="btn-system btn-deletar d-flex align-items-center" @click="deleteImage(image)">
+                <i class="bx bx-trash me-2"></i>
                 Excluir
               </button>
             </div>
@@ -162,3 +162,83 @@ export default {
   }
 }
 </script>
+<style scoped>
+.breadcrumb-link {
+  color: #1e90ff;
+}
+
+.breadcrumb-item::before {
+  color: #e4e4e4;
+}
+
+.breadcrumb-item.active {
+  color: #e4e4e4;
+}
+
+.container-fluid{
+  color: white;
+}
+
+.btn-system {
+  display: inline-block;
+  margin: 0 0.3em 0.3em 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.btn-editar {
+  background-color: #3b82f6;
+  border: 2px solid #3b82f6;
+  padding: 0.65em 0.9em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-editar:hover {
+  background-color: #2563eb;
+  color: white;
+}
+
+.btn-deletar {
+  background-color: #ef4444;
+  border: 2px solid #ef4444;
+  padding: 0.65em 1em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-deletar:hover {
+  background-color: #dc2626;
+}
+
+.btn-link {
+  background-color: #a855f7;
+  border: 2px solid #a855f7;
+  padding: 0.65em 1em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-link:hover {
+  background-color: #9333ea;
+  color: white;
+}
+
+.btn-copy {
+  background-color: #6366f1;
+  border: 2px solid #6366f1;
+  padding: 0.65em 1.2em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-copy:hover {
+  background-color: #4f46e5;
+}
+
+</style>

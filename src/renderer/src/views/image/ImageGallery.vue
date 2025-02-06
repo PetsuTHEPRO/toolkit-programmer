@@ -10,22 +10,23 @@ import Sidebar from '../../components/Sidebar.vue'
       <nav aria-label="breadcrumb" class="my-3">
         <ol class="breadcrumb">
           <li class="breadcrumb-item">
-              <router-link :to="{ name: 'image' }">Imagens</router-link>
+              <router-link :to="{ name: 'image' }" class="breadcrumb-link">Imagens</router-link>
             </li>
             <li class="breadcrumb-item active" aria-current="page">Galeria</li>
           </ol>
         </nav>
         
         <!-- Search Bar -->
-        <div class="input-group mb-4">
+        <div class="input-group my-5">
           <input
-            type="text"
-            class="form-control"
-            placeholder="Pesquisar imagens..."
             v-model="searchTerm"
+            type="text"
+            class="form-control search py-4"
+            placeholder="Type here..."
+            @input="handleSearch"
           />
-          <button class="btn btn-outline-secondary" type="button">
-            <i class="bx bx-search"></i>
+          <button class="btn btn-outline-secondary search d-flex align-items-center p-4" style="background-color: #727DDC; color: white;" type="button">
+            <i class="bx bx-search fs-4" style="font-weight: bold"></i>
           </button>
         </div>
 
@@ -54,21 +55,21 @@ import Sidebar from '../../components/Sidebar.vue'
         <!-- Pagination -->
         <div class="mt-4 d-flex justify-content-between align-items-center">
           <button
-            class="btn btn-outline-primary"
+            class="btn btn-control d-flex align-items-center"
             :disabled="currentPage === 1"
             @click="handlePrevPage"
           >
-            <i class="bi bi-chevron-left me-2"></i>
+          <i class="bx bx-chevron-left fs-5"></i>
             Anterior
           </button>
-          <span>Página {{ currentPage }} de {{ totalPages }}</span>
+          <span class="text-white">Página {{ currentPage }} de {{ totalPages }}</span>
           <button
-            class="btn btn-outline-primary"
+            class="btn btn-control d-flex align-items-center"
             :disabled="currentPage === totalPages"
             @click="handleNextPage"
           >
             Próxima
-            <i class="bi bi-chevron-right ms-2"></i>
+            <i class="bx bx-chevron-right fs-5"></i>
           </button>
         </div>
       </div>
@@ -148,7 +149,51 @@ export default {
   text-overflow: ellipsis;
 }
 
+.btn-control {
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 25px;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  transition: all 0.2s;
+  animation: bn13bouncy 5s infinite linear;
+}
+
+.btn-control:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+
 .card-img-top:hover {
   transform: scale(1.05);
+}
+
+.search{
+  font-family: 'Poppins', sans-serif;
+  border-radius: 20px;
+  border: none;
+  height: 40px;
+  background-color: #3D444D;
+  color: white;
+}
+
+.search:focus{
+  background-color: #3D444D;
+  color: white;
+}
+
+.search::-webkit-input-placeholder{
+  color: #B1B4B8;
+}
+
+.breadcrumb-link {
+  color: #1e90ff;
+}
+
+.breadcrumb-item::before {
+  color: #e4e4e4;
+}
+
+.breadcrumb-item.active {
+  color: #e4e4e4;
 }
 </style>

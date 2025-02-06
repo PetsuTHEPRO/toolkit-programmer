@@ -198,6 +198,8 @@ export default {
           return 'text-algorithm'
         case 'FRAMEWORK':
           return 'text-framework'
+        case 'ARTICLE':
+          return 'text-article'
         default:
           return 'text-secondary' // Cinza padrão
       }
@@ -280,6 +282,11 @@ body {
 }
 
 .text-framework {
-  color: #6c757d;
+  color: #fd7e14;
 }
+
+.text-article {
+  color: #8e44ad;
+}
+
 </style>

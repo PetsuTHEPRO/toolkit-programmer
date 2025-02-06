@@ -14,24 +14,21 @@ import FontModal from '@renderer/components/modals/FontModal.vue'
           </ol>
         </nav>
 
-        <div class="card my-5">
-          <div class="card-header">
-            <h5 class="card-title">Pesquisar Fontes</h5>
-          </div>
-          <div class="card-body">
-            <div class="input-group">
-              <input
-                v-model="searchTerm"
-                type="text"
-                class="form-control"
-                placeholder="Digite o nome ou family da Fonte"
-                @input="handleSearch"
-              />
-              <button class="btn btn-outline-secondary" type="button">
-                <i class="bx bx-search"></i>
-              </button>
-            </div>
-          </div>
+        <div class="input-group my-5">
+          <input
+            v-model="searchTerm"
+            type="text"
+            class="form-control search py-4"
+            placeholder="Type here..."
+            @input="handleSearch"
+          />
+          <button
+            class="btn btn-outline-secondary search d-flex align-items-center p-4"
+            style="background-color: #727ddc; color: white"
+            type="button"
+          >
+            <i class="bx bx-search fs-4" style="font-weight: bold"></i>
+          </button>
         </div>
 
         <div class="card mb-5">
@@ -39,7 +36,7 @@ import FontModal from '@renderer/components/modals/FontModal.vue'
             <h5 class="card-title">Lista de Fontes</h5>
             <button
               type="button"
-              class="btn btn-outline-primary me-2 d-flex align-items-center"
+              class="btn-system btn-adicionar me-2 d-flex align-items-center"
               @click="showModal = true"
             >
               <i class="bx bx-plus-circle me-1"></i>
@@ -47,16 +44,12 @@ import FontModal from '@renderer/components/modals/FontModal.vue'
             </button>
           </div>
           <div class="card-body card-element py-0">
-            <div class="overflow-auto" style="max-height: 400px">
+            <div class="overflow-auto">
               <ul class="list-unstyled">
                 <li v-if="currentItems.length === 0" class="text-center text-gray mt-3">
                   Nenhuma fonte encontrada.
                 </li>
-                <li
-                  v-for="(item, index) in currentItems"
-                  :key="item.id"
-                  class="border-bottom pb-4 mt-4 d-flex"
-                >
+                <li v-for="(item, index) in currentItems" :key="item.id" class="pb-4 mt-4 d-flex">
                   <div class="row w-100 m-0">
                     <!-- Thumbnail -->
                     <div class="col-2">
@@ -79,25 +72,32 @@ import FontModal from '@renderer/components/modals/FontModal.vue'
                           :href="item.link"
                           target="_blank"
                           rel="noopener noreferrer"
-                          class="btn btn-primary me-2"
+                          class="btn-system btn-link me-2 align-items-center justify-content-center"
                         >
-                          Open Link
+                          <div class="d-flex align-items-center justify-content-center">
+                            <i class="bx bx-link-external me-2"></i>
+                            Open Link
+                          </div>
                         </a>
-
                         <button
                           v-else
-                          class="btn btn-success me-2"
+                          class="btn-system btn-copy me-2"
                           @click="copyToClipboard(item.link)"
                         >
-                          Copy Import
+                        <div class="d-flex align-items-center justify-content-center">
+                          <i class="bx bx-copy me-2"></i>
+                          Copy
+                        </div>
                         </button>
-                        <button class="btn btn-warning me-2" @click="editFont(index)">
-                          Editar
-                          <i class="bx bx-box-arrow-up-right"></i>
+                        <button class="btn-system btn-editar me-2" @click="editFont(index)">
+                          <div class="d-flex align-items-center justify-content-center">
+                            <i class="bx bx-pencil me-2"></i>
+                            Editar
+                          </div>
                         </button>
-                        <a class="btn btn-danger" @click="handleDelete(index)">
+                        <a class="btn-system btn-deletar" @click="handleDelete(index)">
+                          <i class="bx bx-trash me-2"></i>
                           Delete
-                          <i class="bx bx-box-arrow-up-right"></i>
                         </a>
                       </div>
                     </div>
@@ -105,34 +105,29 @@ import FontModal from '@renderer/components/modals/FontModal.vue'
                 </li>
               </ul>
             </div>
-            <div v-if="items.length > 0" class="d-flex justify-content-between my-2">
-              <button
-                class="btn btn-outline-secondary btn-sm"
-                :disabled="currentPage === 1"
-                @click="handlePrevPage"
-              >
-                <i class="bx bx-chevron-left"></i> Anterior
-              </button>
-              <span class="text-sm font-medium">
-                Página {{ currentPage }} de {{ totalPages }}
-              </span>
-              <button
-                class="btn btn-outline-secondary btn-sm"
-                :disabled="currentPage === totalPages"
-                @click="handleNextPage"
-              >
-                Próxima <i class="bx bx-chevron-right"></i>
-              </button>
-            </div>
-            <!-- Modal -->
-            <FontModal
-              :key="idFont"
-              :fontId="idFont"
-              :visible="showModal"
-              @close="onCloseFontModal"
-            >
-            </FontModal>
           </div>
+
+          <div class="card-footer d-flex align-items-center justify-content-between">
+            <button
+              class="btn btn-control d-flex align-items-center"
+              :disabled="currentPage === 1"
+              @click="prevPage"
+            >
+              <i class="bx bx-chevron-left me-2"></i> Anterior
+            </button>
+            <span>Página {{ currentPage }} de {{ totalPages }}</span>
+            <button
+              class="btn btn-control d-flex align-items-center"
+              :disabled="currentPage === totalPages"
+              @click="nextPage"
+            >
+              Próxima <i class="bx bx-chevron-right fs-5"></i>
+            </button>
+          </div>
+
+          <!-- Modal -->
+          <FontModal :key="idFont" :fontId="idFont" :visible="showModal" @close="onCloseFontModal">
+          </FontModal>
         </div>
       </div>
     </div>
@@ -175,7 +170,7 @@ export default {
   created() {
     SystemController.updateSystem()
     this.items = SystemController.getStorage('fontsStorage')
-    console.log("items:", this.items)
+    console.log('items:', this.items)
   },
   methods: {
     getImageSrc(imagePath) {
@@ -207,11 +202,11 @@ export default {
       SystemController.deleteFont(index)
     },
     copyToClipboard(text) {
-      console.log("Texto:", text)
+      console.log('Texto:', text)
       navigator.clipboard
         .writeText(text)
         .then(() => {
-          notificationService.success("Copiado para Área de Transferencia!")
+          notificationService.success('Copiado para Área de Transferencia!')
         })
         .catch((err) => {
           console.error('Erro ao copiar:', err)
@@ -221,9 +216,13 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .text-gray {
   color: #6b7280;
+}
+
+.text-muted {
+  color: rgba(255, 255, 255, 0.6) !important;
 }
 
 .break-text {
@@ -232,4 +231,144 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.card-header,
+.card-footer {
+  background-color: #141414;
+  color: white;
+}
+
+.btn-system {
+  display: inline-block;
+  margin: 0 0.3em 0.3em 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.btn-control {
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 25px;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  transition: all 0.2s;
+  animation: bn13bouncy 5s infinite linear;
+}
+
+.btn-control:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.btn-adicionar {
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 25px;
+  border: 2px solid #22c55e;
+  padding: 0.65em 1.6em;
+  color: #22c55e;
+  transition: all 0.2s;
+  animation: bn13bouncy 5s infinite linear;
+}
+
+.btn-adicionar:hover {
+  background-color: #22c55e;
+  color: #000000;
+}
+
+.btn-editar {
+  background-color: #3b82f6;
+  border: 2px solid #3b82f6;
+  padding: 0.5em 0.8em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-editar:hover {
+  background-color: #2563eb;
+  color: white;
+}
+
+.btn-deletar {
+  background-color: #ef4444;
+  border: 2px solid #ef4444;
+  padding: 0.5em 0.8em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-deletar:hover {
+  background-color: #dc2626;
+}
+
+.btn-link {
+  background-color: #a855f7;
+  border: 2px solid #a855f7;
+  padding: 0.5em 0.8em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-link:hover {
+  background-color: #9333ea;
+  color: white;
+}
+
+.btn-copy {
+  background-color: #6366f1;
+  border: 2px solid #6366f1;
+  padding: 0.5em 0.8em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-copy:hover {
+  background-color: #4f46e5;
+}
+
+@keyframes bn13bouncy {
+  0% {
+    top: 0em;
+  }
+  40% {
+    top: 0em;
+  }
+  43% {
+    top: -0.9em;
+  }
+  46% {
+    top: 0em;
+  }
+  48% {
+    top: -0.4em;
+  }
+  50% {
+    top: 0em;
+  }
+  100% {
+    top: 0em;
+  }
+}
+
+.search{
+  font-family: 'Poppins', sans-serif;
+  border-radius: 20px;
+  border: none;
+  height: 40px;
+  background-color: #3D444D;
+  color: white;
+}
+
+.search:focus{
+  background-color: #3D444D;
+  color: white;
+}
+
+.search::-webkit-input-placeholder{
+  color: #B1B4B8;
+}
+
 </style>

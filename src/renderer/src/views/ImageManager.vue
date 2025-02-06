@@ -22,7 +22,7 @@ import ModalIcon from '@renderer/components/modals/IconModal.vue'
             <div class="d-flex">
               <button
                 type="button"
-                class="btn btn-outline-primary me-2 d-flex align-items-center"
+                class="btn-system btn-adicionar me-2 d-flex align-items-center"
                 @click="showModal[0] = true"
               >
                 <i class="bx bx-upload me-1"></i>
@@ -31,7 +31,7 @@ import ModalIcon from '@renderer/components/modals/IconModal.vue'
 
               <router-link
                 :to="{ name: 'gallery' }"
-                class="btn btn-outline-primary d-flex align-items-center"
+                class="btn-system btn-link d-flex align-items-center"
               >
                 <i class="bx bx-plus-circle me-1"></i>
                 Ver mais
@@ -72,17 +72,17 @@ import ModalIcon from '@renderer/components/modals/IconModal.vue'
               <input
                 v-model="searchTerm"
                 type="text"
-                class="form-control"
+                class="form-control search"
                 placeholder="Pesquisar icons..."
               />
-              <button class="btn btn-outline-secondary" type="button">
+              <button class="btn btn-outline-secondary search px-3 d-flex align-items-center" style="background-color: #727DDC; color: white;" type="button">
                 <i class="bx bx-search"></i>
               </button>
             </div>
             <div class="d-flex ms-3">
               <button
                 type="button"
-                class="btn btn-outline-primary me-2 d-flex align-items-center"
+                class="btn-system btn-adicionar me-2 d-flex align-items-center"
                 @click="showModal[1] = true"
               >
                 <i class="bx bx-upload me-1"></i>
@@ -260,6 +260,11 @@ export default {
   overflow: hidden;
 }
 
+.card-header {
+  background-color: #141414;
+  color: white;
+}
+
 .card-text {
   display: -webkit-box;
   -webkit-line-clamp: 2; /* Limita para 2 linhas */
@@ -267,6 +272,46 @@ export default {
   height: 50px;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.btn-system {
+  display: inline-block;
+  margin: 0 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.btn-adicionar {
+  background-color: rgba(0, 0, 0, 0);
+  padding: 0.5em 1.1em;
+  border-radius: 25px;
+  border: 2px solid #22c55e;
+  color: #22c55e;
+  transition: all 0.2s;
+  animation: bn13bouncy 5s infinite linear;
+}
+
+.btn-adicionar:hover {
+  background-color: #22c55e;
+  color: #000000;
+}
+
+.btn-link {
+  background-color: #a855f7;
+  border: 2px solid #a855f7;
+  padding: 0.5em 0.6em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-link:hover {
+  background-color: #9333ea;
+  color: white;
 }
 
 .card-img-top {
@@ -278,4 +323,23 @@ export default {
   background-color: #18181b !important;
   color: white;
 }
+
+.search{
+  font-family: 'Poppins', sans-serif;
+  border-radius: 20px;
+  border: none;
+  height: 40px;
+  background-color: #3D444D;
+  color: white;
+}
+
+.search:focus{
+  background-color: #3D444D;
+  color: white;
+}
+
+.search::-webkit-input-placeholder{
+  color: #B1B4B8;
+}
+
 </style>

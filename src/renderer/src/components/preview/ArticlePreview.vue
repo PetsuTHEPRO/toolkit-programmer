@@ -10,17 +10,17 @@ import { VuePDF, usePDF } from '@tato30/vue-pdf'
         <nav aria-label="breadcrumb" class="my-3">
           <ol class="breadcrumb">
             <li class="breadcrumb-item">
-              <router-link :to="{ name: 'article' }">Artigo</router-link>
+              <router-link :to="{ name: 'article' }" class="breadcrumb-link">Artigo</router-link>
             </li>
             <li class="breadcrumb-item active" aria-current="page">{{ article.name }}</li>
           </ol>
         </nav>
 
-        <div class="card shadow-lg">
+        <div class="card shadow-lg mb-3">
           <div class="card-header">
             <h5 class="card-title text-center">Visualizador de PDF</h5>
           </div>
-          <div class="card-body">
+          <div class="card-body card-element">
             <div class="d-flex justify-content-center">
               <div
                 class="border rounded overflow-hidden bg-white shadow-inner"
@@ -48,27 +48,37 @@ import { VuePDF, usePDF } from '@tato30/vue-pdf'
           <div class="card-footer d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
               <button
-                class="btn btn-outline-secondary btn-sm me-2"
+                class="btn btn-control btn-sm me-2"
+                :disabled="page === 1"
                 @click="page = page > 1 ? page - 1 : page"
               >
                 <span class="bx bx-chevron-left"></span>
               </button>
-              <span>Página {{ page }} de {{ pages }}</span>
+              <span class="text-sm font-medium">Página {{ page }} de {{ pages }}</span>
               <button
-                class="btn btn-outline-secondary btn-sm ms-2"
+                class="btn btn-control btn-sm ms-2"
+                :disabled="page === pages"
                 @click="page = page < pages ? page + 1 : page"
               >
                 <span class="bx bx-chevron-right"></span>
               </button>
             </div>
             <div class="d-flex align-items-center">
-              <button class="btn btn-outline-secondary btn-sm me-2" @click="zoomOut">
+              <button
+                class="btn btn-control btn-sm me-2 p-2 d-flex align-items-center"
+                :disabled="zoom <= 0.75"
+                @click="zoomOut"
+              >
                 <span class="bx bx-zoom-out"></span>
               </button>
-              <button @click="zoomReset" class="btn btn-sm">
+              <button class="btn btn-reset btn-sm" :disabled="zoom === 1.2" @click="zoomReset">
                 {{ (zoom * 100 - 20).toFixed(0) }}%
               </button>
-              <button class="btn btn-outline-secondary btn-sm ms-2" @click="zoomIn">
+              <button
+                class="btn btn-control btn-sm ms-2 p-2 d-flex align-items-center"
+                :disabled="zoom >= 1.7"
+                @click="zoomIn"
+              >
                 <span class="bx bx-zoom-in"></span>
               </button>
             </div>
@@ -104,7 +114,6 @@ export default {
     this.article = SystemController.getStorage('articlesStorage')[this.articleId]
     try {
       const pdfUrl = await import(this.article.path)
-      console.log(pdfUrl.default)
       const { pdf, pages } = await usePDF(pdfUrl.default)
       console.log('PDF carregado:', pdf)
       console.log('Páginas:', pages)
@@ -132,4 +141,53 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.card-header,
+.card-footer {
+  background-color: #141414;
+  color: white;
+}
+
+.card-element {
+  background-color: #212529;
+  color: white;
+}
+
+.btn-control {
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 10px;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  transition: all 0.2s;
+  animation: bn13bouncy 5s infinite linear;
+}
+
+.btn-reset{
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 10px;
+  color: #ffffff;
+}
+
+.btn-reset:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.btn-control:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.breadcrumb-link {
+  color: #1e90ff;
+}
+
+.breadcrumb-item::before {
+  color: #e4e4e4;
+}
+
+.breadcrumb-item.active {
+  color: #e4e4e4;
+}
+
+</style>

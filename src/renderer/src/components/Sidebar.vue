@@ -119,6 +119,11 @@ export default {
           ]
         },
         {
+          text: 'Configurações',
+          icon: 'bx bx-cog',
+          rota: ''
+        },
+        {
           text: 'Teste',
           icon: 'bx bx-check-circle',
           rota: 'teste'

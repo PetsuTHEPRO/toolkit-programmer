@@ -6,6 +6,7 @@ import path from 'path'
 const filePath = path.join(__dirname, '../../src/renderer/src/data')
 
 export default {
+
   downloadImage(image, path) {
     // Aqui você pode escrever a imagem no caminho escolhido
     fs.writeFileSync(path, Buffer.from(image), (err) => {
@@ -19,79 +20,125 @@ export default {
   },
   // Função para carregar os links do arquivo
   loadSystemInfo() {
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath + '/systemInfo.txt', 'utf-8')
-      return JSON.parse(data)
-    } else {
-      return [] // Se o arquivo não existir, retorna uma lista vazia
+    try {
+      if (fs.existsSync(filePath + '/systemInfo.txt')) {
+        const data = fs.readFileSync(filePath + '/systemInfo.txt', 'utf-8')
+        return JSON.parse(data)
+      } else {
+        fs.writeFileSync(filePath + '/systemInfo.txt', '"{\\"colorCount\\":0,\\"linkCount\\":0,\\"fontCount\\":0,\\"log\\":[],\\"dailyRoutine\\":{}}"', 'utf-8')
+        const data = fs.readFileSync(filePath + '/systemInfo.txt', 'utf-8')
+        return JSON.parse(data)
+      }
+    } catch (error) {
+      return [] // Em caso de erro, retorna uma lista vazia
     }
   },
 
   // Função para salvar os links no arquivo
   loadLinks() {
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath + '/linkStorage.txt', 'utf-8')
-      return JSON.parse(data)
-    } else {
-      return [] // Se o arquivo não existir, retorna uma lista vazia
+    try {
+      if (fs.existsSync(filePath + '/linkStorage.txt')) {
+        const data = fs.readFileSync(filePath + '/linkStorage.txt', 'utf-8')
+        return JSON.parse(data)
+      } else {
+        fs.writeFileSync(filePath + '/linkStorage.txt', '"[]"', 'utf-8')
+        return '[]' // Retorna uma lista vazia
+      }
+    } catch (error) {
+      return [] // Em caso de erro, retorna uma lista vazia
     }
   },
   loadArticles() {
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath + '/articleStorage.txt', 'utf-8')
-      return JSON.parse(data)
-    } else {
-      return [] // Se o arquivo não existir, retorna uma lista vazia
+    try {
+      if (fs.existsSync(filePath + '/articleStorage.txt')) {
+        const data = fs.readFileSync(filePath + '/articleStorage.txt', 'utf-8')
+        return JSON.parse(data)
+      } else {
+        fs.writeFileSync(filePath + '/articleStorage.txt', '"[]"', 'utf-8')
+        return '[]' // Retorna uma lista vazia
+      }
+    } catch (error) {
+      return [] // Em caso de erro, retorna uma lista vazia
     }
   },
   loadFonts() {
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath + '/fontStorage.txt', 'utf-8')
-      return JSON.parse(data)
-    } else {
-      return [] // Se o arquivo não existir, retorna uma lista vazia
+    try {
+      if (fs.existsSync(filePath + '/fontStorage.txt')) {
+        const data = fs.readFileSync(filePath + '/fontStorage.txt', 'utf-8')
+        return JSON.parse(data)
+      } else {
+        fs.writeFileSync(filePath + '/fontStorage.txt', '"[]"', 'utf-8')
+        return '[]' // Retorna uma lista vazia
+      }
+    } catch (error) {
+      return [] // Em caso de erro, retorna uma lista vazia
     }
   },
   loadFrameworks() {
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath + '/frameworkStorage.txt', 'utf-8')
-      return JSON.parse(data)
-    } else {
-      return [] // Se o arquivo não existir, retorna uma lista vazia
+    try {
+      if (fs.existsSync(filePath + '/frameworkStorage.txt')) {
+        const data = fs.readFileSync(filePath + '/frameworkStorage.txt', 'utf-8')
+        return JSON.parse(data)
+      } else {
+        fs.writeFileSync(filePath + '/frameworkStorage.txt', '"[]"', 'utf-8')
+        return '[]' // Retorna uma lista vazia
+      }
+    } catch (error) {
+      return [] // Em caso de erro, retorna uma lista vazia
     }
   },
   loadAlgorithms() {
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath + '/algorithmStorage.txt', 'utf-8')
-      return JSON.parse(data)
-    } else {
-      return [] // Se o arquivo não existir, retorna uma lista vazia
+    try {
+      if (fs.existsSync(filePath + '/algorithmStorage.txt')) {
+        const data = fs.readFileSync(filePath + '/algorithmStorage.txt', 'utf-8')
+        return JSON.parse(data)
+      } else {
+        fs.writeFileSync(filePath + '/algorithmStorage.txt', '"[]"', 'utf-8')
+        return '[]' // Retorna uma lista vazia
+      }
+    } catch (error) {
+      return [] // Em caso de erro, retorna uma lista vazia
     }
   },
   loadImages() {
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath + '/imageStorage.txt', 'utf-8')
-      return JSON.parse(data)
-    } else {
-      return [] // Se o arquivo não existir, retorna uma lista vazia
+    try {
+      if (fs.existsSync(filePath + '/imageStorage.txt')) {
+        const data = fs.readFileSync(filePath + '/imageStorage.txt', 'utf-8')
+        return JSON.parse(data)
+      } else {
+        fs.writeFileSync(filePath + '/imageStorage.txt', '"[]"', 'utf-8')
+        return '[]' // Retorna uma lista vazia
+      }
+    } catch (error) {
+      return [] // Em caso de erro, retorna uma lista vazia
     }
   },
 
   loadIcons() {
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath + '/iconStorage.txt', 'utf-8')
-      return JSON.parse(data)
-    } else {
-      return [] // Se o arquivo não existir, retorna uma lista vazia
+    try {
+      if (fs.existsSync(filePath + '/iconStorage.txt')) {
+        const data = fs.readFileSync(filePath + '/iconStorage.txt', 'utf-8')
+        return JSON.parse(data)
+      } else {
+        fs.writeFileSync(filePath + '/iconStorage.txt', '"[]"', 'utf-8')
+        return '[]' // Retorna uma lista vazia
+      }
+    } catch (error) {
+      return [] // Em caso de erro, retorna uma lista vazia
     }
   },
 
   loadPalettes() {
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath + '/paletteStorage.txt', 'utf-8')
-      return JSON.parse(data)
-    } else {
-      return [] // Se o arquivo não existir, retorna uma lista vazia
+    try {
+      if (fs.existsSync(filePath + '/paletteStorage.txt')) {
+        const data = fs.readFileSync(filePath + '/paletteStorage.txt', 'utf-8')
+        return JSON.parse(data)
+      } else {
+        fs.writeFileSync(filePath + '/paletteStorage.txt', '"[]"', 'utf-8')
+        return '[]' // Retorna uma lista vazia
+      }
+    } catch (error) {
+      return [] // Em caso de erro, retorna uma lista vazia
     }
   },
 

@@ -5,22 +5,48 @@ import icon from '../../resources/icon.png?asset'
 import fs from 'fs'
 import fileManager from '../../src/renderer/src/service/gerenciadorArquivo'
 
+// Verifica se o ambiente é executável portátil (como AppImage)
+const executableDir = app.getPath('userData')
+const logDir = join(executableDir, 'logs')
+const logFilePath = join(logDir, 'app.log')
+
+// Verifica se o diretório de logs existe e cria se necessário
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir, { recursive: true })
+  logMessage("Criou pasta")
+}else{
+  logError("Pasta ja existe")
+}
+
+// Função de log para gravar no arquivo
+function logMessage(message) {
+  const timestamp = new Date().toISOString()
+  fs.appendFileSync(logFilePath, `[${timestamp}] ${message}\n`)
+}
+
+// Função de log para erros
+function logError(error) {
+  const timestamp = new Date().toISOString();
+  fs.appendFileSync(logFilePath, `[${timestamp}] ERROR: ${error.stack || error}\n`);
+}
+
 // Obtém o caminho do diretório de dados do usuário
+const userPath = app.getPath('userData')
+const uploadsPath = join(userPath, 'assets/images')
+const uploadsIconsPath = join(userPath, 'assets/icons')
+const uploadsPdfPath = join(userPath, 'assets/pdfs')
 
-const uploadsPath = join(__dirname, '../../src/renderer/src/assets/images')
-const uploadsIconsPath = join(__dirname, '../../src/renderer/src/assets/icons')
-const uploadsPdfPath = join(__dirname, '../../src/renderer/src/assets/pdfs')
-
+// Cria as pastas se não existirem
 try{
   // Verifica se a pasta existe e cria se não existir
   if (!fs.existsSync(uploadsPdfPath)) {
     fs.mkdirSync(uploadsPdfPath, { recursive: true })
-    console.log('Pasta criada com sucesso:', uploadsPdfPath)
+    logMessage(`Pasta criada com sucesso: ${uploadsPdfPath}`)
   } else {
-    console.log('A pasta já existe:', uploadsPdfPath)
+    logMessage(`A pasta já existe: ${uploadsPdfPath}`)
   }
 } catch (error) {
-  console.error('Erro ao criar a pasta:', error)
+  logError(`Erro ao criar a pasta ${uploadsPdfPath}: ${error}`)
 }
 
 try {
@@ -28,10 +54,10 @@ try {
   if (!fs.existsSync(uploadsPath)) {
     fs.mkdirSync(uploadsPath, { recursive: true })
   } else {
-    console.log('A pasta já existe:', uploadsPath)
+    logMessage(`Pasta criada com sucesso: ${uploadsPath}`)
   }
 } catch (error) {
-  console.error('Erro ao criar a pasta:', error)
+  logError(`Erro ao criar a pasta ${uploadsPath}: ${error}`)
 }
 
 try {
@@ -43,7 +69,7 @@ try {
     console.log('A pasta já existe:', uploadsIconsPath)
   }
 } catch (error) {
-  console.error('Erro ao criar a pasta:', error)
+  console.error('Erro ao criar a pasta:', error, uploadsIconsPath)
 }
 
 function createWindow() {
@@ -66,6 +92,7 @@ function createWindow() {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
+    mainWindow.webContents.openDevTools()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -79,6 +106,8 @@ function createWindow() {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+      .then(() => logMessage('Janela carregada com sucesso'))
+      .catch((error) => logError(`Erro ao carregar a janela: ${error}`))
   }
 }
 
@@ -103,7 +132,7 @@ ipcMain.handle('download-image', async (event, imageBuffer) => {
     // Aqui você pode escrever a imagem no caminho escolhido
     fileManager.downloadImage(imageBuffer, uploadsPath)
   } else {
-    console.log('Salvamento cancelado.')
+    logError('Erro no salvamento da imagem.')
     return false
   }
 
@@ -245,13 +274,14 @@ app.whenReady().then(() => {
   })
 
   // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
+  ipcMain.on('ping', () => logMessage('Pong'))
 
   createWindow()
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
+    logMessage('Janela carregada com sucesso')
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
@@ -260,6 +290,7 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
+  logMessage('Janela fechada com sucesso')
   if (process.platform !== 'darwin') {
     app.quit()
   }
