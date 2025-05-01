@@ -1,0 +1,202 @@
+/* Barra de scroll global para toda a aplicação */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* Fundo transparente */
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 100, 0.4); /* Cinza semi-transparente */
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 100, 100, 0.6); /* Um pouco mais visível no hover */
+}
+
+/* Para containers específicos com overflow */
+.scroll-container {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(100, 100, 100, 0.4) transparent; /* Firefox */
+}
+
+
+.light-theme {
+  --bg-body: #f8f9fa;
+  --card-header: #f6f8fa;
+  --card-header-color: #333333;
+  --card-border: #D1D9E0;
+  --card-dashboard-shadow: rgba(255, 255, 255, 0.3);
+  --card-element-bg: #ffffff;
+  --card-element-text: #333;
+
+  --card-palette-border: #1d1d1d;
+
+  --palette-bg: #dbeafe;
+  --palette-text: #1e40af;
+
+  --link-bg: #dcfce7;
+  --link-text: #166333;
+
+  --breadcrumb-color: #424242;
+
+  --font-bg: #f3e8ff;
+  --font-text: #6b21a7;
+
+  --text-cor:         #d84315;  /* Laranja queimado, mais visível */
+  --text-link:        #c79100;  /* Amarelo dourado escuro */
+  --text-font:        #218838;  /* Verde escuro e forte */
+  --text-icon:        #117a8b;  /* Azul petróleo, ótimo contraste */
+  --text-image:       #0056b3;  /* Azul escuro */
+  --text-algorithm:   #c82333;  /* Vermelho mais forte e escuro */
+  --text-framework:   #e8590c;  /* Laranja mais fechado */
+  --text-article:     #6f42c1;  /* Roxo com ótimo contraste */
+
+  --container-bg: #F8F8F8;
+  --container-color: #333;
+
+  --card-bg: #ffffff;
+  --text-color: #333;
+  --title-color: #333;
+  --form-bg: #f8f9fa;
+  --form-border: #ccc;
+  --form-color: #333;
+  --modal-bg: #fff;
+  --modal-border: #ccc;
+  --modal-color: #333;
+  --list-bg: #fff;
+  --list-border: #ccc;
+  --list-color: #333;
+  --list-active-bg: #0d6efd;
+  --list-active-border: #0d6efd;
+  --list-active-color: #fff;
+  --alert-warning-bg: rgba(255, 193, 7, 0.1);
+  --alert-warning-border: #ffc107;
+  --alert-warning-text: #856404;
+  --alert-warning-icon: #ffc107;
+
+  --list-link-bg: #fff;
+  --list-link-border: #ccc;
+  --list-link-color: #595959;
+  --list-link-header-color: #333;
+
+  --code-background: #f3f3f3;   /* fundo claro semelhante ao VSCode light */
+  --code-border: #D1D9E0;
+  --code-color: #333333;        /* texto escuro */
+
+  --tabs-background: #f6f8fa;
+  --tabs-color: #586069;
+  --tabs-border: #0366d6;
+  --tabs-background-active: #e1e4e8;
+  --tabs-color-active: 586069;
+
+  --ia-bg: #FFFFFF;
+  --ia-chat-bg: #F3F4F6;
+  --ia-color: #1e1e2f;
+  --ia-balloon-bg: #EFF6FF;
+  --ia-balloon-color: #444444;
+
+  --ia-input-bg: #F3F4F6;
+  --ia-input-border: #ccc;
+  --ia-input-color: #444444;
+  --ia-input-placeholder: #A8A8AB;
+
+  --pagination-bg: #00000000;
+  --pagination-border: #000000;
+  --pagination-color: #000000;
+  --pagination-hover-bg: #000000;
+  --pagination-hover-color: #ffffff;
+}
+
+.dark-theme {
+  --bg-body: #121212;
+  --card-header: #141414;
+  --card-header-color: #fff;
+  --card-border: #3d444d;
+  --card-dashboard-shadow: rgba(255, 255, 255, 0.3);
+  --card-element-bg: #212529;
+  --card-element-text: #ffffff;
+
+  --card-palette-border: #000;
+
+  --palette-bg: #dbeafe;
+  --palette-text: #1e40af;
+
+  --link-bg: #dcfce7;
+  --link-text: #166333;
+
+  --breadcrumb-color: #e4e4e4;
+
+  --font-bg: #f3e8ff;
+  --font-text: #6b21a7;
+
+  --text-cor: #ff5733;
+  --text-link: #ffc107;
+  --text-font: #28a745;
+  --text-icon: #17a2b8;
+  --text-image: #007bff;
+  --text-algorithm: #dc3545;
+  --text-framework: #fd7e14;
+  --text-article: #8e44ad;
+
+  --container-bg: #121212;
+  --container-color: #fff;
+
+  --card-bg: #2d2d2d;
+  --card-header: #333;
+  --card-border: #444;
+  --text-color: #f8f9fa;
+  --title-color: #fff;
+  --form-bg: #333;
+  --form-border: #444;
+  --form-color: #f8f9fa;
+  --modal-bg: #2d2d2d;
+  --modal-border: #444;
+  --modal-color: #f8f9fa;
+  --list-bg: #2d2d2d;
+  --list-border: #444;
+  --list-color: #fff;
+  --list-active-bg: #0d6efd;
+  --list-active-color: #fff;
+  --list-active-border: #0d6efd;
+  --alert-warning-bg: rgba(255, 193, 7, 0.15);
+  --alert-warning-border: #ffc107;
+  --alert-warning-text: #ffd700;
+  --alert-warning-icon: #ffc107;
+
+  --list-link-bg: #212529;
+  --list-link-border: #ccc;
+  --list-link-color: #ffffff99;
+  --list-link-header-color: #fff;
+
+  --code-background: #1e1e1e;
+  --code-border: #3d444d;
+  --code-color: #d4d4d4;
+
+  --tabs-background: #1c2431;
+  --tabs-color: #5c707a;
+  --tabs-border: #3d444d;
+  --tabs-color-active: #ffffff;
+  --tabs-background-active: #374151;
+
+  --ia-bg: #1e1e2f;
+  --ia-chat-bg: #12121C;
+  --ia-border: #1e1e2f;
+  --ia-color: #ffffffa1;
+  --ia-balloon-bg: #2B2B3D;
+  --ia-balloon-color: #dcdcdc;
+
+  --ia-input-bg: #12121c;
+  --ia-input-border: #4e4e53;
+  --ia-input-color: #dcdcdc;
+  --ia-input-placeholder: #A8A8AB;
+
+  --pagination-bg: #00000000;
+  --pagination-border: #ffffff;
+  --pagination-color: #ffffff;
+  --pagination-hover-bg: #ffffff;
+  --pagination-hover-color: #000000;
+}

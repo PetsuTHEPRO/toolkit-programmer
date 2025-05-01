@@ -4,13 +4,18 @@ import LinkModal from '@renderer/components/modals/LinkModal.vue'
 </script>
 
 <template>
-  <div class="container-fluid d-flex p-0">
+  <div
+    class="container-fluid d-flex p-0"
+    :class="themeMode === 'dark' ? 'dark-theme' : 'light-theme'"
+  >
     <Sidebar />
     <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <div class="col">
         <nav aria-label="breadcrumb" class="mt-3">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page" style="color: #e4e4e4">Link</li>
+            <li class="breadcrumb-item active" aria-current="page">
+              {{ $t('sidebar.learn.links') }}
+            </li>
           </ol>
         </nav>
 
@@ -19,39 +24,43 @@ import LinkModal from '@renderer/components/modals/LinkModal.vue'
             v-model="searchTerm"
             type="text"
             class="form-control search py-4"
-            placeholder="Type here..."
+            :placeholder="$t('search', { name: $t('sidebar.learn.links').toLowerCase() })"
             @input="handleSearch"
           />
-          <button class="btn btn-outline-secondary search d-flex align-items-center p-4" style="background-color: #727DDC; color: white;" type="button">
+          <button
+            class="btn btn-outline-secondary search d-flex align-items-center p-4"
+            style="background-color: #727ddc; color: white"
+            type="button"
+          >
             <i class="bx bx-search fs-4" style="font-weight: bold"></i>
           </button>
         </div>
 
         <div class="card mb-5">
           <div class="card-header d-flex align-items-center justify-content-between">
-            <h5 class="card-title">Lista de Links</h5>
+            <h5 class="card-title">{{ $t('pages.links.list') }}</h5>
             <button
               type="button"
               class="btn-system btn-adicionar me-2 d-flex align-items-center"
               @click="showModal = true"
             >
               <i class="bx bx-plus-circle me-1"></i>
-              Adicionar
+              {{ $t('buttons.upload') }}
             </button>
           </div>
           <div class="card-body py-0 list-link">
             <div class="overflow-auto">
               <ul class="list-unstyled">
-                <li v-if="currentItems.length === 0" class="text-center text-gray mt-3">
-                  Nenhum link encontrado.
+                <li v-if="currentLinks.length === 0" class="text-center text-white mt-3">
+                  {{ $t('messages.he-empty', { name: $t('sidebar.learn.links').toLowerCase() }) }}
                 </li>
                 <li
-                  v-for="(item, index) in currentItems"
+                  v-for="(item, index) in currentLinks"
                   :key="item.id"
                   class="border-bottom pb-4 mt-4"
                 >
                   <h3 class="h6 font-semibold">{{ item.name }}</h3>
-                  <p class="text-muted mt-1">{{ item.description }}</p>
+                  <p class="text-link mt-1">{{ item.description }}</p>
                   <a
                     :href="item.link"
                     target="_blank"
@@ -60,7 +69,7 @@ import LinkModal from '@renderer/components/modals/LinkModal.vue'
                   >
                     <div class="d-flex justitfy-content-between align-items-center text-white">
                       <i class="bx bx-link-external me-2"></i>
-                      Open Link
+                      {{ $t('buttons.view') }}
                     </div>
                   </a>
                   <button
@@ -69,37 +78,41 @@ import LinkModal from '@renderer/components/modals/LinkModal.vue'
                   >
                     <div class="d-flex justitfy-content-between align-items-center">
                       <i class="bx bx-edit me-1"></i>
-                      Editar
+                      {{ $t('buttons.edit') }}
                     </div>
                   </button>
                   <a class="btn-system btn-deletar" @click="handleDelete(index)">
                     <div class="d-flex justify-content-center align-items-center">
                       <i class="bx bx-trash me-2"></i>
-                      Delete
+                      {{ $t('buttons.delete') }}
                     </div>
                   </a>
                 </li>
               </ul>
             </div>
-            <div v-if="items.length > 0" class="d-flex justify-content-between my-2">
+            <div
+              class="d-flex justify-content-between my-2"
+              :class="[links.length <= 0 ? 'border-top pt-3' : '']"
+            >
               <button
                 class="btn btn-control d-flex align-items-center"
                 :disabled="currentPage === 1"
                 @click="handlePrevPage"
               >
-                <i class="bx bx-chevron-left"></i> Anterior
+                <i class="bx bx-chevron-left"></i> {{ $t('buttons.previous') }}
               </button>
-              <span class="text-sm font-medium">
-                Página {{ currentPage }} de {{ totalPages }}
+              <span class="text-sm font-medium"
+                >{{ $t('pagination', { currentPage: currentPage, totalPages: totalPages }) }}
               </span>
               <button
                 class="btn btn-control d-flex align-items-center"
                 :disabled="currentPage === totalPages"
                 @click="handleNextPage"
               >
-                Próxima <i class="bx bx-chevron-right fs-5"></i>
+                {{ $t('buttons.next') }} <i class="bx bx-chevron-right fs-5"></i>
               </button>
             </div>
+
             <!-- Modal -->
             <LinkModal
               :key="idLink"
@@ -117,38 +130,42 @@ import LinkModal from '@renderer/components/modals/LinkModal.vue'
 <script>
 import { mapGetters } from 'vuex'
 import SystemController from '../controller/SystemController'
+import { getTheme } from '../service/userPreferences'
+
 export default {
   data() {
     return {
       showModal: false,
-      items: [],
+      links: [],
       idLink: -1,
       searchTerm: '',
       currentPage: 1,
-      itemsPerPage: 5
+      linksPerPage: 5,
+      themeMode: getTheme()
     }
   },
   computed: {
     ...mapGetters(['isSidebarOpen']),
-    filteredItems() {
-      return this.items.filter(
+    filteredLinks() {
+      return this.links.filter(
         (item) =>
           item.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
           item.description.toLowerCase().includes(this.searchTerm.toLowerCase())
       )
     },
-    currentItems() {
-      const indexOfLastItem = this.currentPage * this.itemsPerPage
-      const indexOfFirstItem = indexOfLastItem - this.itemsPerPage
-      return this.filteredItems.slice(indexOfFirstItem, indexOfLastItem)
+    currentLinks() {
+      const indexOfLastItem = this.currentPage * this.linksPerPage
+      const indexOfFirstItem = indexOfLastItem - this.linksPerPage
+      return this.filteredLinks.slice(indexOfFirstItem, indexOfLastItem)
     },
     totalPages() {
-      return Math.ceil(this.filteredItems.length / this.itemsPerPage)
+      let totalPages = Math.ceil(this.filteredLinks.length / this.linksPerPage)
+      return totalPages === 0 ? 1 : totalPages
     }
   },
   created() {
     SystemController.updateSystem()
-    this.items = SystemController.getStorage('linksStorage')
+    this.links = SystemController.getStorage('linksStorage')
   },
   methods: {
     handleSearch() {
@@ -182,7 +199,11 @@ export default {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('../assets/base.css');
 
+.breadcrumb-item {
+  color: var(--breadcrumb-color);
+}
 .btn-system {
   display: inline-block;
   padding: 0.65em 1.6em;
@@ -197,17 +218,17 @@ export default {
 }
 
 .btn-control {
-  background-color: rgba(0, 0, 0, 0);
+  background-color: var(--pagination-bg);
   border-radius: 25px;
-  border: 2px solid #ffffff;
-  color: #ffffff;
+  border: 2px solid var(--pagination-border);
+  color: var(--pagination-color);
   transition: all 0.2s;
   animation: bn13bouncy 5s infinite linear;
 }
 
 .btn-control:hover {
-  background-color: #ffffff;
-  color: #000000;
+  background-color: var(--pagination-hover-bg);
+  color: var(--pagination-hover-color);
 }
 
 .btn-adicionar {
@@ -294,38 +315,34 @@ export default {
 }
 
 .card-header {
-  background-color: #141414;
-  color: white;
+  background-color: var(--card-header);
+  color: var(--card-header-color);
 }
 
 .list-link {
-  background-color: #212529;
-  color: white;
+  background-color: var(--list-link-bg);
+  color: var(--list-link-header-color);
 }
 
-.text-muted {
-  color: rgba(255, 255, 255, 0.6) !important;
+.text-link {
+  color: var(--list-link-color);
 }
 
-.text-gray {
-  color: #6b7280;
-}
-
-.search{
+.search {
   font-family: 'Poppins', sans-serif;
   border-radius: 20px;
   border: none;
   height: 40px;
-  background-color: #3D444D;
+  background-color: #3d444d;
   color: white;
 }
 
-.search:focus{
-  background-color: #3D444D;
+.search:focus {
+  background-color: #3d444d;
   color: white;
 }
 
-.search::-webkit-input-placeholder{
-  color: #B1B4B8;
+.search::-webkit-input-placeholder {
+  color: #b1b4b8;
 }
 </style>

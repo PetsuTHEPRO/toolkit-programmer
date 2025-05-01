@@ -12,7 +12,7 @@
         <div class="modal-content bg-dark text-white">
           <div class="modal-header">
             <h5 id="modalTitle" class="modal-title">
-              <slot name="title">Adicionar Artigo</slot>
+              <slot name="title">{{ titleModal }} Artigo</slot>
             </h5>
             <button type="button" class="btn-close" aria-label="Close" @click="closeModal"></button>
           </div>
@@ -24,7 +24,7 @@
                   type="text"
                   class="form-control"
                   id="name"
-                  v-model="articleData.name"
+                  v-model="article.name"
                   placeholder="Digite o nome do algoritmo"
                   required
                 />
@@ -34,13 +34,13 @@
                 <textarea
                   class="form-control"
                   id="explanation"
-                  v-model="articleData.description"
+                  v-model="article.description"
                   placeholder="Explique como o algoritmo funciona"
                   required
                 ></textarea>
               </div>
               <!-- Input para upload de PDF -->
-              <div v-if="!pdfEdit" class="mb-3">
+              <div v-if="!articleEdit" class="mb-3">
                 <label for="materialPdf" class="form-label">Arquivo PDF</label>
                 <input
                   id="materialPdf"
@@ -54,8 +54,8 @@
               <div class="pdf-preview d-flex align-items-center justify-content-center">
                 <!-- Exibe o link de visualização do PDF -->
                 <a
-                  v-if="articleData.pdfPreviewUrl"
-                  :href="articleData.pdfPreviewUrl"
+                  v-if="article.pdfPreviewUrl"
+                  :href="article.pdfPreviewUrl"
                   target="_blank"
                   class="btn btn-primary"
                 >
@@ -64,8 +64,8 @@
 
                 <!-- Exibe uma pré-visualização do PDF com iframe -->
                 <iframe
-                  v-if="articleData.pdfPreviewUrl"
-                  :src="articleData.pdfPreviewUrl"
+                  v-if="article.pdfPreviewUrl"
+                  :src="article.pdfPreviewUrl"
                   width="100"
                   height="100"
                   frameborder="0"
@@ -77,7 +77,7 @@
             <slot name="footer">
               <button type="button" class="btn btn-secondary" @click="closeModal">Cancelar</button>
               <button type="button" class="btn btn-primary" @click="submitArticle">
-                Adicionar
+                {{ titleModal }}
               </button>
             </slot>
           </div>
@@ -90,6 +90,10 @@
 
 <script>
 import SystemController from '../../controller/SystemController'
+import Article from '../../model/entity/article'
+
+const NO_ARTICLE_ID = -1
+
 export default {
   props: {
     visible: {
@@ -99,71 +103,91 @@ export default {
     programmingLanguages: {
       type: Array,
       default: () => []
+    },
+    idArticle: {
+      type: Number,
+      default: -1
     }
   },
   data() {
     return {
-      articleData: {
-        name: '',
-        description: '',
-        pdfFile: null,
-        pdfFileName: '',
-        pdfSize: ''
+      titleModal: this.idArticle !== NO_ARTICLE_ID ? 'Editar' : 'Adicionar',
+      article: new Article(-1, '', '', '', '', ''),
+      articleEdit: null
+    }
+  },
+  created() {
+    if (this.idArticle !== -1) {
+      const storedArticles = SystemController.getStorage('articlesStorage')
+      const storedArticle = storedArticles.find((v) => v.id === this.idArticle)
+      if (storedArticle) {
+        this.article = new Article(
+          storedArticle.id,
+          storedArticle.name,
+          storedArticle.description,
+          storedArticle.pdfFileName,
+          storedArticle.pdfSize,
+          storedArticle.path
+        )
       }
     }
   },
   methods: {
     closeModal() {
+      this.article = new Article(-1, '', '', '', '', '')
       this.$emit('close')
     },
     handleFileUpload(event) {
       const file = event.target.files[0]
       if (file && file.type === 'application/pdf') {
-        this.articleData.pdfFile = file
-        this.articleData.pdfFileName = file.name
-        this.articleData.pdfSize = (file.size / 1024).toFixed(2) + ' KB' // Converte o tamanho para KB
+        this.article.pdfFile = file
+        this.article.pdfFileName = file.name
+        this.article.pdfSize = (file.size / 1024).toFixed(2) + ' KB' // Converte o tamanho para KB
       } else {
         alert('Por favor, selecione um arquivo PDF.')
       }
     },
+    generateId() {
+      return (
+        Date.now().toString(36) +
+        Math.floor(Math.random() * 1000)
+          .toString(36)
+          .padStart(4, '0')
+      )
+    },
     async submitArticle() {
-      try {
-        // Ler o arquivo PDF como ArrayBuffer
-        const pdfBuffer = await this.readFileAsArrayBuffer(this.articleData.pdfFile)
-        await window.api.uploadPdf(new Uint8Array(pdfBuffer), this.articleData.pdfFileName)
-
-        // Atualizar os dados do PDF
-        this.pdfData = {
-          name: this.articleData.name,
-          description: this.articleData.description,
-          pdfFileName: this.articleData.pdfFileName,
-          pdfSize: this.articleData.pdfSize,
-          path: '../../assets/pdfs/' + this.articleData.pdfFileName // Caminho do PDF
-        }
-
-        // Adicionar PDF ao sistema
-        SystemController.addArticle(this.pdfData)
-      } catch (error) {
-        console.error('Erro ao fazer upload do PDF:', error)
-        alert('Erro ao fazer upload do PDF.')
+      const articleData = {
+        ...this.article.toDTO(),
+        id: this.generateId()
       }
 
-      this.articleData = {
-        name: '',
-        explanation: '',
-        pdfFile: null,
-        pdfFileName: '',
-        pdfSize: ''
+      if (this.idArticle !== NO_ARTICLE_ID) {
+        SystemController.editArticle({ ...articleData, id: this.idArticle })
+      } else {
+        // Modo criação
+        if (!this.article.pdfFile) {
+          alert('Por favor, faça upload de um arquivo PDF.')
+          return
+        }
+
+        try {
+          // Lê o conteúdo do arquivo PDF como base64 (ou você pode salvar diretamente o File)
+          const pdfBase64 = await this.readFileAsDataURL(this.article.pdfFile)
+          SystemController.addArticle({ ...articleData, path: pdfBase64 })
+        } catch (error) {
+          console.error('Erro ao fazer upload do PDF:', error)
+          alert('Erro ao fazer upload do PDF.')
+        }
       }
 
       this.closeModal()
     },
-    readFileAsArrayBuffer(file) {
+    readFileAsDataURL(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader()
         reader.onload = () => resolve(reader.result)
         reader.onerror = reject
-        reader.readAsArrayBuffer(file)
+        reader.readAsDataURL(file)
       })
     }
   }
@@ -185,5 +209,45 @@ export default {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+}
+
+.form-control,
+.form-select {
+  background-color: #282a36;
+  color: #f8f8f2;
+}
+
+.form-control::placeholder {
+  color: #b1b4b8;
+}
+
+.form-control button {
+  color: #f8f8f2;
+}
+
+.btn-adicionar {
+  background-color: #a855f7;
+  border: 2px solid #a855f7;
+  padding: 0.5em 0.8em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-adicionar:hover {
+  background-color: #9333ea;
+  color: white;
+}
+
+.btn-cancelar {
+  background-color: #3b82f6;
+  border: 2px solid #3b82f6;
+  padding: 0.5em 0.8em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-cancelar:hover {
+  background-color: #2563eb;
+  color: white;
 }
 </style>

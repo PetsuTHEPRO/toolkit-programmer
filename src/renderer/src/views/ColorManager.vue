@@ -4,13 +4,16 @@ import ColorModal from '@renderer/components/modals/ColorModal.vue'
 </script>
 
 <template>
-  <div class="container-fluid d-flex p-0">
+  <div class="container-fluid d-flex p-0"
+    :class="themeMode === 'dark' ? 'dark-theme' : 'light-theme'">
     <Sidebar />
     <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <div class="col">
         <nav aria-label="breadcrumb" class="my-3">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page" style="color: #e4e4e4">Color Palette</li>
+            <li class="breadcrumb-item active" aria-current="page">
+              {{ $t('sidebar.resources.palette') }}
+            </li>
           </ol>
         </nav>
 
@@ -19,12 +22,13 @@ import ColorModal from '@renderer/components/modals/ColorModal.vue'
             v-model="searchTerm"
             type="text"
             class="form-control search py-4"
-            placeholder="Type here..."
+            :placeholder="$t('search', { name: $t('sidebar.resources.palette').toLowerCase() })"
             @input="handleSearch"
           />
           <button
             class="btn btn-outline-secondary search d-flex align-items-center p-4"
-            style="background-color: #727DDC; color: white;" type="button"
+            style="background-color: #727ddc; color: white"
+            type="button"
           >
             <i class="bx bx-search fs-4" style="font-weight: bold"></i>
           </button>
@@ -32,21 +36,21 @@ import ColorModal from '@renderer/components/modals/ColorModal.vue'
 
         <div class="card mb-5 p-0">
           <div class="card-header d-flex align-items-center justify-content-between">
-            <h5 class="card-title">Lista das Paletas</h5>
+            <h5 class="card-title">{{ $t('pages.palette.paletteList') }}</h5>
             <button
               type="button"
               class="btn-system btn-adicionar me-2 d-flex align-items-center"
               @click="showModal = true"
             >
               <i class="bx bx-plus-circle me-1"></i>
-              Adicionar
+              {{ $t('buttons.upload') }}
             </button>
           </div>
           <div class="card-body card-element p-0">
             <div class="overflow-auto px-2" style="max-height: 790px">
               <ul class="list-unstyled row mx-0">
                 <li v-if="currentItems.length === 0" class="text-center text-gray mt-3">
-                  Nenhuma paleta encontrada.
+                  {{ $t('messages.she-empty', { name: $t('pages.palette.title').toLowerCase() }) }}
                 </li>
                 <div v-for="(palette, index) in currentItems" :key="index" class="col-md-4 mt-4">
                   <ColorPalette
@@ -61,16 +65,20 @@ import ColorModal from '@renderer/components/modals/ColorModal.vue'
             </div>
           </div>
           <div class="card-footer d-flex align-items-center justify-content-between">
-            <button class="btn btn-control d-flex align-items-center" :disabled="currentPage === 1" @click="prevPage">
-              <i class="bx bx-chevron-left me-2"></i> Anterior
+            <button
+              class="btn btn-control d-flex align-items-center"
+              :disabled="currentPage === 1"
+              @click="prevPage"
+            >
+              <i class="bx bx-chevron-left me-2"></i> {{ $t('buttons.previous') }}
             </button>
-            <span>Página {{ currentPage }} de {{ totalPages }}</span>
+            <span>{{  $t('pagination', { currentPage: currentPage, totalPages: totalPages}) }}</span>
             <button
               class="btn btn-control d-flex align-items-center"
               :disabled="currentPage === totalPages"
               @click="nextPage"
             >
-              Próxima <i class="bx bx-chevron-right fs-5"></i>
+              {{  $t('buttons.next') }} <i class="bx bx-chevron-right fs-5"></i>
             </button>
           </div>
           <ColorModal
@@ -90,6 +98,7 @@ import ColorModal from '@renderer/components/modals/ColorModal.vue'
 import { mapGetters } from 'vuex'
 import ColorPalette from '../components/ColorPalette.vue'
 import SystemController from '../controller/SystemController'
+import { getTheme } from '../service/userPreferences'
 
 export default {
   components: {
@@ -102,7 +111,8 @@ export default {
       idPalette: -1,
       currentPage: 1,
       itemsPerPage: 9,
-      searchTerm: ''
+      searchTerm: '',
+      themeMode: getTheme()
     }
   },
   computed: {
@@ -160,6 +170,12 @@ export default {
 </script>
 
 <style scoped>
+@import url('../assets/base.css');
+
+.breadcrumb-item {
+  color: var(--breadcrumb-color);
+}
+
 .min-vh-100 {
   min-height: 100vh;
 }
@@ -181,21 +197,17 @@ export default {
 }
 
 .btn-control {
-  background-color: rgba(0, 0, 0, 0);
+  background-color: var(--pagination-bg);
   border-radius: 25px;
-  border: 2px solid #ffffff;
-  color: #ffffff;
+  border: 2px solid var(--pagination-border);
+  color: var(--pagination-color);
   transition: all 0.2s;
   animation: bn13bouncy 5s infinite linear;
 }
 
 .btn-control:hover {
-  background-color: #ffffff;
-  color: #000000;
-}
-
-.text-muted {
-  color: rgba(255, 255, 255, 0.6) !important;
+  background-color: var(--pagination-hover-bg);
+  color: var(--pagination-hover-color);
 }
 
 .btn-adicionar {
@@ -212,9 +224,10 @@ export default {
   color: #000000;
 }
 
-.card-header, .card-footer {
-  background-color: #141414;
-  color: white;
+.card-header,
+.card-footer {
+  background-color: var(--card-header);
+  color: var(--card-header-color);
 }
 
 @keyframes bn13bouncy {
@@ -241,22 +254,21 @@ export default {
   }
 }
 
-.search{
+.search {
   font-family: 'Poppins', sans-serif;
   border-radius: 20px;
   border: none;
   height: 40px;
-  background-color: #3D444D;
+  background-color: #3d444d;
   color: white;
 }
 
-.search:focus{
-  background-color: #3D444D;
+.search:focus {
+  background-color: #3d444d;
   color: white;
 }
 
-.search::-webkit-input-placeholder{
-  color: #B1B4B8;
+.search::-webkit-input-placeholder {
+  color: #b1b4b8;
 }
-
 </style>

@@ -4,15 +4,15 @@ import FrameworkModal from '../components/modals/FrameworkModal.vue'
 </script>
 
 <template>
-  <div class="container-fluid d-flex p-0">
+  <div class="container-fluid d-flex p-0" :class="themeMode === 'dark' ? 'dark-theme' : 'light-theme'">
     <Sidebar />
     <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <!-- Título da Página -->
       <div class="col">
         <nav aria-label="breadcrumb" class="mt-3">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page" style="color: #e4e4e4">
-              Framework
+            <li class="breadcrumb-item active" aria-current="page">
+              {{ $t('sidebar.developers.framework') }}
             </li>
           </ol>
         </nav>
@@ -21,7 +21,7 @@ import FrameworkModal from '../components/modals/FrameworkModal.vue'
             v-model="searchTerm"
             type="text"
             class="form-control search py-4"
-            placeholder="Type here..."
+            :placeholder="$t('search', { name: $t('sidebar.developers.framework').toLowerCase() })"
             @input="handleSearch"
           />
           <button
@@ -35,20 +35,23 @@ import FrameworkModal from '../components/modals/FrameworkModal.vue'
 
         <div class="card mb-2">
           <div class="card-header d-flex align-items-center justify-content-between">
-            <h5 class="card-title">Lista de Framework/Libs</h5>
+            <h5 class="card-title">{{ $t('pages.frameworks.list') }}</h5>
             <button
               type="button"
               class="btn-system btn-adicionar me-2 d-flex align-items-center"
               @click="showModal = true"
             >
               <i class="bx bx-plus-circle me-1"></i>
-              Adicionar
+              {{  $t('buttons.upload') }}
             </button>
           </div>
           <div v-if="frameworks.length === 0" class="card-body card-element py-0">
             <div class="overflow-auto" style="max-height: 400px">
               <ul class="list-unstyled">
-                <li class="text-center text-gray mt-3">Nenhum framework/API encontrado.</li>
+                <li class="text-center text-gray mt-3">{{
+                    $t('messages.he-empty', { name: $t('sidebar.developers.framework').toLowerCase() })
+                  }}
+                </li>
               </ul>
             </div>
           </div>
@@ -154,41 +157,42 @@ import FrameworkModal from '../components/modals/FrameworkModal.vue'
               <!-- Card footer com os botões de editar e excluir -->
               <div class="card-footer d-flex justify-content-between">
                 <button class="btn btn-editar me-2" @click="editFramework(index)">
-                  <i class="bx bx-pencil"></i> Editar
+                  <i class="bx bx-pencil"></i> {{ $t('buttons.edit') }}
                 </button>
                 <button class="btn btn-deletar" @click="handleDelete(index)">
-                  <i class="bx bx-trash"></i> Excluir
+                  <i class="bx bx-trash"></i> {{ $t('buttons.delete') }}
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        <div
-          v-if="filteredFrameworks.length > frameworksPerPage"
-          class="my-4 d-flex align-items-center justify-content-between"
-        >
-          <button
-            class="btn btn-outline-secondary"
-            @click="handlePrevPage"
-            :disabled="currentPage === 1"
-          >
-            Anterior
-          </button>
-          <span class="text-sm font-medium"> Página {{ currentPage }} de {{ totalPages }} </span>
-          <button
-            class="btn btn-outline-secondary"
-            @click="handleNextPage"
-            :disabled="currentPage === totalPages"
-          >
-            Próxima
-          </button>
+        <div class="card mb-4 d-flex flex-column border-top-0">
+          <div class="card-footer d-flex align-items-center justify-content-between">
+            <button
+              class="btn btn-control d-flex align-items-center"
+              :disabled="currentPage === 1"
+              @click="handlePrevPage"
+            >
+              <i class="bx bx-chevron-left me-2"></i> {{ $t('buttons.previous') }}
+            </button>
+            <span>{{
+              $t('pagination', { currentPage: currentPage, totalPages: totalPages })
+            }}</span>
+            <button
+              class="btn btn-control d-flex align-items-center"
+              :disabled="currentPage === totalPages"
+              @click="handleNextPage"
+            >
+              {{ $t('buttons.next') }} <i class="bx bx-chevron-right fs-5"></i>
+            </button>
+          </div>
         </div>
         <!-- Modal -->
         <FrameworkModal
           :key="idFramework"
-          :visible="showModal"
           :idFramework="idFramework"
+          :visible="showModal"
           @close="onCloseFrameworkModal"
         >
         </FrameworkModal>
@@ -201,6 +205,7 @@ import FrameworkModal from '../components/modals/FrameworkModal.vue'
 import { mapGetters } from 'vuex'
 import SystemController from '../controller/SystemController'
 import notificationService from '@renderer/service/notificationService'
+import { getTheme } from '../service/userPreferences'
 
 export default {
   data() {
@@ -210,7 +215,8 @@ export default {
       currentPage: 1,
       idFramework: -1,
       frameworksPerPage: 6,
-      frameworks: []
+      frameworks: [],
+      themeMode: getTheme()
     }
   },
   computed: {
@@ -228,7 +234,8 @@ export default {
       return this.filteredFrameworks.slice(indexOfFirstFramework, indexOfLastFramework)
     },
     totalPages() {
-      return Math.ceil(this.filteredFrameworks.length / this.frameworksPerPage)
+      let totalPages = Math.ceil(this.filteredFrameworks.length / this.frameworksPerPage)
+      return totalPages === 0 ? 1 : totalPages
     }
   },
   created() {
@@ -246,7 +253,7 @@ export default {
       SystemController.deleteFramework(index)
     },
     copyCode(code) {
-      navigator.clipboard.writeText(code) .then(() => {
+      navigator.clipboard.writeText(code).then(() => {
         notificationService.success('Código copiado com sucesso!')
       })
     },
@@ -264,6 +271,16 @@ export default {
 </script>
 
 <style scoped>
+@import url('../assets/base.css');
+
+.breadcrumb-item {
+  color: var(--breadcrumb-color);
+}
+
+.container-fluid {
+  background-color: var(--container-bg);
+}
+
 .object-contain {
   object-fit: contain;
 }
@@ -373,8 +390,8 @@ export default {
 
 .card-header,
 .card-footer {
-  background-color: #141414;
-  color: white;
+  background-color: var(--card-header);
+  color: var(--card-header-color);
 }
 
 .search{
@@ -396,36 +413,52 @@ export default {
 }
 
 .bg-code{
-  background-color: #282A36;
-  border: 2px solid #3D444D;
+  background-color: var(--code-background);
+  border: 2px solid var(--code-border);
   position: relative;
   overflow: hidden;
 }
 
 .nav-tabs{
-  border-bottom: 1px solid #3D444D;
+  border-bottom: 1px solid var(--tabs-background-active);
 }
 
 /* Estilo geral para as abas */
 .nav-tabs .nav-link {
-  color: #5C707A;
-  background-color: #1C2431;
-  border: 1px solid #3D444D;
+  color: var(--tabs-color);
+  background-color: var(--tabs-background);
+  border: 1px solid var(--tabs-background-active);
+  cursor: pointer;
   border-radius: 0.30rem 0.30rem 0 0;
-  margin-right: 5px; /* Espaçamento entre as abas */
+  margin-right: 3px; /* Espaçamento entre as abas */
   padding: 10px 15px; /* Espaçamento interno */
   transition: background-color 0.3s, color 0.3s; /* Transição suave nas alterações */
 }
 
 .nav-tabs .nav-link:hover {
-  color: white;
-  background-color: #374151;
+  color: var(--tabs-color-active);
+  background-color: var(--tabs-background-active);
 }
 
 /* Estilo para a aba ativa */
 .nav-tabs .nav-link.active {
-  color: white;
-  background-color: #374151;
-  border-color: #3D444D;
+  color: var(--tabs-color-active);
+  cursor: default;
+  background-color: var(--tabs-background-active);
+  border-color: var(--tabs-background-active);
+}
+
+.btn-control {
+  background-color: var(--pagination-bg);
+  border-radius: 25px;
+  border: 2px solid var(--pagination-border);
+  color: var(--pagination-color);
+  transition: all 0.2s;
+  animation: bn13bouncy 5s infinite linear;
+}
+
+.btn-control:hover {
+  background-color: var(--pagination-hover-bg);
+  color: var(--pagination-hover-color);
 }
 </style>

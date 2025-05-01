@@ -9,6 +9,8 @@ class SystemController {
       fonts: 'fontsStorage',
       frameworks: 'frameworksStorage',
       algorithms: 'algorithmsStorage',
+      apis: 'apisStorage',
+      videos: 'videosStorage',
       images: 'imagesStorage',
       icons: 'iconsStorage',
       palettes: 'palettesStorage',
@@ -26,7 +28,6 @@ class SystemController {
     store.commit('SET_STATE_PROPERTY', { key: 'dailyRoutine', value: data.dailyRoutine })
     store.commit('SET_STATE_PROPERTY', { key: 'currentMonth', value: data.currentMonth })
 
-    // Iterar pelos dados de armazenamento e fazer os commits usando a mutação genérica
     for (const [key, storageKey] of Object.entries(storageItems)) {
       let loadedData = window.api[`load${key.charAt(0).toUpperCase() + key.slice(1)}`]()
       store.commit('SET_STATE_PROPERTY', { key: storageKey, value: JSON.parse(loadedData) })
@@ -60,7 +61,7 @@ class SystemController {
     // Verifica se já existe uma entrada para o dia atual, caso contrário inicializa
     dailyRoutine[day] = (dailyRoutine[day] || 0) + 1
     // Faz commit para atualizar o estado do Vuex
-    store.commit('SET_STATE_PROPERTY', { key: 'dailyRoutine', value: dailyRoutine });
+    store.commit('SET_STATE_PROPERTY', { key: 'dailyRoutine', value: dailyRoutine })
     // Salva o sistema atualizado
     this.saveSystem()
   }
@@ -77,6 +78,21 @@ class SystemController {
   static deleteLink(index) {
     const count = 1
     this.deleteFromStorage('linksStorage', 'Link removido com sucesso!', index, count)
+  }
+
+  static addVideo(change) {
+    const count = 1
+    console.log('change', change)
+    this.addToStorage('videosStorage', 'Video adicionado com sucesso!', change, count)
+  }
+
+  static editVideo(change) {
+    this.editFromStorage('videosStorage', 'Video editado com sucesso!', change)
+  }
+
+  static deleteVideo(index) {
+    const count = 1
+    this.deleteFromStorage('videosStorage', 'Video removido com sucesso!', index, count)
   }
 
   static addFont(change) {
@@ -105,8 +121,24 @@ class SystemController {
     this.deleteFromStorage('frameworksStorage', 'Framework removido com sucesso!', index)
   }
 
+  static addApi(change) {
+    this.addToStorage('apisStorage', 'Api adicionada com sucesso!', change)
+  }
+
+  static editApi(change) {
+    this.editFromStorage('apisStorage', 'Api editada com sucesso!', change)
+  }
+
+  static deleteApi(index) {
+    this.deleteFromStorage('apisStorage', 'Api removida com sucesso!', index)
+  }
+
   static addAlgorithm(change) {
     this.addToStorage('algorithmsStorage', 'Algoritmo adicionado com sucesso!', change)
+  }
+
+  static editAlgorithm(change) {
+    this.editFromStorage('algorithmsStorage', 'Algoritmo editado com sucesso!', change)
   }
 
   static deleteAlgorithm(index) {
@@ -119,6 +151,10 @@ class SystemController {
 
   static deleteArticle(index) {
     this.deleteFromStorage('articlesStorage', 'Artigo removido com sucesso!', index)
+  }
+
+  static editArticle(change) {
+    this.editFromStorage('articlesStorage', 'Artigo editado com sucesso!', change)
   }
 
   static addImage(change) {
@@ -191,6 +227,8 @@ class SystemController {
       fonts: 'getStorage',
       frameworks: 'getStorage',
       algorithms: 'getStorage',
+      videos: 'getStorage',
+      apis: 'getStorage',
       images: 'getStorage',
       icons: 'getStorage',
       palettes: 'getStorage',
@@ -218,15 +256,27 @@ class SystemController {
     this.saveSystem()
   }
 
-  static deleteFromStorage(storageKey, message, change, count) {
+  static deleteFromStorage(storageKey, message, id, count) {
     let storage = this.getStorage(storageKey)
-    storage.splice(change, 1)
+    // Encontrar o índice pelo ID
+
+    // Encontrar o índice pelo ID
+    const index = storage.findIndex((item) => item.id === id)
+
+    if (index === -1) {
+      notification.error('Vídeo não encontrado!')
+      return
+    }
+
+    storage.splice(index, 1)
+
     store.commit('REMOVE_ITEM', { storageKey, storage, count })
 
     notification.success(message)
     this.updateDiaryRoutine()
     this.saveSystem()
   }
+  
   static editFromStorage(storageKey, message, change) {
     store.commit('EDIT_ITEM', { storageKey, change })
     notification.success(message)

@@ -110,8 +110,8 @@
           </div>
           <div class="modal-footer">
             <slot name="footer">
-              <button type="button" class="btn btn-secondary" @click="closeModal">Cancelar</button>
-              <button type="button" class="btn btn-primary" @click="submitFont">Adicionar</button>
+              <button type="button" class="btn-adicionar" @click="closeModal">Cancelar</button>
+              <button type="button" class="btn-cancelar" @click="submitFont">Adicionar</button>
             </slot>
           </div>
         </div>
@@ -219,15 +219,14 @@ export default {
 
         try {
           // Envia a imagem e os dados para o backend
-          const imageBuffer = await this.readFileAsArrayBuffer(this.fontData.fontFile)
-          await window.api.uploadImageFont(new Uint8Array(imageBuffer), this.fontData.fontFileName)
+          const base64Data = await this.readFileAsDataURL(this.fontData.fontFile)
 
           this.fontData = {
             name: this.fontData.name,
             family: this.fontData.family,
             uploadType: this.fontData.uploadType,
             link: this.fontData.link,
-            path: '../assets/images/fontStorage/' + this.fontData.fontFileName
+            thumbnail: base64Data
           }
           SystemController.addFont(this.fontData)
         } catch (error) {
@@ -247,12 +246,12 @@ export default {
       }
       this.closeModal()
     },
-    readFileAsArrayBuffer(file) {
+    readFileAsDataURL(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader()
         reader.onload = () => resolve(reader.result)
         reader.onerror = reject
-        reader.readAsArrayBuffer(file)
+        reader.readAsDataURL(file)
       })
     }
   }
@@ -274,5 +273,44 @@ export default {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+}
+
+.form-control, .form-select {
+  background-color: #282A36;
+  color: #F8F8F2;
+}
+
+.form-control::placeholder {
+  color: #B1B4B8;
+}
+
+.form-control button{
+  color: #F8F8F2;
+}
+
+.btn-adicionar {
+  background-color: #a855f7;
+  border: 2px solid #a855f7;
+  padding: 0.5em 0.8em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-adicionar:hover {
+  background-color: #9333ea;
+  color: white;
+}
+
+.btn-cancelar {
+  background-color: #3b82f6;
+  border: 2px solid #3b82f6;
+  padding: 0.5em 0.8em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-cancelar:hover {
+  background-color: #2563eb;
+  color: white;
 }
 </style>

@@ -4,19 +4,44 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import fs from 'fs'
 import fileManager from '../../src/renderer/src/service/gerenciadorArquivo'
+import IAServico from '../../src/renderer/src/service/IAService'
+import { BackupProcessor, setupBackupIPC } from '../../src/renderer/src/service/backup'
+import dotenv from 'dotenv'
+
+dotenv.config({ path: join(__dirname, '../../.env') })
 
 // Verifica se o ambiente é executável portátil (como AppImage)
 const executableDir = app.getPath('userData')
+const dataDir = join(executableDir, 'data')
+const txtDir = join(dataDir, 'txt')
+const imgDir = join(dataDir, 'img')
+const pdfDir = join(dataDir, 'pdf')
 const logDir = join(executableDir, 'logs')
 const logFilePath = join(logDir, 'app.log')
 
-// Verifica se o diretório de logs existe e cria se necessário
+// Cria as pastas se não existirem
+const ensureDir = (dirPath) => {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true })
+    logMessage(`Criou a pasta: ${dirPath}`)
+  } else {
+    logMessage(`A pasta já existia: ${dirPath}`)
+  }
+}
+
+ensureDir(logDir)
+ensureDir(dataDir)
+ensureDir(txtDir)
+ensureDir(imgDir)
+ensureDir(pdfDir)
+
+/* Verifica se o diretório de logs existe e cria se necessário
 if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir, { recursive: true })
-  logMessage("Criou pasta")
-}else{
-  logError("Pasta ja existe")
-}
+  logMessage('Criou pasta')
+} else {
+  logError('Pasta ja existe')
+}*/
 
 // Função de log para gravar no arquivo
 function logMessage(message) {
@@ -26,50 +51,8 @@ function logMessage(message) {
 
 // Função de log para erros
 function logError(error) {
-  const timestamp = new Date().toISOString();
-  fs.appendFileSync(logFilePath, `[${timestamp}] ERROR: ${error.stack || error}\n`);
-}
-
-// Obtém o caminho do diretório de dados do usuário
-const userPath = app.getPath('userData')
-const uploadsPath = join(userPath, 'assets/images')
-const uploadsIconsPath = join(userPath, 'assets/icons')
-const uploadsPdfPath = join(userPath, 'assets/pdfs')
-
-// Cria as pastas se não existirem
-try{
-  // Verifica se a pasta existe e cria se não existir
-  if (!fs.existsSync(uploadsPdfPath)) {
-    fs.mkdirSync(uploadsPdfPath, { recursive: true })
-    logMessage(`Pasta criada com sucesso: ${uploadsPdfPath}`)
-  } else {
-    logMessage(`A pasta já existe: ${uploadsPdfPath}`)
-  }
-} catch (error) {
-  logError(`Erro ao criar a pasta ${uploadsPdfPath}: ${error}`)
-}
-
-try {
-  // Verifica se a pasta existe e cria se não existir
-  if (!fs.existsSync(uploadsPath)) {
-    fs.mkdirSync(uploadsPath, { recursive: true })
-  } else {
-    logMessage(`Pasta criada com sucesso: ${uploadsPath}`)
-  }
-} catch (error) {
-  logError(`Erro ao criar a pasta ${uploadsPath}: ${error}`)
-}
-
-try {
-  // Verifica se a pasta existe e cria se não existir
-  if (!fs.existsSync(uploadsIconsPath)) {
-    fs.mkdirSync(uploadsIconsPath, { recursive: true })
-    console.log('Pasta criada com sucesso:', uploadsIconsPath)
-  } else {
-    console.log('A pasta já existe:', uploadsIconsPath)
-  }
-} catch (error) {
-  console.error('Erro ao criar a pasta:', error, uploadsIconsPath)
+  const timestamp = new Date().toISOString()
+  fs.appendFileSync(logFilePath, `[${timestamp}] ERROR: ${error.stack || error}\n`)
 }
 
 function createWindow() {
@@ -81,7 +64,7 @@ function createWindow() {
     minHeight: 600, // Define a altura mínima
     show: false,
     autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    icon, // <- Ícone aplicado em todas as plataformas
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
@@ -92,7 +75,7 @@ function createWindow() {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
-    mainWindow.webContents.openDevTools()
+    process.env.DEBUG_MODE ? mainWindow.webContents.openDevTools() : ''
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -105,7 +88,8 @@ function createWindow() {
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    mainWindow
+      .loadFile(join(__dirname, '../renderer/index.html'))
       .then(() => logMessage('Janela carregada com sucesso'))
       .catch((error) => logError(`Erro ao carregar a janela: ${error}`))
   }
@@ -116,7 +100,7 @@ ipcMain.handle('download-image', async (event, imageBuffer) => {
   // Opções para o diálogo de salvar
   const options = {
     title: 'Salvar Imagem',
-    defaultPath: join(uploadsPath, 'imagem.png'),
+    defaultPath: join(imgDir, 'imagem.png'),
     buttonLabel: 'Salvar',
     filters: [
       { name: 'Imagens', extensions: ['jpg', 'jpeg', 'png', 'gif'] },
@@ -141,122 +125,221 @@ ipcMain.handle('download-image', async (event, imageBuffer) => {
 
 // Comunicação IPC para carregar os links no frontend
 ipcMain.on('load-system-info', (event) => {
-  let systemInfo = fileManager.loadSystemInfo()
+  let systemInfo = fileManager.loadSystemInfo(txtDir)
   event.returnValue = systemInfo // Envia os links para o renderer
 })
 
 // Comunicação IPC para carregar os links no frontend
 ipcMain.on('load-links', (event) => {
-  let links = fileManager.loadLinks()
+  let links = fileManager.loadLinks(txtDir)
   event.returnValue = links
 })
 
+ipcMain.handle('get-image-dir', () => {
+  const imgDir = join(app.getPath('userData'), 'data', 'img')
+  return imgDir
+})
+
+ipcMain.handle('get-api-key', () => {
+  return process.env.YOUTUBE_API_KEY
+})
+
+ipcMain.handle('get-icon-dir', () => {
+  const iconDir = join(app.getPath('userData'), 'data', 'icon')
+  return iconDir
+})
+
+ipcMain.handle('get-image-base64', async (event, imagePath) => {
+  try {
+    const raw = fs.readFileSync(imagePath)
+    const ext = imagePath.split('.').pop() // png, jpg...
+    const base64 = raw.toString('base64')
+    return `data:image/${ext};base64,${base64}`
+  } catch (err) {
+    console.error('Erro ao ler imagem:', err)
+    return null
+  }
+})
+
+ipcMain.handle('get-icon-base64', async (event, imagePath) => {
+  try {
+    const raw = fs.readFileSync(imagePath)
+    const ext = imagePath.split('.').pop() // png, jpg...
+    const base64 = raw.toString('base64')
+    return `data:image/${ext};base64,${base64}`
+  } catch (err) {
+    console.error('Erro ao ler imagem:', err)
+    return null
+  }
+})
+
 ipcMain.on('load-articles', (event) => {
-  let articles = fileManager.loadArticles()
+  let articles = fileManager.loadArticles(txtDir)
   event.returnValue = articles
 })
 
+// Depois de criar a janela, instancie o serviço:
+const iaServico = new IAServico()
+iaServico.registerHandlers()
+
 // Comunicação IPC para carregar os links no frontend
 ipcMain.on('load-fonts', (event) => {
-  let fonts = fileManager.loadFonts()
+  let fonts = fileManager.loadFonts(txtDir)
   event.returnValue = fonts
 })
 
 // Comunicação IPC para carregar os links no frontend
 ipcMain.on('load-frameworks', (event) => {
-  let frameworks = fileManager.loadFrameworks()
+  let frameworks = fileManager.loadFrameworks(txtDir)
   event.returnValue = frameworks
 })
 
+ipcMain.on('load-apis', (event) => {
+  let apis = fileManager.loadApis(txtDir)
+  event.returnValue = apis
+})
+
 ipcMain.on('load-algorithms', (event) => {
-  let algorithms = fileManager.loadAlgorithms()
+  let algorithms = fileManager.loadAlgorithms(txtDir)
   event.returnValue = algorithms
 })
 
+ipcMain.on('load-videos', (event) => {
+  let videos = fileManager.loadVideos(txtDir)
+  event.returnValue = videos
+})
+
 ipcMain.on('load-images', (event) => {
-  let images = fileManager.loadImages()
+  let images = fileManager.loadImages(txtDir)
   event.returnValue = images
 })
 
 ipcMain.on('load-icons', (event) => {
-  let icons = fileManager.loadIcons()
+  let icons = fileManager.loadIcons(txtDir)
   event.returnValue = icons
 })
 
 ipcMain.on('load-palettes', (event) => {
-  let palettes = fileManager.loadPalettes()
+  let palettes = fileManager.loadPalettes(txtDir)
   event.returnValue = palettes
 })
 // Comunicação IPC para salvar os links no arquivo
 ipcMain.handle('save-system-info', async (event, systemInfo) => {
-  fileManager.saveSystemInfo(systemInfo)
+  fileManager.saveSystemInfo(txtDir, systemInfo)
   return true
 })
 
 ipcMain.handle('save-links', async (event, links) => {
-  fileManager.saveLinks(links)
+  fileManager.saveLinks(txtDir, links)
   return true
 })
 
 ipcMain.handle('save-articles', async (event, articles) => {
-  fileManager.saveArticles(articles)
+  fileManager.saveArticles(txtDir, articles)
   return true
 })
 
 ipcMain.handle('save-fonts', async (event, fonts) => {
-  fileManager.saveFonts(fonts)
+  fileManager.saveFonts(txtDir, fonts)
+  return true
+})
+
+ipcMain.handle('save-videos', async (event, videos) => {
+  fileManager.saveVideos(txtDir, videos)
   return true
 })
 
 ipcMain.handle('save-frameworks', async (event, frameworks) => {
-  fileManager.saveFrameworks(frameworks)
+  fileManager.saveFrameworks(txtDir, frameworks)
   return true
 })
 
 ipcMain.handle('save-algorithms', async (event, algorithms) => {
-  fileManager.saveAlgorithms(algorithms)
+  fileManager.saveAlgorithms(txtDir, algorithms)
+  return true
+})
+
+ipcMain.handle('save-apis', async (event, apis) => {
+  fileManager.saveApis(txtDir, apis)
   return true
 })
 
 ipcMain.handle('save-images', async (event, images) => {
-  fileManager.saveImages(images)
+  fileManager.saveImages(txtDir, images)
   return true
 })
 
 ipcMain.handle('save-icons', async (event, icons) => {
-  fileManager.saveIcons(icons)
+  fileManager.saveIcons(txtDir, icons)
   return true
 })
 
 ipcMain.handle('save-palettes', async (event, palettes) => {
-  fileManager.savePalettes(palettes)
+  fileManager.savePalettes(txtDir, palettes)
   return true
 })
 
 // Manipulador IPC para upload de imagem
 ipcMain.handle('upload-image', async (event, imageBuffer, fileName) => {
-  const filePath = join(uploadsPath, fileName)
+  const filePath = join(imgDir, fileName)
   fs.writeFileSync(filePath, Buffer.from(imageBuffer))
   return filePath
 })
 
 // Manipulador IPC para upload de icon
 ipcMain.handle('upload-icon', async (event, imageBuffer, fileName) => {
-  const filePath = join(uploadsIconsPath, fileName)
+  const filePath = join(imgDir, fileName)
   fs.writeFileSync(filePath, Buffer.from(imageBuffer))
   return filePath
 })
 
 ipcMain.handle('upload-image-font', async (event, imageBuffer, fileName) => {
-  const filePath = join(uploadsPath + '/fontStorage', fileName)
+  const filePath = join(imgDir + '/fontStorage', fileName)
   fs.writeFileSync(filePath, Buffer.from(imageBuffer))
   return filePath
 })
 
 ipcMain.handle('upload-pdf', async (event, pdfBuffer, fileName) => {
-  const filePath = join(uploadsPdfPath, fileName)
+  const filePath = join(pdfDir, fileName)
   fs.writeFileSync(filePath, Buffer.from(pdfBuffer))
   return filePath
+})
+
+ipcMain.handle('select-backup-directory', async () => {
+  try {
+    const result = await dialog.showOpenDialog({
+      properties: ['openDirectory']
+    })
+
+    if (result.canceled || result.filePaths.length === 0) {
+      return null
+    }
+
+    return result.filePaths[0]
+  } catch (err) {
+    console.error('Erro ao escolher diretório:', err)
+    return null
+  }
+})
+
+// Criar instância do BackupProcessor
+const backupProcessor = new BackupProcessor(fileManager, txtDir)
+
+// Configurar IPC handlers
+setupBackupIPC(backupProcessor)
+
+// Handler para obter o caminho padrão de backup
+ipcMain.handle('get-default-backup-path', async () => {
+  const userDataPath = app.getPath('userData')
+  const backupDir = join(userDataPath, 'backups')
+  
+  // Garante que o diretório existe
+  await fs.promises.mkdir(backupDir, { recursive: true })
+  
+  // Cria nome do arquivo com timestamp
+  const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '')
+  const timeStr = new Date().toTimeString().split(' ')[0].replace(/:/g, '')
+  return join(backupDir, `backup_${dateStr}_${timeStr}.bin`)
 })
 
 // This method will be called when Electron has finished

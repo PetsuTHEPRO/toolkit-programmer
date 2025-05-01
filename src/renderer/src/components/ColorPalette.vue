@@ -100,6 +100,8 @@ export default {
 </script>
 
 <style scoped>
+@import url('../assets/base.css');
+
 /* Certifica que o card permite overflow */
 .card {
   position: relative;
@@ -107,8 +109,8 @@ export default {
 }
 
 .card-header {
-  background-color: #141414;
-  color: white;
+  background-color: var(--container-bg);
+  color: var(--container-color);
 }
 
 .h-24 {
@@ -126,7 +128,7 @@ export default {
   flex-grow: 1;
   z-index: 1;
   box-sizing: border-box !important;
-  border: 1px solid black;
+  border: 1px solid var(--card-palette-border);
 }
 
 .color-box:hover {

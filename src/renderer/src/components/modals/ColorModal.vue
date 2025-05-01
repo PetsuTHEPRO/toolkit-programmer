@@ -180,4 +180,43 @@ export default {
   justify-content: center;
   min-height: 100vh;
 }
+
+.form-control, .form-select {
+  background-color: #282A36;
+  color: #F8F8F2;
+}
+
+.form-control::placeholder {
+  color: #B1B4B8;
+}
+
+.form-control button{
+  color: #F8F8F2;
+}
+
+.btn-adicionar {
+  background-color: #a855f7;
+  border: 2px solid #a855f7;
+  padding: 0.5em 0.8em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-adicionar:hover {
+  background-color: #9333ea;
+  color: white;
+}
+
+.btn-cancelar {
+  background-color: #3b82f6;
+  border: 2px solid #3b82f6;
+  padding: 0.5em 0.8em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-cancelar:hover {
+  background-color: #2563eb;
+  color: white;
+}
 </style>

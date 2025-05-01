@@ -1,7 +1,8 @@
 <script setup>
-const ipcHandle = () => window.electron.ipcRenderer.send('ping')
 </script>
 
 <template>
-  <RouterView />
+  <div>
+    <RouterView />
+  </div>
 </template>

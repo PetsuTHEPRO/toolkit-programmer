@@ -198,8 +198,7 @@ export default {
 
         try {
           // Envia a imagem e os dados para o backend
-          const imageBuffer = await this.readFileAsArrayBuffer(this.iconeData.iconeFile)
-          await window.api.uploadIcon(new Uint8Array(imageBuffer), this.iconeData.iconeFileName)
+          const base64Data = await this.readFileAsDataURL(this.iconeData.iconeFile)
 
           // Emitir os dados do material para o componente pai
           this.iconeData = {
@@ -207,7 +206,7 @@ export default {
             usage: this.iconeData.usage,
             library: this.iconeData.library,
             link: this.iconeData.link,
-            path: '../assets/icons/' + this.iconeData.iconeFileName
+            base64: base64Data
           }
 
           SystemController.addIcon(this.iconeData)
@@ -228,12 +227,12 @@ export default {
       }
       this.closeModal()
     },
-    readFileAsArrayBuffer(file) {
+    readFileAsDataURL(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader()
         reader.onload = () => resolve(reader.result)
         reader.onerror = reject
-        reader.readAsArrayBuffer(file)
+        reader.readAsDataURL(file)
       })
     }
   }
@@ -255,5 +254,44 @@ export default {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+}
+
+.form-control, .form-select {
+  background-color: #282A36;
+  color: #F8F8F2;
+}
+
+.form-control::placeholder {
+  color: #B1B4B8;
+}
+
+.form-control button{
+  color: #F8F8F2;
+}
+
+.btn-adicionar {
+  background-color: #a855f7;
+  border: 2px solid #a855f7;
+  padding: 0.5em 0.8em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-adicionar:hover {
+  background-color: #9333ea;
+  color: white;
+}
+
+.btn-cancelar {
+  background-color: #3b82f6;
+  border: 2px solid #3b82f6;
+  padding: 0.5em 0.8em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-cancelar:hover {
+  background-color: #2563eb;
+  color: white;
 }
 </style>

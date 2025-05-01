@@ -1,8 +1,10 @@
 <script setup>
 import Sidebar from '../components/Sidebar.vue'
+import MonacoEditor from './MonacoEditor.vue'
 </script>
+
 <template>
-  <div class="container-fluid d-flex p-0">
+  <div class="container-fluid d-flex p-0" :class="themeMode === 'dark' ? 'dark-theme' : 'light-theme'">
     <Sidebar />
     <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <div class="col">
@@ -11,7 +13,9 @@ import Sidebar from '../components/Sidebar.vue'
             <li class="breadcrumb-item">
               <router-link :to="{ name: 'algorithm' }">Algoritmo</router-link>
             </li>
-            <li class="breadcrumb-item active" aria-current="page">{{ algorithms.name }}</li>
+            <li class="breadcrumb-item active" aria-current="page" style="color: white">
+              {{ algorithms.name }}
+            </li>
           </ol>
         </nav>
         <div class="card w-100 mx-auto max-w-4xl">
@@ -24,7 +28,10 @@ import Sidebar from '../components/Sidebar.vue'
               <li class="nav-item" v-for="lang in languages" :key="lang">
                 <a
                   class="nav-link"
-                  :class="{ active: selectedLanguage === lang, disabled: selectedLanguage !== lang }"
+                  :class="{
+                    active: selectedLanguage === lang,
+                    disabled: selectedLanguage !== lang
+                  }"
                   @click.prevent="setSelectedLanguage(lang)"
                 >
                   {{ lang }}
@@ -40,14 +47,16 @@ import Sidebar from '../components/Sidebar.vue'
                 class="tab-pane fade show active"
               >
                 <div class="card mt-3">
-                  <div class="card-header">
-                    <h5 class="card-title">{{ lang }}</h5>
-                    <p class="card-description">Implementação do Bubble Sort em {{ lang }}</p>
-                  </div>
-                  <div class="card-body">
+                  <div class="card-body p-0 border-0">
+                    <!--
                     <pre class="bg-light p-4 rounded-md overflow-auto">
                       <code :class="'language-' + selectedLanguage.toLowerCase()" v-html="highlightedCode"></code>
                     </pre>
+                    -->
+                    <MonacoEditor
+                      :code="algorithms.code[lang]"
+                      :language="selectedLanguage.toLowerCase()"
+                      />
                   </div>
                 </div>
               </div>
@@ -63,11 +72,13 @@ import Sidebar from '../components/Sidebar.vue'
 import { mapGetters } from 'vuex'
 import highlightService from '../service/highlightService'
 import SystemController from '../controller/SystemController'
+import { getTheme } from '../service/userPreferences'
 
 export default {
   data() {
     return {
       languages: ['Java', 'Python', 'Javascript', 'Rust', 'Go', 'Php'],
+      themeMode: getTheme() || 'light',
       algorithms: [],
       algorithmId: null,
       selectedLanguage: '',
@@ -102,8 +113,8 @@ export default {
       // Aplica o destaque de código para a linguagem selecionada
       let code = this.algorithms.code[this.selectedLanguage]
 
-      code = '\n' + code;
-      
+      code = '\n' + code
+
       this.highlightedCode = highlightService.highlightCode(
         code,
         this.selectedLanguage.toLowerCase()
@@ -114,12 +125,27 @@ export default {
 </script>
 
 <style scoped>
+@import url('../assets/base.css');
+
 /* Estilos adicionais, se necessário */
-pre {
-  background: #282a36 !important;
-  color: white;
-  padding: 1rem;
-  border-radius: 0.25rem;
-  overflow-x: auto;
+.container-fluid {
+  background-color: var(--container-bg);
+  color: var(--container-color);
+}
+
+.card-header,
+.card-footer {
+  background-color: var(--card-header);
+  color: var(--card-header-color);
+}
+
+.card-element {
+  background-color: --var(--card-element-bg);
+  color: --var(--card-element-text);
+}
+
+.nav-link {
+  /* Cor desativada - cinza */
+  color: #b1b4b8;
 }
 </style>

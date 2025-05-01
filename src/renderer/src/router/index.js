@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import DashboardView from '../views/DashboardView.vue'
-import TesteView from '../views/Teste.vue'
+import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,17 +16,44 @@ const router = createRouter({
       component: DashboardView
     },
     {
-      path: '/teste',
-      name: 'teste',
-      component: TesteView
-    },
-    {
       path: '/image',
       name: 'image',
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/ImageManager.vue')
+    },
+    {
+      path: '/api',
+      name: 'api',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/ApiManager.vue')
+    },
+    {
+      path: '/video',
+      name: 'video',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/VideoManager.vue')
+    },
+    {
+      path: '/assistenteIA',
+      name: 'assistenteIA',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/ChatAssistente.vue')
+    },
+    {
+      path: '/configuracao',
+      name: 'configuracao',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/ConfiguracaoView.vue')
     },
     {
       path: '/gallery',
@@ -43,7 +69,7 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../components/ImagePreview.vue')
+      component: () => import('../components/preview/ImagePreview.vue')
     },
     {
       path: '/frameword',
@@ -108,8 +134,13 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/ColorManager.vue')
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/'
     }
   ]
 })
 
 export default router
+

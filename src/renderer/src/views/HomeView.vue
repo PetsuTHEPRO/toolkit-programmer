@@ -55,16 +55,16 @@
             <i class="bx bx-right-arrow-alt me-2"></i>
             Começar Agora
           </router-link>
+          <!-- href="https://www.ko-fi.com/petermenezes" -->
           <a
-            href="https://www.ko-fi.com/petermenezes"
             target="_blank"
             class="btn btn-lg btn-purple-400 hover-scale mx-2 d-flex align-items-center justify-content-center"
           >
             <i class="bx bx-heart me-2"></i>
             Doar
           </a>
+          <!-- href="https://github.com/petsuTHEPRO/toolkit-programmer/blob/master/README.md" -->
           <a
-            href="https://github.com/petsuTHEPRO/toolkit-programmer/blob/master/README.md"
             target="_blank"
             class="btn btn-lg btn-purple-600 hover-scale mx-2 d-flex align-items-center justify-content-center"
           >

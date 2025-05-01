@@ -1,0 +1,141 @@
+{
+  "app": {
+    "title": "Toolkit Programmer",
+    "description": "Tool for developers"
+  },
+  "buttons": {
+    "close": "Close",
+    "save": "Save",
+    "next": "Next",
+    "previous": "Previous",
+    "more": "More",
+    "less": "Less",
+    "cancel": "Cancel",
+    "clear": "Clear Log",
+    "add": "Add",
+    "delete": "Delete",
+    "view": "View",
+    "open": "Open",
+    "edit": "Edit",
+    "download": "Download",
+    "upload": "Upload",
+    "copy": "Copy",
+    "viewMore": "View more"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "resources": {
+      "title": "Resources",
+      "images": "Images",
+      "fonts": "Fonts",
+      "palette": "Color Palette"
+    },
+    "developers": {
+      "title": "Development",
+      "api": "API",
+      "code": "Code",
+      "framework": "Framework"
+    },
+    "learn": {
+      "title": "Knowledge",
+      "articles": "Articles",
+      "videos": "Videos",
+      "links": "Links"
+    },
+    "help": "Help (AI)",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "pages": {
+    "dashboard": {
+      "stats": {
+        "colors": "Colors",
+        "links": "Links",
+        "fonts": "Fonts"
+      },
+      "activityLog": {
+        "title": "Activity Log",
+        "empty": "No logs recorded."
+      },
+      "dailyActivity": {
+        "title": "Daily Activities"
+      }
+    },
+    "images": {
+      "title": "Images",
+      "recent": "Recent Images"
+    },
+    "icons": "Icons",
+    "fonts": {
+      "title": "Fonts",
+      "list": "Font List"
+    },
+    "palette": {
+      "title": "Color Palette",
+      "paletteList" : "Palette List"
+    },
+    "api": {
+      "list": "API List"
+    },
+    "algorithms": {
+      "list": "Algorithms List"
+    },
+    "frameworks": {
+      "list": "Frameworks List"
+    },
+    "articles": {
+      "list": "Articles List"
+    },
+    "videos": {
+      "list": "Videos List"
+    },
+    "links": {
+      "list": "Links List"
+    },
+    "settings": {
+      "personal": {
+        "title": "Personal Area",
+        "account-header": "Account Settings",
+        "label": "Name",
+        "delete-header": "Danger Zone",
+        "delete-description": "This action cannot be undone. All your data will be permanently deleted."
+      },
+      "backup": {
+        "title": "Backup",
+        "export-header": "Export Backup",
+        "export-description": "Export all your data to a backup file.",
+        "export-label": "Save Location",
+        "import-header": "Import Backup",
+        "import-description": "Import data from a saved backup file.",
+        "import-label": "Backup File"
+      },
+      "app": "Application",
+      "language": {
+        "title": "Language",
+        "portuguese": "Portuguese",
+        "english": "English",
+        "spanish": "Spanish"
+      },
+      "ia": {
+        "title": "AI Settings",
+        "ia-header": "Choose your preferred AI model",
+        "ia-warning": "Warning: Using ChatGPT requires a paid OpenAI API subscription."
+      },
+      "theme": {
+        "title": "Theme",
+        "dark": "Dark Theme",
+        "light": "Light Theme"
+      }
+    }
+  },
+  "messages": {
+    "welcome": "Welcome, {name}!",
+    "items": "{count} item | {count} items",
+    "she-empty": "No {name} found.",
+    "he-empty": "No {name} found.",
+    "she-log": "A {name} was successfully {action}.",
+    "he-log": "A {name} was successfully {action}."
+  },
+  "search": "Search {name}...",
+  "pagination": "Page {currentPage} of {totalPages}"
+}

@@ -3,19 +3,22 @@ import Sidebar from '../../components/Sidebar.vue'
 </script>
 
 <template>
-  <div class="container-fluid d-flex p-0">
+  <div
+    class="container-fluid d-flex p-0"
+    :class="themeMode === 'dark' ? 'dark-theme' : 'light-theme'"
+  >
     <Sidebar />
     <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <div class="col">
-      <nav aria-label="breadcrumb" class="my-3">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item">
+        <nav aria-label="breadcrumb" class="my-3">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
               <router-link :to="{ name: 'image' }" class="breadcrumb-link">Imagens</router-link>
             </li>
             <li class="breadcrumb-item active" aria-current="page">Galeria</li>
           </ol>
         </nav>
-        
+
         <!-- Search Bar -->
         <div class="input-group my-5">
           <input
@@ -25,7 +28,11 @@ import Sidebar from '../../components/Sidebar.vue'
             placeholder="Type here..."
             @input="handleSearch"
           />
-          <button class="btn btn-outline-secondary search d-flex align-items-center p-4" style="background-color: #727DDC; color: white;" type="button">
+          <button
+            class="btn btn-outline-secondary search d-flex align-items-center p-4"
+            style="background-color: #727ddc; color: white"
+            type="button"
+          >
             <i class="bx bx-search fs-4" style="font-weight: bold"></i>
           </button>
         </div>
@@ -38,14 +45,16 @@ import Sidebar from '../../components/Sidebar.vue'
             :key="image.id"
           >
             <div class="card h-100">
-              <img
-                :src="getImageSrc(image.path)"
-                :alt="image.fileName"
-                class="card-img-top"
-                style="height: 200px; object-fit: cover"
-                @click="handleOpenImage(index)"
-              />
-              <div class="card-body">
+              <div class="thumbnail-container">
+                <img
+                  :src="image.base64"
+                  :alt="image.fileName"
+                  class="card-img-top"
+                  style="height: 200px; object-fit: cover"
+                  @click="handleOpenImage(index)"
+                />
+              </div>
+              <div class="card-body border">
                 <p class="card-text">{{ image.description }}</p>
               </div>
             </div>
@@ -59,7 +68,7 @@ import Sidebar from '../../components/Sidebar.vue'
             :disabled="currentPage === 1"
             @click="handlePrevPage"
           >
-          <i class="bx bx-chevron-left fs-5"></i>
+            <i class="bx bx-chevron-left fs-5"></i>
             Anterior
           </button>
           <span class="text-white">Página {{ currentPage }} de {{ totalPages }}</span>
@@ -80,13 +89,15 @@ import Sidebar from '../../components/Sidebar.vue'
 <script>
 import { mapGetters } from 'vuex'
 import SystemController from '../../controller/SystemController'
+import { getTheme } from '../../service/userPreferences'
 export default {
   data() {
     return {
       images: [],
       searchTerm: '',
       currentPage: 1,
-      imagesPerPage: 12
+      imagesPerPage: 12,
+      themeMode: getTheme()
     }
   },
   computed: {
@@ -113,9 +124,6 @@ export default {
     this.images = SystemController.getStorage('imagesStorage')
   },
   methods: {
-    getImageSrc(imagePath) {
-      return new URL('../' + imagePath, import.meta.url).href
-    },
     handlePrevPage() {
       if (this.currentPage > 1) {
         this.currentPage--
@@ -135,7 +143,25 @@ export default {
 </script>
 
 <style scoped>
+@import url('../../assets/base.css');
 /* Opcional: estilos customizados */
+
+.thumbnail-container {
+  background: repeating-conic-gradient(#e5e7eb 0% 25%, #d1d5db 0% 50%) 50% / 20px 20px;
+  padding: 4px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.container-fluid {
+  background-color: var(--container-bg);
+  color: var(--container-color);
+}
+
+.breadcrumb-item {
+  color: var(--breadcrumb-color);
+}
+
 .card-img-top {
   transition: transform 0.3s;
 }
@@ -167,22 +193,22 @@ export default {
   transform: scale(1.05);
 }
 
-.search{
+.search {
   font-family: 'Poppins', sans-serif;
   border-radius: 20px;
   border: none;
   height: 40px;
-  background-color: #3D444D;
+  background-color: #3d444d;
   color: white;
 }
 
-.search:focus{
-  background-color: #3D444D;
+.search:focus {
+  background-color: #3d444d;
   color: white;
 }
 
-.search::-webkit-input-placeholder{
-  color: #B1B4B8;
+.search::-webkit-input-placeholder {
+  color: #b1b4b8;
 }
 
 .breadcrumb-link {
@@ -190,10 +216,6 @@ export default {
 }
 
 .breadcrumb-item::before {
-  color: #e4e4e4;
-}
-
-.breadcrumb-item.active {
   color: #e4e4e4;
 }
 </style>

@@ -1,10 +1,10 @@
 <script setup>
-import Sidebar from './Sidebar.vue'
-import ImageModal from './modals/ImageModal.vue'
+import Sidebar from '../Sidebar.vue'
+import ImageModal from '../modals/ImageModal.vue'
 </script>
 
 <template>
-  <div class="container-fluid d-flex p-0">
+  <div class="container-fluid d-flex p-0" :class="themeMode === 'dark' ? 'dark-theme' : 'light-theme'">
     <Sidebar />
     <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <nav aria-label="breadcrumb" class="mt-3">
@@ -21,13 +21,15 @@ import ImageModal from './modals/ImageModal.vue'
       <div class="col">
         <div class="row g-4">
           <!-- Imagem -->
-          <div class="col-md-6">
-            <img
-              :src="getImageSrc(image.path) || '../assets/images/no-image.png'"
+          <div class="col-md-6 d-flex align-items-center justify-content-center">
+            <div class="thumbnail-container">
+              <img
+              :src="image.base64 || '../assets/images/no-image.png'"
               class="img-fluid rounded-3 object-fit-cover"
               :alt="image.fileName"
               style="aspect-ratio: 800/600"
-            />
+              />
+            </div>
           </div>
 
           <!-- Detalhes da Imagem -->
@@ -56,7 +58,10 @@ import ImageModal from './modals/ImageModal.vue'
                 Abrir Imagem
               </a>
 
-              <button class="btn-system btn-copy d-flex align-items-center" @click="downloadImage(image)">
+              <button
+                class="btn-system btn-copy d-flex align-items-center"
+                @click="downloadImage(image)"
+              >
                 <i class="bx bx-download me-2"></i>
                 Download
               </button>
@@ -68,12 +73,15 @@ import ImageModal from './modals/ImageModal.vue'
               </button>
 
               <!-- Botão para Excluir -->
-              <button class="btn-system btn-deletar d-flex align-items-center" @click="deleteImage(image)">
+              <button
+                class="btn-system btn-deletar d-flex align-items-center"
+                @click="deleteImage(image)"
+              >
                 <i class="bx bx-trash me-2"></i>
                 Excluir
               </button>
             </div>
-            <ImageModal :visible="showModal" :image="image" @close="onCloseImageModal" />
+            <ImageModal :visible="showModal" :imageId="imageId" :image="image" @close="onCloseImageModal" />
           </div>
         </div>
       </div>
@@ -83,27 +91,27 @@ import ImageModal from './modals/ImageModal.vue'
 
 <script>
 import { mapGetters } from 'vuex'
-import SystemController from '../controller/SystemController'
-import notificationService from '../service/notificationService';
+import SystemController from '../../controller/SystemController'
+import notificationService from '../../service/notificationService'
+import { getTheme } from '../../service/userPreferences'
+
 export default {
   data() {
     return {
       image: null,
       imageId: null,
-      showModal: false
+      showModal: false,
+      themeMode: getTheme()
     }
   },
   computed: {
     ...mapGetters(['isSidebarOpen'])
   },
   created() {
-    this.imageId = this.$route.params.id
+    this.imageId = Number(this.$route.params.id)
     this.image = SystemController.getStorage('imagesStorage')[this.imageId]
   },
   methods: {
-    getImageSrc(imagePath) {
-      return new URL(imagePath, import.meta.url).href
-    },
     async downloadImage() {
       let pathDefault = '/src/assets/images/'
       try {
@@ -163,20 +171,27 @@ export default {
 }
 </script>
 <style scoped>
+@import url('../../assets/base.css');
+
+.thumbnail-container {
+  background: repeating-conic-gradient(#e5e7eb 0% 25%, #d1d5db 0% 50%) 50% / 20px 20px;
+  padding: 4px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.container-fluid {
+  background-color: var(--container-bg);
+  color: var(--container-color);
+}
+
+.breadcrumb-item,
+.breadcrumb-item::before {
+  color: var(--breadcrumb-color);
+}
+
 .breadcrumb-link {
   color: #1e90ff;
-}
-
-.breadcrumb-item::before {
-  color: #e4e4e4;
-}
-
-.breadcrumb-item.active {
-  color: #e4e4e4;
-}
-
-.container-fluid{
-  color: white;
 }
 
 .btn-system {
@@ -240,5 +255,4 @@ export default {
 .btn-copy:hover {
   background-color: #4f46e5;
 }
-
 </style>

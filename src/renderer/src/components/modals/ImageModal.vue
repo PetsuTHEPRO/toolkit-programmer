@@ -14,13 +14,18 @@
             <h5 class="modal-title" id="modalTitle">
               <slot name="title">{{ !imageEdit ? 'Adicionar Imagem' : 'Editar Imagem' }}</slot>
             </h5>
-            <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              @click="closeModal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <slot name="body">
               <!-- Input para o nome do material -->
               <div class="mb-3">
-                <label for="materialName" class="form-label">Nome</label>
+                <label for="materialName" class="form-label">🆔 Nome</label>
                 <input
                   type="text"
                   id="materialName"
@@ -33,7 +38,7 @@
 
               <!-- Input para a descrição do material -->
               <div class="mb-3">
-                <label for="materialDescription" class="form-label">Descrição</label>
+                <label for="materialDescription" class="form-label">✏️ Descrição</label>
                 <textarea
                   id="materialDescription"
                   v-model="imagemData.description"
@@ -44,7 +49,7 @@
 
               <!-- Input para upload de imagem -->
               <div v-if="!imageEdit" class="mb-3">
-                <label for="materialImage" class="form-label">Imagem</label>
+                <label for="materialImage" class="form-label">📁 Escolher imagem</label>
                 <input
                   id="materialImage"
                   type="file"
@@ -65,8 +70,8 @@
           </div>
           <div class="modal-footer">
             <slot name="footer">
-              <button type="button" class="btn btn-secondary" @click="closeModal">Cancelar</button>
-              <button type="button" class="btn btn-primary" @click="submitImage">
+              <button type="button" class="btn-cancelar" @click="closeModal">Cancelar</button>
+              <button type="button" class="btn-adicionar" @click="submitImage">
                 {{ !imageEdit ? 'Adicionar' : 'Editar' }}
               </button>
             </slot>
@@ -89,6 +94,10 @@ export default {
     image: {
       type: Object,
       default: null
+    },
+    imageId: {
+      type: Number,
+      default: -1
     }
   },
   data() {
@@ -141,10 +150,11 @@ export default {
       if (this.imageEdit) {
         this.imageEdit = {
           ...this.imageEdit,
+          id: this.imageId,
           name: this.imagemData.name,
           description: this.imagemData.description
         }
-
+        console.log(this.imageEdit)
         SystemController.editImage(this.imageEdit)
       } else {
         if (!this.imagemData.imageFile) {
@@ -153,8 +163,7 @@ export default {
         }
 
         try {
-          const imageBuffer = await this.readFileAsArrayBuffer(this.imagemData.imageFile)
-          await window.api.uploadImage(new Uint8Array(imageBuffer), this.imagemData.imageFileName)
+          const base64Data = await this.readFileAsDataURL(this.imagemData.imageFile)
 
           this.imageData = {
             name: this.imagemData.name,
@@ -164,7 +173,7 @@ export default {
             height: this.imagemData.height,
             size: this.imagemData.size,
             format: this.imagemData.format,
-            path: '../assets/images/' + this.imagemData.imageFileName
+            base64: base64Data
           }
 
           SystemController.addImage(this.imageData)
@@ -184,12 +193,12 @@ export default {
 
       this.closeModal()
     },
-    readFileAsArrayBuffer(file) {
+    readFileAsDataURL(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader()
         reader.onload = () => resolve(reader.result)
         reader.onerror = reject
-        reader.readAsArrayBuffer(file)
+        reader.readAsDataURL(file)
       })
     }
   }
@@ -211,5 +220,45 @@ export default {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+}
+
+.form-control,
+.form-select {
+  background-color: #282a36;
+  color: #f8f8f2;
+}
+
+.form-control::placeholder {
+  color: #b1b4b8;
+}
+
+.form-control button {
+  color: #f8f8f2;
+}
+
+.btn-adicionar {
+  background-color: #a855f7;
+  border: 2px solid #a855f7;
+  padding: 0.5em 0.8em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-adicionar:hover {
+  background-color: #9333ea;
+  color: white;
+}
+
+.btn-cancelar {
+  background-color: #3b82f6;
+  border: 2px solid #3b82f6;
+  padding: 0.5em 0.8em;
+  border-radius: 5px;
+  color: white;
+}
+
+.btn-cancelar:hover {
+  background-color: #2563eb;
+  color: white;
 }
 </style>

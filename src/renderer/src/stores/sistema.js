@@ -17,6 +17,8 @@ const store = createStore({
     linksStorage: [],
     fontsStorage: [],
     frameworksStorage: [],
+    apisStorage: [],
+    videosStorage: [],
     algorithmsStorage: [],
     imagesStorage: [],
     iconsStorage: [],
@@ -67,6 +69,7 @@ const store = createStore({
     },
     // Função genérica para adicionar item
     ADD_ITEM(state, { storageKey, items, count }) {
+      console.log("itens", items)
       state.storageKey = items
 
       if (count) {
@@ -81,6 +84,7 @@ const store = createStore({
       const article = isFemale ? 'Uma' : 'Um'
       const suffix = isFemale ? 'a' : 'o'
 
+      // Adiciona a mensagem de log
       // Adiciona a mensagem de log
       this.commit('ADD_LOG_MESSAGE', {
         type: type,
@@ -110,9 +114,9 @@ const store = createStore({
     },
 
     EDIT_ITEM(state, { storageKey, change }) {
-      for (let index = 0; index < state[storageKey].length; index++) {
-        if (index === change.id) {
-          state[storageKey][index] = { ...state[storageKey][index], ...change }
+      for (const item of state[storageKey]) {
+        if (item.id === change.id) {
+          Object.assign(item, change)
           break
         }
       }
@@ -149,11 +153,10 @@ const store = createStore({
     },
 
     TOGGLE_SUBMENU(state, submenu) {
-
       for (let key in state.submenus) {
-        if(key !== submenu){
+        if (key !== submenu) {
           state.submenus[key] = false
-        }else{
+        } else {
           state.submenus[submenu] = !state.submenus[submenu]
         }
       }
@@ -171,7 +174,7 @@ const store = createStore({
     },
     SET_DIARY_ROUTINE(state, dailyRoutine) {
       state.dailyRoutine = dailyRoutine
-      console.log("STATE", state)
+      console.log('STATE', state)
     }
   },
 

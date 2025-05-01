@@ -3,7 +3,7 @@ import Sidebar from '@renderer/components/Sidebar.vue'
 import { VuePDF, usePDF } from '@tato30/vue-pdf'
 </script>
 <template>
-  <div class="container-fluid d-flex p-0">
+  <div class="container-fluid d-flex p-0" :class="themeMode === 'dark' ? 'dark-theme' : 'light-theme'">
     <Sidebar />
     <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <div class="col">
@@ -92,6 +92,7 @@ import { VuePDF, usePDF } from '@tato30/vue-pdf'
 <script>
 import { mapGetters } from 'vuex'
 import SystemController from '@renderer/controller/SystemController'
+import { getTheme } from '../../service/userPreferences'
 
 export default {
   data() {
@@ -102,8 +103,15 @@ export default {
       pdfFile: null,
       zoom: 1.2,
       article: null,
-      articleId: null
+      articleId: null,
+      themeMode: getTheme()
     }
+  },
+  mounted() {
+    window.addEventListener('keydown', this.handleKeyDown)
+  },
+  beforeUnmount() {
+    window.removeEventListener('keydown', this.handleKeyDown)
   },
   computed: {
     ...mapGetters(['isSidebarOpen'])
@@ -113,8 +121,10 @@ export default {
     this.articleId = this.$route.params.id
     this.article = SystemController.getStorage('articlesStorage')[this.articleId]
     try {
-      const pdfUrl = await import(this.article.path)
-      const { pdf, pages } = await usePDF(pdfUrl.default)
+      const base64 = this.article.path // ou como você estiver guardando o conteúdo base64
+      const cleanBase64 = base64.replace(/^data:application\/pdf;base64,/, '')
+      const uint8Array = this.base64ToUint8Array(cleanBase64)
+      const { pdf, pages } = await usePDF(uint8Array)
       console.log('PDF carregado:', pdf)
       console.log('Páginas:', pages)
       this.pdf = pdf
@@ -129,6 +139,17 @@ export default {
         this.zoom += 0.1 // Aumenta o zoom em 10%
       }
     },
+    handleKeyDown(event) {
+      if (event.key === 'ArrowRight') {
+        if (this.page < this.pages) {
+          this.page++
+        }
+      } else if (event.key === 'ArrowLeft') {
+        if (this.page > 1) {
+          this.page--
+        }
+      }
+    },
     zoomOut() {
       if (this.zoom >= 0.75) {
         this.zoom -= 0.1 // Diminui o zoom em 10% (mínimo de 20%)
@@ -136,58 +157,70 @@ export default {
     },
     zoomReset() {
       this.zoom = 1.2
+    },
+    base64ToUint8Array(base64) {
+      const raw = atob(base64)
+      const uint8Array = new Uint8Array(raw.length)
+      for (let i = 0; i < raw.length; i++) {
+        uint8Array[i] = raw.charCodeAt(i)
+      }
+      return uint8Array
     }
   }
 }
 </script>
 
 <style scoped>
+@import url('../../assets/base.css');
+
+.container-fluid {
+  background-color: var(--container-bg);
+  color: var(--container-color);
+}
+
+.breadcrumb-item,
+.breadcrumb-item::before {
+  color: var(--breadcrumb-color);
+}
+
 .card-header,
 .card-footer {
-  background-color: #141414;
-  color: white;
+  background-color: var(--card-header);
+  color: var(--card-header-color);
 }
 
 .card-element {
-  background-color: #212529;
-  color: white;
+  background-color: --var(--card-element-bg);
+  color: --var(--card-element-text);
 }
 
 .btn-control {
-  background-color: rgba(0, 0, 0, 0);
+  background-color: var(--pagination-bg);
   border-radius: 10px;
-  border: 2px solid #ffffff;
-  color: #ffffff;
+  border: 2px solid var(--pagination-border);
+  color: var(--pagination-color);
   transition: all 0.2s;
   animation: bn13bouncy 5s infinite linear;
 }
 
-.btn-reset{
-  background-color: rgba(0, 0, 0, 0);
+.btn-control:hover {
+  background-color: var(--pagination-hover-bg);
+  color: var(--pagination-hover-color);
+}
+
+.btn-reset {
+  background-color: var(--pagination-bg);
+  border: 2px solid var(--pagination-border);
   border-radius: 10px;
-  color: #ffffff;
+  color: var(--pagination-color);
 }
 
 .btn-reset:hover {
-  background-color: #ffffff;
-  color: #000000;
-}
-
-.btn-control:hover {
-  background-color: #ffffff;
-  color: #000000;
+  background-color: var(--pagination-hover-bg);
+  color: var(--pagination-hover-color);
 }
 
 .breadcrumb-link {
   color: #1e90ff;
 }
-
-.breadcrumb-item::before {
-  color: #e4e4e4;
-}
-
-.breadcrumb-item.active {
-  color: #e4e4e4;
-}
-
 </style>

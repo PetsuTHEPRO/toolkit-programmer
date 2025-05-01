@@ -1,9 +1,7 @@
 // gerenciadorArquivo.js
 import fs from 'fs'
-import path from 'path'
 
-// Caminho para o arquivo linkStorage.txt
-const filePath = path.join(__dirname, '../../src/renderer/src/data')
+// Caminho para o arquivo linkStorage.txt const filePath = path.join(__dirname, '../../src/renderer/src/data')
 
 export default {
 
@@ -19,14 +17,14 @@ export default {
     })
   },
   // Função para carregar os links do arquivo
-  loadSystemInfo() {
+  loadSystemInfo(executableDir) {
     try {
-      if (fs.existsSync(filePath + '/systemInfo.txt')) {
-        const data = fs.readFileSync(filePath + '/systemInfo.txt', 'utf-8')
+      if (fs.existsSync(executableDir + '/systemInfo.txt')) {
+        const data = fs.readFileSync(executableDir + '/systemInfo.txt', 'utf-8')
         return JSON.parse(data)
       } else {
-        fs.writeFileSync(filePath + '/systemInfo.txt', '"{\\"colorCount\\":0,\\"linkCount\\":0,\\"fontCount\\":0,\\"log\\":[],\\"dailyRoutine\\":{}}"', 'utf-8')
-        const data = fs.readFileSync(filePath + '/systemInfo.txt', 'utf-8')
+        fs.writeFileSync(executableDir + '/systemInfo.txt', '"{\\"colorCount\\":0,\\"linkCount\\":0,\\"fontCount\\":0,\\"log\\":[],\\"dailyRoutine\\":{}}"', 'utf-8')
+        const data = fs.readFileSync(executableDir + '/systemInfo.txt', 'utf-8')
         return JSON.parse(data)
       }
     } catch (error) {
@@ -35,106 +33,91 @@ export default {
   },
 
   // Função para salvar os links no arquivo
-  loadLinks() {
+  loadLinks(executableDir) {
     try {
-      if (fs.existsSync(filePath + '/linkStorage.txt')) {
-        const data = fs.readFileSync(filePath + '/linkStorage.txt', 'utf-8')
+      if (fs.existsSync(executableDir + '/linkStorage.txt')) {
+        const data = fs.readFileSync(executableDir + '/linkStorage.txt', 'utf-8')
         return JSON.parse(data)
       } else {
-        fs.writeFileSync(filePath + '/linkStorage.txt', '"[]"', 'utf-8')
+        fs.writeFileSync(executableDir + '/linkStorage.txt', '"[]"', 'utf-8')
         return '[]' // Retorna uma lista vazia
       }
     } catch (error) {
       return [] // Em caso de erro, retorna uma lista vazia
     }
   },
-  loadArticles() {
+  loadArticles(executableDir) {
     try {
-      if (fs.existsSync(filePath + '/articleStorage.txt')) {
-        const data = fs.readFileSync(filePath + '/articleStorage.txt', 'utf-8')
+      if (fs.existsSync(executableDir + '/articleStorage.txt')) {
+        const data = fs.readFileSync(executableDir + '/articleStorage.txt', 'utf-8')
         return JSON.parse(data)
       } else {
-        fs.writeFileSync(filePath + '/articleStorage.txt', '"[]"', 'utf-8')
+        fs.writeFileSync(executableDir + '/articleStorage.txt', '"[]"', 'utf-8')
         return '[]' // Retorna uma lista vazia
       }
     } catch (error) {
       return [] // Em caso de erro, retorna uma lista vazia
     }
   },
-  loadFonts() {
+  loadFonts(executableDir) {
     try {
-      if (fs.existsSync(filePath + '/fontStorage.txt')) {
-        const data = fs.readFileSync(filePath + '/fontStorage.txt', 'utf-8')
+      if (fs.existsSync(executableDir + '/fontStorage.txt')) {
+        const data = fs.readFileSync(executableDir + '/fontStorage.txt', 'utf-8')
         return JSON.parse(data)
       } else {
-        fs.writeFileSync(filePath + '/fontStorage.txt', '"[]"', 'utf-8')
+        fs.writeFileSync(executableDir + '/fontStorage.txt', '"[]"', 'utf-8')
         return '[]' // Retorna uma lista vazia
       }
     } catch (error) {
       return [] // Em caso de erro, retorna uma lista vazia
     }
   },
-  loadFrameworks() {
+  loadFrameworks(executableDir) {
     try {
-      if (fs.existsSync(filePath + '/frameworkStorage.txt')) {
-        const data = fs.readFileSync(filePath + '/frameworkStorage.txt', 'utf-8')
+      if (fs.existsSync(executableDir + '/frameworkStorage.txt')) {
+        const data = fs.readFileSync(executableDir + '/frameworkStorage.txt', 'utf-8')
         return JSON.parse(data)
       } else {
-        fs.writeFileSync(filePath + '/frameworkStorage.txt', '"[]"', 'utf-8')
+        fs.writeFileSync(executableDir + '/frameworkStorage.txt', '"[]"', 'utf-8')
         return '[]' // Retorna uma lista vazia
       }
     } catch (error) {
       return [] // Em caso de erro, retorna uma lista vazia
     }
   },
-  loadAlgorithms() {
+  loadApis(executableDir) {
     try {
-      if (fs.existsSync(filePath + '/algorithmStorage.txt')) {
-        const data = fs.readFileSync(filePath + '/algorithmStorage.txt', 'utf-8')
+      if (fs.existsSync(executableDir + '/apiStorage.txt')) {
+        const data = fs.readFileSync(executableDir + '/apiStorage.txt', 'utf-8')
         return JSON.parse(data)
       } else {
-        fs.writeFileSync(filePath + '/algorithmStorage.txt', '"[]"', 'utf-8')
+        fs.writeFileSync(executableDir + '/apiStorage.txt', '"[]"', 'utf-8')
         return '[]' // Retorna uma lista vazia
       }
     } catch (error) {
       return [] // Em caso de erro, retorna uma lista vazia
     }
   },
-  loadImages() {
+  loadAlgorithms(executableDir) {
     try {
-      if (fs.existsSync(filePath + '/imageStorage.txt')) {
-        const data = fs.readFileSync(filePath + '/imageStorage.txt', 'utf-8')
+      if (fs.existsSync(executableDir + '/algorithmStorage.txt')) {
+        const data = fs.readFileSync(executableDir + '/algorithmStorage.txt', 'utf-8')
         return JSON.parse(data)
       } else {
-        fs.writeFileSync(filePath + '/imageStorage.txt', '"[]"', 'utf-8')
+        fs.writeFileSync(executableDir + '/algorithmStorage.txt', '"[]"', 'utf-8')
         return '[]' // Retorna uma lista vazia
       }
     } catch (error) {
       return [] // Em caso de erro, retorna uma lista vazia
     }
   },
-
-  loadIcons() {
+  loadImages(executableDir) {
     try {
-      if (fs.existsSync(filePath + '/iconStorage.txt')) {
-        const data = fs.readFileSync(filePath + '/iconStorage.txt', 'utf-8')
+      if (fs.existsSync(executableDir + '/imageStorage.txt')) {
+        const data = fs.readFileSync(executableDir + '/imageStorage.txt', 'utf-8')
         return JSON.parse(data)
       } else {
-        fs.writeFileSync(filePath + '/iconStorage.txt', '"[]"', 'utf-8')
-        return '[]' // Retorna uma lista vazia
-      }
-    } catch (error) {
-      return [] // Em caso de erro, retorna uma lista vazia
-    }
-  },
-
-  loadPalettes() {
-    try {
-      if (fs.existsSync(filePath + '/paletteStorage.txt')) {
-        const data = fs.readFileSync(filePath + '/paletteStorage.txt', 'utf-8')
-        return JSON.parse(data)
-      } else {
-        fs.writeFileSync(filePath + '/paletteStorage.txt', '"[]"', 'utf-8')
+        fs.writeFileSync(executableDir + '/imageStorage.txt', '"[]"', 'utf-8')
         return '[]' // Retorna uma lista vazia
       }
     } catch (error) {
@@ -142,39 +125,87 @@ export default {
     }
   },
 
-  saveSystemInfo(systemInfo) {
-    fs.writeFileSync(filePath + '/systemInfo.txt', JSON.stringify(systemInfo, null, 2), 'utf-8')
+  loadIcons(executableDir) {
+    try {
+      if (fs.existsSync(executableDir + '/iconStorage.txt')) {
+        const data = fs.readFileSync(executableDir + '/iconStorage.txt', 'utf-8')
+        return JSON.parse(data)
+      } else {
+        fs.writeFileSync(executableDir + '/iconStorage.txt', '"[]"', 'utf-8')
+        return '[]' // Retorna uma lista vazia
+      }
+    } catch (error) {
+      return [] // Em caso de erro, retorna uma lista vazia
+    }
   },
-  saveLinks(links) {
-    fs.writeFileSync(filePath + '/linkStorage.txt', JSON.stringify(links, null, 2), 'utf-8')
+
+  loadVideos(executableDir) {
+    try {
+      if (fs.existsSync(executableDir + '/videoStorage.txt')) {
+        const data = fs.readFileSync(executableDir + '/videoStorage.txt', 'utf-8')
+        return JSON.parse(data)
+      } else {
+        fs.writeFileSync(executableDir + '/videoStorage.txt', '"[]"', 'utf-8')
+        return '[]' // Retorna uma lista vazia
+      }
+    } catch (error) {
+      return [] // Em caso de erro, retorna uma lista vazia
+    }
   },
-  saveFonts(fonts) {
-    fs.writeFileSync(filePath + '/fontStorage.txt', JSON.stringify(fonts, null, 2), 'utf-8')
+
+  loadPalettes(executableDir) {
+    try {
+      if (fs.existsSync(executableDir + '/paletteStorage.txt')) {
+        const data = fs.readFileSync(executableDir + '/paletteStorage.txt', 'utf-8')
+        return JSON.parse(data)
+      } else {
+        fs.writeFileSync(executableDir + '/paletteStorage.txt', '"[]"', 'utf-8')
+        return '[]' // Retorna uma lista vazia
+      }
+    } catch (error) {
+      return [] // Em caso de erro, retorna uma lista vazia
+    }
   },
-  saveArticles(articles) {
-    fs.writeFileSync(filePath + '/articleStorage.txt', JSON.stringify(articles, null, 2), 'utf-8')
+
+  saveSystemInfo(executableDir, systemInfo) {
+    fs.writeFileSync(executableDir + '/systemInfo.txt', JSON.stringify(systemInfo, null, 2), 'utf-8')
   },
-  saveFrameworks(frameworks) {
+  saveLinks(executableDir, links) {
+    fs.writeFileSync(executableDir + '/linkStorage.txt', JSON.stringify(links, null, 2), 'utf-8')
+  },
+  saveFonts(executableDir, fonts) {
+    fs.writeFileSync(executableDir + '/fontStorage.txt', JSON.stringify(fonts, null, 2), 'utf-8')
+  },
+  saveArticles(executableDir, articles) {
+    fs.writeFileSync(executableDir + '/articleStorage.txt', JSON.stringify(articles, null, 2), 'utf-8')
+  },
+  saveVideos(executableDir, videos) {
+    fs.writeFileSync(executableDir + '/videoStorage.txt', JSON.stringify(videos, null, 2), 'utf-8')
+  },
+  saveFrameworks(executableDir, frameworks) {
     fs.writeFileSync(
-      filePath + '/frameworkStorage.txt',
+      executableDir + '/frameworkStorage.txt',
       JSON.stringify(frameworks, null, 2),
       'utf-8'
     )
   },
-  saveAlgorithms(algorithms) {
+  saveApis(executableDir, apis) {
+    fs.writeFileSync(executableDir + '/apiStorage.txt', JSON.stringify(apis, null, 2), 'utf-8')
+  },
+  saveAlgorithms(executableDir, algorithms) {
     fs.writeFileSync(
-      filePath + '/algorithmStorage.txt',
+      executableDir + '/algorithmStorage.txt',
       JSON.stringify(algorithms, null, 2),
       'utf-8'
     )
   },
-  saveImages(images) {
-    fs.writeFileSync(filePath + '/imageStorage.txt', JSON.stringify(images, null, 2), 'utf-8')
+  saveImages(executableDir, images) {
+    fs.writeFileSync(executableDir + '/imageStorage.txt', JSON.stringify(images, null, 2), 'utf-8')
   },
-  saveIcons(icons) {
-    fs.writeFileSync(filePath + '/iconStorage.txt', JSON.stringify(icons, null, 2), 'utf-8')
+  saveIcons(executableDir, icons) {
+    fs.writeFileSync(executableDir + '/iconStorage.txt', JSON.stringify(icons, null, 2), 'utf-8')
   },
-  savePalettes(palettes) {
-    fs.writeFileSync(filePath + '/paletteStorage.txt', JSON.stringify(palettes, null, 2), 'utf-8')
+  savePalettes(executableDir, palettes) {
+    fs.writeFileSync(executableDir + '/paletteStorage.txt', JSON.stringify(palettes, null, 2), 'utf-8')
   }
 }

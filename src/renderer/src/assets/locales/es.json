@@ -1,0 +1,141 @@
+{
+  "app": {
+    "title": "Toolkit Programmer",
+    "description": "Herramienta para desarrolladores"
+  },
+  "buttons": {
+    "close": "Cerrar",
+    "save": "Guardar",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "more": "Más",
+    "less": "Menos",
+    "cancel": "Cancelar",
+    "clear": "Limpiar Log",
+    "add": "Añadir",
+    "delete": "Eliminar",
+    "view": "Ver",
+    "open": "Abrir",
+    "edit": "Editar",
+    "download": "Descargar",
+    "upload": "Subir",
+    "copy": "Copiar",
+    "viewMore": "Ver más"
+  },
+  "sidebar": {
+    "dashboard": "Panel",
+    "resources": {
+      "title": "Recursos",
+      "images": "Imágenes",
+      "fonts": "Fuentes",
+      "palette": "Paleta de Colores"
+    },
+    "developers": {
+      "title": "Desarrollo",
+      "api": "API",
+      "code": "Código",
+      "framework": "Framework"
+    },
+    "learn": {
+      "title": "Conocimiento",
+      "articles": "Artículos",
+      "videos": "Videos",
+      "links": "Enlaces"
+    },
+    "help": "Ayuda (IA)",
+    "settings": "Configuraciones",
+    "logout": "Cerrar sesión"
+  },
+  "pages": {
+    "dashboard": {
+      "stats": {
+        "colors": "Colores",
+        "links": "Enlaces",
+        "fonts": "Fuentes"
+      },
+      "activityLog": {
+        "title": "Registro de Actividades",
+        "empty": "No hay registros."
+      },
+      "dailyActivity": {
+        "title": "Actividades Diarias"
+      }
+    },
+    "images": {
+      "title": "Imágenes",
+      "recent": "Imágenes Recientes"
+    },
+    "icons": "Íconos",
+    "fonts": {
+      "title": "Fuentes",
+      "list": "Lista de Fuentes"
+    },
+    "palette": {
+      "title": "Paleta de Colores",
+      "paletteList" : "Lista de Paletas"
+    },
+    "api": {
+      "list": "Lista de APIs"
+    },
+    "algorithms": {
+      "list": "Lista de Algoritmos"
+    },
+    "frameworks": {
+      "list": "Lista de Frameworks"
+    },
+    "articles": {
+      "list": "Lista de Artículos"
+    },
+    "videos": {
+      "list": "Lista de Vídeos"
+    },
+    "links": {
+      "list": "Lista de Enlaces"
+    },
+    "settings": {
+      "personal": {
+        "title": "Área Personal",
+        "account-header": "Configuración de Cuenta",
+        "label": "Nombre",
+        "delete-header": "Zona de Peligro",
+        "delete-description": "Esta acción no se puede deshacer. Todos sus datos serán eliminados permanentemente."
+      },
+      "backup": {
+        "title": "Respaldo",
+        "export-header": "Exportar Respaldo",
+        "export-description": "Exporta todos tus datos a un archivo de respaldo.",
+        "export-label": "Ubicación para Guardar",
+        "import-header": "Importar Respaldo",
+        "import-description": "Importa datos desde un archivo de respaldo guardado.",
+        "import-label": "Archivo de Respaldo"
+      },
+      "app": "Aplicación",
+      "language": {
+        "title": "Idioma",
+        "portuguese": "Portugués",
+        "english": "Inglés",
+        "spanish": "Español"
+      },
+      "ia": {
+        "title": "Configuración de IA",
+        "ia-header": "Elige tu modelo de IA preferido",
+        "ia-warning": "Atención: El uso de ChatGPT requiere una suscripción paga a la API de OpenAI."
+      },
+      "theme": {
+        "title": "Tema",
+        "dark": "Tema Oscuro",
+        "light": "Tema Claro"
+      }
+    }
+  },
+  "messages": {
+    "welcome": "¡Bienvenido, {name}!",
+    "items": "{count} ítem | {count} ítems",
+    "she-empty": "No se encontró ninguna {name}.",
+    "he-empty": "No se encontró ningún {name}.",
+    "she-log": "Una {name} fue {action} con éxito.",
+    "he-log": "Un {name} fue {action} con éxito."
+  },
+  "search": "Buscar {name}...",
+  "pagination": "Página {currentPage} de {totalPages}"
+}
