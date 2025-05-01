@@ -1,34 +1,54 @@
-# toolkit-programmer
+# 🛠️ Toolkit Programmer  
 
-An Electron application with Vue
+![Toolkit Programmer Banner](./project-banner.png)  
 
-## Recommended IDE Setup
+**Uma ferramenta tudo-em-um para desenvolvedores organizarem recursos e aumentarem produtividade**
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
+---
 
-## Project Setup
+## ✨ Recursos Principais  
 
-### Install
+- 🗃️ **Repositório Centralizado**  
+  Armazene e organize:  
+  ✅ Imagens | ✅ Ícones | ✅ Fontes  
+  ✅ Trechos de código | ✅ Artigos técnicos  
 
+- 🤖 **Assistente Multi-IA**  
+  Integração com:  
+  🔹 ChatGPT | 🔹 Claude | 🔹 Copilot  
+
+- 🔍 **Busca Inteligente**  
+  Encontre qualquer recurso com tags e pesquisa full-text  
+
+- 🌈 **Interface Customizável**  
+  Tema claro/escuro e layouts personalizáveis  
+
+---
+
+## 🚀 Comece Agora  
+
+### 📥 Instalação  
 ```bash
-$ npm install
+git clone https://github.com/seu-user/toolkit-programmer.git
+cd toolkit-programmer
+npm install
 ```
 
-### Development
+### 🛠️ Comandos Úteis
 
-```bash
-$ npm run dev
-```
 
-### Build
+## 🎨 Screenshots
 
-```bash
-# For windows
-$ npm run build:win
+<div align="center"> <img src="./screenshots/dashboard.png" width="45%" alt="Dashboard"/> <img src="./screenshots/code-snippets.png" width="45%" alt="Gerenciador de Códigos"/> </div>
 
-# For macOS
-$ npm run build:mac
+## 🌟 Roadmap
 
-# For Linux
-$ npm run build:linux
-```
+**Dicas para uso:**  
+1. Substitua `seu-user` pelo seu nome de usuário do GitHub  
+2. Adicione imagens reais na pasta do projeto  
+3. Atualize as seções de Roadmap e Features conforme necessário  
+4. Para badges personalizados, use [shields.io](https://shields.io)  
+
+Exemplo de badge:  
+```markdown
+![GitHub stars](https://img.shields.io/github/stars/seu-user/toolkit-programmer?style=social)
