@@ -89,13 +89,13 @@ git checkout -b minha-contribuicao
 5. **Fazendo as Alterações**
 
 Fazendo suas Alterações
-1. Edite ou adicione arquivos no projeto
-2. Teste localmente suas mudanças
-3. Mantenha o código:
+- Edite ou adicione arquivos no projeto
+- Teste localmente suas mudanças
+- Mantenha o código:
    - Bem organizado
    - Documentado
    - Testado
-4. Seguindo o padrão existente
+- Seguindo o padrão existente
 
 6. **Commitando as Alterações**
 
