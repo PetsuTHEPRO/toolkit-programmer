@@ -44,7 +44,77 @@ npm install
 
 ### 🛠️ Comandos Úteis
 
+```bash
 
+npm run dev // Desenvolvimento
+npm run build:win // Build para Windows
+npm run build:mac // Build para macOS
+npm run build:linux // Build para Linux
+
+```
 ## 🎨 Screenshots
 
 <div align="center"> <img src="./resources/bem-vindo.png" width="45%" alt="Bem-vindo"/> <img src="./resources/dashboard.png" width="45%" alt="Dashboard"/> <img src="./resources/link.png" width="45%" alt="Link"/> </div>
+
+## 📚 Como Contribuir
+
+Quer ajudar a melhorar o Toolkit Programmer? Seguimos um processo simples:
+
+### 📋 Passo a Passo para Contribuir
+
+1. **Faça um Fork do Repositório**
+   - Clique no botão "Fork" no canto superior direito [desta página](https://github.com/PetsuTHEPRO/toolkit-programmer)
+   - Isso criará uma cópia do projeto na sua conta GitHub
+
+2. **Clone o Seu Fork**
+   ```bash
+   git clone https://github.com/SEU-USUARIO/toolkit-programmer.git
+   cd toolkit-programmer
+   ```
+3. **Configuração do Ambiente**
+
+Primeiro, instale as dependências e inicie o ambiente de desenvolvimento:
+
+```bash
+npm install   # Instala todas as dependências
+npm run dev   # Inicia o servidor de desenvolvimento
+```
+4. **Criando uma Nova Branch**
+
+Crie uma branch específica para sua contribuição:
+
+```bash
+git checkout -b minha-contribuicao
+```
+5. **Fazendo as Alterações**
+
+Fazendo suas Alterações
+1. Edite ou adicione arquivos no projeto
+2. Teste localmente suas mudanças
+3. Mantenha o código:
+   - Bem organizado
+   - Documentado
+   - Testado
+4. Seguindo o padrão existente
+
+6. **Commitando as Alterações**
+
+```bash
+git add .
+git commit -m "Minha contribuição"
+```
+7. **Enviando as Alterações**
+
+```bash
+git push origin minha-contribuicao
+```
+
+## 🤝 Colaboradores
+
+- [Peterson Menezes](https://github.com/petsuTHEPRO)
+
+## 📝 Licenca
+
+[MIT](https://choosealicense.com/licenses/mit/)
+
+---
