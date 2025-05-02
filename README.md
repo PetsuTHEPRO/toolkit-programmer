@@ -1,6 +1,6 @@
 # 🛠️ Toolkit Programmer  
 
-![Toolkit Programmer Banner](./project-banner.png)  
+![Toolkit Programmer Banner](./resources/banner.png)  
 
 **Uma ferramenta tudo-em-um para desenvolvedores organizarem recursos e aumentarem produtividade**
 
