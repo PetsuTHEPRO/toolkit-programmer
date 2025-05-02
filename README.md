@@ -42,15 +42,29 @@ cd toolkit-programmer
 npm install
 ```
 
+### 🔐 Configuração do Ambiente (.env)
+
+Para que todas as funcionalidades do Toolkit Programmer funcionem corretamente, você precisa configurar seu arquivo de ambiente.
+
+#### 📋 Criando o arquivo .env
+
+1. Na raiz do projeto, crie um arquivo chamado `.env`
+2. Adicione suas chaves de API:
+
+```ini
+# .env
+OPENROUTER_API_KEY=SEU_OPENROUTER_API_KEY
+YOUTUBE_API_KEY=SEU_YOUTUBE_API_KEY
+DEBUG_MODE=true
+```
+
 ### 🛠️ Comandos Úteis
 
 ```bash
-
 npm run dev // Desenvolvimento
 npm run build:win // Build para Windows
 npm run build:mac // Build para macOS
 npm run build:linux // Build para Linux
-
 ```
 ## 🎨 Screenshots
 
