@@ -14,7 +14,8 @@
   - ✅ Ícones 
   - ✅ Fontes  
   - ✅ Trechos de código 
-  -✅ Artigos técnicos  
+  - ✅ Artigos técnicos
+  - ✅ E muito mais...
 
 - 🤖 **Assistente Multi-IA**  
   Integração com:  
@@ -28,7 +29,7 @@
   Encontre qualquer recurso com tags e pesquisa full-text  
 
 - 🌈 **Interface Customizável**  
-  Tema claro/escuro e layouts personalizáveis  
+  Tema claro/escuro e idiomas EN/PT/ES 
 
 ---
 
@@ -46,7 +47,7 @@ npm install
 
 ## 🎨 Screenshots
 
-<div align="center"> <img src="./screenshots/dashboard.png" width="45%" alt="Dashboard"/> <img src="./screenshots/code-snippets.png" width="45%" alt="Gerenciador de Códigos"/> </div>
+<div align="center"> <img src="./resources/bem-vindo.png" width="45%" alt="Dashboard"/> <img src="./screenshots/code-snippets.png" width="45%" alt="Gerenciador de Códigos"/> </div>
 
 ## 🌟 Roadmap
 
