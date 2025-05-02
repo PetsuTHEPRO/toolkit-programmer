@@ -47,16 +47,4 @@ npm install
 
 ## 🎨 Screenshots
 
-<div align="center"> <img src="./resources/bem-vindo.png" width="45%" alt="Dashboard"/> <img src="./screenshots/code-snippets.png" width="45%" alt="Gerenciador de Códigos"/> </div>
-
-## 🌟 Roadmap
-
-**Dicas para uso:**  
-1. Substitua `seu-user` pelo seu nome de usuário do GitHub  
-2. Adicione imagens reais na pasta do projeto  
-3. Atualize as seções de Roadmap e Features conforme necessário  
-4. Para badges personalizados, use [shields.io](https://shields.io)  
-
-Exemplo de badge:  
-```markdown
-![GitHub stars](https://img.shields.io/github/stars/seu-user/toolkit-programmer?style=social)
+<div align="center"> <img src="./resources/bem-vindo.png" width="45%" alt="Bem-vindo"/> <img src="./resources/dashboard.png" width="45%" alt="Dashboard"/> <img src="./resources/link.png" width="45%" alt="Link"/> </div>
