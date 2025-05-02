@@ -10,12 +10,19 @@
 
 - 🗃️ **Repositório Centralizado**  
   Armazene e organize:  
-  ✅ Imagens | ✅ Ícones | ✅ Fontes  
-  ✅ Trechos de código | ✅ Artigos técnicos  
+  - ✅ Imagens
+  - ✅ Ícones 
+  - ✅ Fontes  
+  - ✅ Trechos de código 
+  -✅ Artigos técnicos  
 
 - 🤖 **Assistente Multi-IA**  
   Integração com:  
-  🔹 ChatGPT | 🔹 Claude | 🔹 Copilot  
+  🔹 Deepseek
+  🔹 Gemini
+  🔹 Meta - LaMA
+  🔹 NVIDIA - LaMA
+  🔹 Qwen  
 
 - 🔍 **Busca Inteligente**  
   Encontre qualquer recurso com tags e pesquisa full-text  
