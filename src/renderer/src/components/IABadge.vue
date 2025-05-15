@@ -17,7 +17,7 @@ export default {
     ai: {
       type: String,
       required: true,
-      validator: value => ['deepseek', 'gpt', 'gemini', 'llama', 'qwen'].includes(value.toLowerCase())
+      validator: value => ['deepseek', 'gpt', 'gemini', 'llama', 'qwen', 'deephermes'].includes(value.toLowerCase())
     },
     size: {
       type: String,
@@ -36,7 +36,8 @@ export default {
         gpt: '#10a37f',
         gemini: '#4285f4',
         llama: '#f8981d',
-        qwen: '#613EDB'
+        qwen: '#613EDB',
+        deephermes: '#4a4d52'
       }
       return colors[this.ai.toLowerCase()]
     },
@@ -50,7 +51,8 @@ export default {
         gpt: 'ChatGPT',
         gemini: 'Gemini',
         llama: 'Llama',
-        qwen: 'Qwen'
+        qwen: 'Qwen',
+        deephermes: 'DeepHermes'
       }
       return names[this.ai.toLowerCase()]
     },
@@ -120,5 +122,9 @@ export default {
 
 .ai-qwen-icon {
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2V7zm0 8h2v2h-2v-2z"/></svg>');
+}
+
+.ai-deephermes-icon {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="2"/><path d="M12 7v3" stroke="white" stroke-width="2"/><circle cx="12" cy="16" r="0.5" fill="white"/></svg>');
 }
 </style>

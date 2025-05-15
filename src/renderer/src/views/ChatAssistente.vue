@@ -18,8 +18,6 @@ import AssistenteIA from '../components/AssistenteIA.vue'
           </ol>
         </nav>
 
-        
-
         <div class="card mb-4">
           <div class="card-header d-flex align-items-center justify-content-between">
             <h5 class="card-title">Assistente IA - Toolkit Programmer (Em Modo de Teste)</h5>

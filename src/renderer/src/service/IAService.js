@@ -28,7 +28,8 @@ export default class IAServico {
       deepseek: 'deepseek/deepseek-chat-v3-0324:free',
       qwen: 'qwen/qwen2.5-vl-3b-instruct:free',
       gpt: 'nvidia/llama-3.1-nemotron-ultra-253b-v1:free',
-      gemini: 'google/gemini-2.0-flash-exp:free'
+      gemini: 'google/gemini-2.0-flash-exp:free',
+      deephermes: 'nousresearch/deephermes-3-mistral-24b-preview:free'
     }),
       (this.availableModes = {
         assistente: 'assistente',

@@ -111,6 +111,7 @@ import Backup from '@renderer/components/Backup.vue'
                         <option value="gemini">Gemini</option>
                         <option value="llama">Llama</option>
                         <option value="qwen">Qwen</option>
+                        <option value="deephermes">DeepHermes</option>
                       </select>
                     </div>
 

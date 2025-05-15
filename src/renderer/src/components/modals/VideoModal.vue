@@ -94,8 +94,8 @@ export default {
   data() {
     return {
       titleModal: this.idVideo !== NO_VIDEO_ID ? 'Editar' : 'Adicionar',
-      video: new Video(-1, '', '', '', '', ''),
-      apiIdVideo: -1
+      video: new Video(NO_VIDEO_ID, '', '', '', '', ''),
+      apiIdVideo: NO_VIDEO_ID
     }
   },
   created() {
@@ -145,7 +145,6 @@ export default {
           .padStart(4, '0')
       )
     },
-    // Exemplo de ID: "kx7d9zq42a" (10 caracteres),
     async buscarDadosDoYoutube() {
       this.apiIdVideo = this.extractVideoId(this.video.link)
       if (!this.apiIdVideo) return

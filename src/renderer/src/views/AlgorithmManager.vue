@@ -81,10 +81,10 @@ import Sidebar from '@renderer/components/Sidebar.vue'
                 </span>
               </div>
               <div class="card-footer d-flex justify-content-between">
-                <button class="btn btn-editar me-2" @click="editAlgorithm(index)">
+                <button class="btn btn-editar me-2" @click="editAlgorithm(algorithm.id)">
                   <i class="bx bx-pencil"></i> {{ $t('buttons.edit') }}
                 </button>
-                <button class="btn btn-deletar" @click="handleDelete(index)">
+                <button class="btn btn-deletar" @click="handleDelete(algorithm.id)">
                   <i class="bx bx-trash"></i> {{ $t('buttons.delete') }}
                 </button>
               </div>
@@ -130,6 +130,7 @@ import Sidebar from '@renderer/components/Sidebar.vue'
 <script>
 import { mapGetters } from 'vuex'
 import SystemController from '../controller/SystemController'
+import Algorithm from '../model/entity/algorithm'
 import { getTheme } from '../service/userPreferences'
 
 export default {
@@ -168,7 +169,7 @@ export default {
   },
   created() {
     SystemController.updateSystem()
-    this.algorithms = SystemController.getStorage('algorithmsStorage')
+    this.loadAlgorithms()
   },
   methods: {
     handlePrevPage() {
@@ -181,10 +182,11 @@ export default {
       this.$router.push({ name: 'algorithmPreview', params: { id: index } })
     },
     getLanguage(algorithm) {
-      return Object.keys(algorithm.code)[0]
+      return algorithm.lang
     },
     getBadgeClass(algorithm) {
       const lang = this.getLanguage(algorithm)
+
       switch (lang.toLowerCase()) {
         case 'java':
           return 'bg-warning text-dark'
@@ -208,15 +210,35 @@ export default {
     },
     onCloseAlgorithmModal() {
       this.showModal = false
-      this.algorithms = SystemController.getStorage('algorithmsStorage')
+      this.loadAlgorithms()
       this.idAlgorithm = -1
     },
     handleDelete(index) {
       SystemController.deleteAlgorithm(index)
+      this.loadAlgorithms()
+    },
+    loadAlgorithms() {
+      const storedAlgorithms = SystemController.getStorage('algorithmsStorage') || []
+      this.algorithms = storedAlgorithms.map(
+        (v) =>
+          new Algorithm(
+            v.id,
+            v.name,
+            v.explanation,
+            Object.keys(v.code)[0],
+            Object.values(v.code)[0]
+          )
+      )
     },
     editAlgorithm(index) {
-      console.log("index: " + index)
-      this.idAlgorithm = index
+      const algorithmToEdit = this.currentAlgorithms
+
+      for (const algorithm of algorithmToEdit) {
+        if (algorithm.id === index) {
+          this.idAlgorithm = algorithm.id
+        }
+      }
+
       this.showModal = true
     }
   }

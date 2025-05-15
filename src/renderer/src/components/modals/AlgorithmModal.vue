@@ -12,7 +12,7 @@
         <div class="modal-content bg-dark text-white">
           <div class="modal-header">
             <h5 id="modalTitle" class="modal-title">
-              <slot name="title">Adicionar Algoritmo</slot>
+              <slot name="title">{{ titleModal }} Algoritmo</slot>
             </h5>
             <button type="button" class="btn-close" aria-label="Close" @click="closeModal"></button>
           </div>
@@ -27,7 +27,7 @@
                       type="text"
                       class="form-control"
                       id="name"
-                      v-model="algorithmData.name"
+                      v-model="algorithm.name"
                       placeholder="Digite o nome do algoritmo"
                       required
                     />
@@ -37,19 +37,18 @@
                     <textarea
                       class="form-control"
                       id="explanation"
-                      v-model="algorithmData.explanation"
+                      v-model="algorithm.explanation"
                       placeholder="Explique como o algoritmo funciona"
                       required
                       rows="8"
                     ></textarea>
                   </div>
                 </div>
-                
                 <!-- Coluna Direita - Linguagem e Código -->
                 <div class="col-md-8">
                   <div class="mb-3">
                     <label for="language" class="form-label">Linguagem</label>
-                    <select class="form-select" id="language" v-model="algorithmData.language" required>
+                    <select class="form-select" id="language" v-model="algorithm.lang" required>
                       <option value="" disabled>Selecione a linguagem</option>
                       <option v-for="lang in programmingLanguages" :key="lang" :value="lang">
                         {{ lang }}
@@ -61,7 +60,7 @@
                     <textarea
                       class="form-control font-mono"
                       id="code"
-                      v-model="algorithmData.code"
+                      v-model="algorithm.code"
                       placeholder="Cole o código do algoritmo aqui"
                       required
                       rows="12"
@@ -75,7 +74,7 @@
             <slot name="footer">
               <button type="button" class="btn btn-secondary" @click="closeModal">Cancelar</button>
               <button type="button" class="btn btn-primary" @click="submitAlgorithm">
-                Adicionar
+                {{ titleModal }}
               </button>
             </slot>
           </div>
@@ -88,6 +87,10 @@
 
 <script>
 import SystemController from '../../controller/SystemController'
+import Algorithm from '../../model/entity/algorithm'
+
+const NO_ALGORITHM_ID = -1
+
 export default {
   props: {
     visible: {
@@ -105,69 +108,50 @@ export default {
   },
   data() {
     return {
-      algorithmData: {
-        name: '',
-        explanation: '',
-        language: '',
-        code: ''
-      },
-      algorithmEdit: null
+      titleModal: this.idAlgorithm !== NO_ALGORITHM_ID ? 'Editar' : 'Adicionar',
+      algorithm: new Algorithm(NO_ALGORITHM_ID, '', '', '', '')
     }
   },
   created() {
-    console.log(this.idAlgorithm)
     if (this.idAlgorithm !== -1) {
-      this.algorithmEdit = SystemController.getStorage('algorithmsStorage')[this.idAlgorithm]
-      this.algorithmData = {
-        name: this.algorithmEdit.name,
-        explanation: this.algorithmEdit.explanation,
-        language: Object.keys(this.algorithmEdit.code)[0], // Pega a primeira linguagem disponível
-        code: this.algorithmEdit.code[Object.keys(this.algorithmEdit.code)[0]] // Pega o código da primeira linguagem
+      const storedAlgorithms = SystemController.getStorage('algorithmsStorage')
+      const storedAlgorithm = storedAlgorithms.find((v) => v.id === this.idAlgorithm)
+      if (storedAlgorithm) {
+        this.algorithm = new Algorithm(
+          storedAlgorithm.id,
+          storedAlgorithm.name,
+          storedAlgorithm.explanation,
+          Object.keys(storedAlgorithm.code)[0],
+          Object.values(storedAlgorithm.code)[0]
+        )
       }
     }
   },
   methods: {
     closeModal() {
+      this.algorithm = new Algorithm(-1, '', '', '', '')
       this.$emit('close')
     },
+    generateId() {
+      return (
+        Date.now().toString(36) +
+        Math.floor(Math.random() * 1000)
+          .toString(36)
+          .padStart(4, '0')
+      )
+    },
     async submitAlgorithm() {
-      if (this.algorithmEdit) {
-        // Modo EDIÇÃO (se existir um algoritmo sendo editado)
-        const updatedAlgorithm = {
-          ...this.algorithmEdit, // Mantém os dados originais
-          id: this.idAlgorithm,
-          name: this.algorithmData.name,
-          explanation: this.algorithmData.explanation,
-          code: {
-            ...this.algorithmEdit.code, // Preserva códigos em outras linguagens
-            [this.algorithmData.language]: this.algorithmData.code // Atualiza a linguagem atual
-          }
-        }
-        SystemController.editAlgorithm(updatedAlgorithm)
+      const algorithmData = {
+        ...this.algorithm.toDTO(),
+        id: this.generateId()
+      }
+
+      if (this.algorithm !== NO_ALGORITHM_ID) {
+        SystemController.editAlgorithm({ ...algorithmData, id: this.idAlgorithm })
       } else {
-        // Modo CRIAÇÃO (validação obrigatória)
-        if (!this.algorithmData.language || !this.algorithmData.code) {
-          alert('Por favor, selecione uma linguagem e insira o código.')
-          return
-        }
-
-        const newAlgorithm = {
-          name: this.algorithmData.name,
-          explanation: this.algorithmData.explanation,
-          code: {
-            [this.algorithmData.language]: this.algorithmData.code
-          }
-        }
-        SystemController.addAlgorithm(newAlgorithm)
+        SystemController.addAlgorithm(algorithmData)
       }
 
-      // Limpeza dos campos (igual ao submitArticle)
-      this.algorithmData = {
-        name: '',
-        explanation: '',
-        language: '',
-        code: ''
-      }
       this.closeModal()
     }
   }

@@ -264,7 +264,7 @@ class SystemController {
     const index = storage.findIndex((item) => item.id === id)
 
     if (index === -1) {
-      notification.error('Vídeo não encontrado!')
+      notification.error('Algoritmo não encontrado!')
       return
     }
 

@@ -35,6 +35,8 @@
     "openai": "^4.92.1",
     "pdfjs-dist": "^4.6.82",
     "pinia": "^2.1.7",
+    "prismjs": "^1.30.0",
+    "shiki": "^3.4.0",
     "vue": "^3.4.29",
     "vue-i18n": "^10.0.7",
     "vue-pdf": "^4.3.0",
@@ -45,7 +47,7 @@
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^1.0.2",
     "@rushstack/eslint-patch": "^1.10.3",
-    "@vitejs/plugin-vue": "^5.0.5",
+    "@vitejs/plugin-vue": "^5.2.4",
     "@vue/eslint-config-prettier": "^9.0.0",
     "@vue/test-utils": "^2.4.6",
     "electron": "^31.0.2",
