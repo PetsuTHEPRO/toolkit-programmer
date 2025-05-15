@@ -54,9 +54,9 @@ import MonacoEditor from './MonacoEditor.vue'
                     </pre>
                     -->
                     <MonacoEditor
-                      :code="algorithms.code[lang]"
+                      :code="algorithms.code"
                       :language="selectedLanguage.toLowerCase()"
-                      />
+                    />
                   </div>
                 </div>
               </div>
@@ -88,9 +88,7 @@ export default {
   computed: {
     ...mapGetters(['isSidebarOpen']),
     availableLanguages() {
-      return this.languages.filter(
-        (lang) => this.algorithms.code[lang] && this.algorithms.code[lang].trim() !== ''
-      )
+      return this.languages.filter(() => this.algorithms.lang.trim() !== '')
     }
   },
   watch: {
@@ -101,8 +99,8 @@ export default {
   },
   created() {
     this.algorithmId = this.$route.params.id
-    this.algorithms = SystemController.getStorage('algorithmsStorage')[this.algorithmId]
-    this.selectedLanguage = Object.keys(this.algorithms.code)[0]
+    this.algorithms = SystemController.getStorage('algorithmsStorage')[this.algorithmId] || []
+    this.selectedLanguage = this.algorithms.lang
     this.highlightCode()
   },
   methods: {
@@ -111,7 +109,7 @@ export default {
     },
     highlightCode() {
       // Aplica o destaque de código para a linguagem selecionada
-      let code = this.algorithms.code[this.selectedLanguage]
+      let code = this.algorithms.code
 
       code = '\n' + code
 

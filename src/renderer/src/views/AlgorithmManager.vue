@@ -182,6 +182,11 @@ export default {
       this.$router.push({ name: 'algorithmPreview', params: { id: index } })
     },
     getLanguage(algorithm) {
+      
+      if (!algorithm.lang) {
+        return 'N/A'
+      }
+
       return algorithm.lang
     },
     getBadgeClass(algorithm) {
@@ -220,14 +225,7 @@ export default {
     loadAlgorithms() {
       const storedAlgorithms = SystemController.getStorage('algorithmsStorage') || []
       this.algorithms = storedAlgorithms.map(
-        (v) =>
-          new Algorithm(
-            v.id,
-            v.name,
-            v.explanation,
-            Object.keys(v.code)[0],
-            Object.values(v.code)[0]
-          )
+        (v) => new Algorithm(v.id, v.name, v.explanation, v.lang, v.code)
       )
     },
     editAlgorithm(index) {

@@ -117,12 +117,13 @@ export default {
       const storedAlgorithms = SystemController.getStorage('algorithmsStorage')
       const storedAlgorithm = storedAlgorithms.find((v) => v.id === this.idAlgorithm)
       if (storedAlgorithm) {
+        console.log(storedAlgorithm)
         this.algorithm = new Algorithm(
           storedAlgorithm.id,
           storedAlgorithm.name,
           storedAlgorithm.explanation,
-          Object.keys(storedAlgorithm.code)[0],
-          Object.values(storedAlgorithm.code)[0]
+          storedAlgorithm.lang,
+          storedAlgorithm.code
         )
       }
     }
@@ -147,6 +148,7 @@ export default {
       }
 
       if (this.algorithm !== NO_ALGORITHM_ID) {
+        console.log(this.algorithm)
         SystemController.editAlgorithm({ ...algorithmData, id: this.idAlgorithm })
       } else {
         SystemController.addAlgorithm(algorithmData)
