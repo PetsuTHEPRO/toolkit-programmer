@@ -4,7 +4,6 @@ import fs from 'fs'
 // Caminho para o arquivo linkStorage.txt const filePath = path.join(__dirname, '../../src/renderer/src/data')
 
 export default {
-
   downloadImage(image, path) {
     // Aqui você pode escrever a imagem no caminho escolhido
     fs.writeFileSync(path, Buffer.from(image), (err) => {

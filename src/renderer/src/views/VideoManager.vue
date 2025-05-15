@@ -61,7 +61,7 @@ import VideoModal from '../components/modals/VideoModal.vue'
 
         <div class="row g-4 mb-4">
           <div v-for="video in currentVideos" :key="video.index" class="col-4">
-            <div class="card d-flex flex-column">
+            <div class="card d-flex flex-column" style="min-height: 500px">
               <div class="card-header d-flex align-items-center justify-content-between">
                 <h5 class="card-title">{{ video.name }}</h5>
               </div>

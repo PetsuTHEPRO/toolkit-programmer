@@ -102,6 +102,7 @@ export default {
     if (this.idVideo !== -1) {
       const storedVideos = SystemController.getStorage('videosStorage')
       const storedVideo = storedVideos.find((v) => v.id === this.idVideo)
+      console.log(storedVideo)
       if (storedVideo) {
         this.video = new Video(
           storedVideo.id,
