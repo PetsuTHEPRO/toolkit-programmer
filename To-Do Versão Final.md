@@ -13,6 +13,7 @@
 - [ ] Corrigir o problema do **chat da IA ficar torto com imagens**
 - [ ] Adicionar **animações de digitação** no chat da IA
 - [ ] Procurar e implementar uma **melhor visualização** das IAs (interface/apresentação)
+- [x] Implementar logica de adicionar API_KEY
 
 ## 🗃️ Persistência de Dados
 

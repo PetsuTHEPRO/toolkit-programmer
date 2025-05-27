@@ -75,7 +75,7 @@
       </ul>
     </div>
     <footer class="text-center py-3">
-      <small>&copy; 2024 Yuri</small>
+      <small>&copy; 2024 Peterson</small>
     </footer>
   </nav>
 </template>

@@ -143,6 +143,8 @@ ipcMain.handle('get-image-dir', () => {
 
 ipcMain.handle('get-api-key', () => {
   return process.env.YOUTUBE_API_KEY
+    ? process.env.YOUTUBE_API_KEY
+    : 'AIzaSyDWNbM3kjXiZioItrac91IDdDRx8OPckxQ'
 })
 
 ipcMain.handle('get-icon-dir', () => {
@@ -267,7 +269,6 @@ ipcMain.handle('save-apis', async (event, apis) => {
 
 ipcMain.handle('set-key-local', async (event, apiKey) => {
   process.env.OPENROUTER_API_LOCAL_KEY = apiKey
-  console.log("API_KEY: ", process.env.OPENROUTER_API_LOCAL_KEY)
   return true
 })
 
@@ -343,10 +344,10 @@ setupBackupIPC(backupProcessor)
 ipcMain.handle('get-default-backup-path', async () => {
   const userDataPath = app.getPath('userData')
   const backupDir = join(userDataPath, 'backups')
-  
+
   // Garante que o diretório existe
   await fs.promises.mkdir(backupDir, { recursive: true })
-  
+
   // Cria nome do arquivo com timestamp
   const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '')
   const timeStr = new Date().toTimeString().split(' ')[0].replace(/:/g, '')
