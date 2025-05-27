@@ -68,12 +68,19 @@ import VideoModal from '../components/modals/VideoModal.vue'
 
               <div class="card-body card-element p-0 py-2 ps-1">
                 <div class="mt-3 d-flex flex-column">
-                  <img
-                    :src="video.thumbnailUrl"
-                    class="img-fluid mb-2"
-                    @click="selectedVideo = video"
-                    style="cursor: pointer"
-                  />
+                  <!-- Skeleton ou imagem real -->
+                  <template v-if="isLoading">
+                    <div class="skeleton skeleton-img"></div>
+                  </template>
+                  <template v-else>
+                    <img
+                      :src="video.thumbnailUrl"
+                      alt="Carregando..."
+                      class="img-fluid mb-2"
+                      @click="selectedVideo = video"
+                      style="cursor: pointer"
+                    />
+                  </template>
                 </div>
                 <div class="mt-3 px-3 d-flex flex-column align-items-center">
                   <p class="text-sm text-gray-600">Descrição: {{ video.description }}</p>
@@ -165,7 +172,8 @@ export default {
       searchTerm: '',
       currentPage: 1,
       idVideo: -1,
-      videosPerPage: 6,
+      isLoading: true, // Adicione esta linha
+      videosPerPage: 9,
       videos: [],
       selectedVideo: null, // Controla qual vídeo está sendo assistido
       thumbnailUrl: '',
@@ -218,7 +226,8 @@ export default {
       const fim = key.slice(-12)
       return `${inicio}...${fim}`
     },
-    loadVideos() {
+    async loadVideos() {
+      this.isLoading = true // Ativa o estado de carregamento
       const storedVideos = SystemController.getStorage('videosStorage') || []
       this.videos = storedVideos.map(
         (v) =>
@@ -232,6 +241,29 @@ export default {
             v.apiIdVideo // Adicione se necessário
           )
       )
+      // Agora vamos esperar as imagens carregarem
+      await this.preloadImages()
+
+      // Simula um delay de carregamento (você pode remover isso em produção)
+      this.isLoading = false
+    },
+    // Adicione este método para pré-carregar as imagens
+    async preloadImages() {
+      const promises = this.videos.map((video) => {
+        return new Promise((resolve) => {
+          if (!video.thumbnailUrl) {
+            resolve()
+            return
+          }
+
+          const img = new Image()
+          img.src = video.thumbnailUrl
+          img.onload = resolve
+          img.onerror = resolve // Resolve mesmo se houver erro para não travar a UI
+        })
+      })
+
+      await Promise.all(promises)
     },
     handleDelete(index) {
       SystemController.deleteVideo(index)
@@ -440,5 +472,46 @@ export default {
 .btn-control:hover {
   background-color: var(--pagination-hover-bg);
   color: var(--pagination-hover-color);
+}
+
+/* Adicione isso no seu bloco de estilos */
+.skeleton {
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-img {
+  width: 100%;
+  height: 200px; /* Ajuste conforme necessário */
+  margin-bottom: 10px;
+}
+
+.skeleton-text {
+  width: 100%;
+  height: 16px;
+  margin-bottom: 8px;
+}
+
+.skeleton-text-sm {
+  width: 70%;
+  height: 12px;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+/* Para o tema escuro */
+.dark-theme .skeleton {
+  background-color: #3d444d;
 }
 </style>

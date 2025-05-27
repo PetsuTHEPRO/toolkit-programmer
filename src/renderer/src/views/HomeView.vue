@@ -82,9 +82,14 @@
 </template>
 
 <script>
+import SystemController from '../controller/SystemController'
 export default {
   data() {
     return {}
+  },
+  created() {
+    document.title = 'Programmer\'s Toolkit'
+    SystemController.updateSystem()
   }
 }
 </script>

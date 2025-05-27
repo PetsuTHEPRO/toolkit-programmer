@@ -48,11 +48,6 @@ import MonacoEditor from './MonacoEditor.vue'
               >
                 <div class="card mt-3">
                   <div class="card-body p-0 border-0">
-                    <!--
-                    <pre class="bg-light p-4 rounded-md overflow-auto">
-                      <code :class="'language-' + selectedLanguage.toLowerCase()" v-html="highlightedCode"></code>
-                    </pre>
-                    -->
                     <MonacoEditor
                       :code="algorithms.code"
                       :language="selectedLanguage.toLowerCase()"

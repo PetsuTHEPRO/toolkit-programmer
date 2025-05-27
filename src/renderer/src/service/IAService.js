@@ -5,22 +5,21 @@ import fileManager from '../../../renderer/src/service/gerenciadorArquivo'
 import imageIADTO from '../../../renderer/src/model/dto/imageIADTO.dto'
 import iconIADTO from '../../../renderer/src/model/dto/iconIADTO.dto'
 import fontIADTO from '../../../renderer/src/model/dto/fontIADTO.dto'
+import linkIADTO from '../../../renderer/src/model/dto/linkIADTO.dto'
+import algorithmIADTO from '../../../renderer/src/model/dto/algorithmIADTO.dto'
 import articleIADTO from '../../../renderer/src/model/dto/articleIADTO.dto'
 
 import OpenAI from 'openai'
 
 export default class IAServico {
   constructor() {
-    this.API_KEY = process.env.OPENROUTER_API_KEY
+    this.API_KEY = process.env.OPENROUTER_API_KEY ? process.env.OPENROUTER_API_KEY : ''
     this.resources = this.loadAllResources()
     this.messageSystem = this.createSystemMessage()
 
     // Configuração inicial padrão
     this.currentModel = 'meta-llama/llama-4-scout:free'
-    this.openai = new OpenAI({
-      baseURL: 'https://openrouter.ai/api/v1',
-      apiKey: this.API_KEY
-    })
+    this.initializeOpenAIClient()
 
     // Mapeamento de modelos disponíveis
     ;(this.availableModels = {
@@ -36,6 +35,14 @@ export default class IAServico {
         geral: 'geral',
         autofill: 'autofill'
       })
+  }
+
+  // Cria o objeto da OpenAI
+  initializeOpenAIClient() {
+    this.openai = new OpenAI({
+      baseURL: 'https://openrouter.ai/api/v1',
+      apiKey: this.API_KEY
+    })
   }
 
   // ... (mantenha os métodos existentes loadAllResources, safeParse, etc.)
@@ -79,6 +86,21 @@ export default class IAServico {
     const fonts = this.safeParse(this.resources.fonts || '[]')
     const readableFont = this.parseObjectsAsReadableText(fonts.map(fontIADTO), 'Fonte')
     return readableFont
+  }
+
+  getAllLinks() {
+    const links = this.safeParse(this.resources.links || '[]')
+    const readableLink = this.parseObjectsAsReadableText(links.map(linkIADTO), 'Link')
+    return readableLink
+  }
+
+  getAllAlgorithms() {
+    const algorithms = this.safeParse(this.resources.algorithms || '[]')
+    const readableAlgorithm = this.parseObjectsAsReadableText(
+      algorithms.map(algorithmIADTO),
+      'Algoritmo'
+    )
+    return readableAlgorithm
   }
 
   getAllArticles() {
@@ -158,11 +180,11 @@ export default class IAServico {
       - Fontes: ${JSON.stringify(this.getAllFonts() || { name: 'Nenhuma fonte cadastrada' })}
       - Frameworks: ${JSON.stringify(this.resources.frameworks)}
       - Paletas de Cores: ${JSON.stringify(this.resources.palettes)}
-      - Links: ${JSON.stringify(this.resources.links)}
+      - Links: ${JSON.stringify(this.getAllLinks() || { name: 'Nenhum link cadastrado' })}
       - Artigos: ${JSON.stringify(this.getAllArticles() || { name: 'Nenhum artigo cadastrado' })}
       - Imagens: ${JSON.stringify(this.getAllImages() || { name: 'Nenhuma imagem cadastrada' })}
       - Ícones: ${JSON.stringify(this.getAllIcons() || { name: 'Nenhum ícone cadastrado' })}
-      - Algoritmos: ${JSON.stringify(this.resources.algorithms)}
+      - Algoritmos: ${JSON.stringify(this.getAllAlgorithms() || { name: 'Nenhum algoritmo cadastrado' })}
     </document>
     
       Regras de Resposta:
@@ -336,6 +358,11 @@ export default class IAServico {
     return false
   }
 
+  setCurrentKey(apiKey) {
+    this.API_KEY = apiKey
+    this.initializeOpenAIClient()
+  }
+
   /**
    * Obtém a lista de modelos disponíveis
    * @returns {Object} - Dicionário de modelos disponíveis
@@ -355,6 +382,8 @@ export default class IAServico {
       const modelToUse = this.availableModels[customModel] || this.currentModel
       const systemMessage = this.createSystemMessage(mode)
 
+      console.log(systemMessage)
+
       const chat = await this.openai.chat.completions.create({
         messages: [
           { role: 'system', content: systemMessage },
@@ -365,8 +394,50 @@ export default class IAServico {
 
       return this.processResponse(chat)
     } catch (err) {
-      console.error('Erro na IA:', err)
-      return '❌ Erro ao processar solicitação'
+      console.error('Erro na chamada da IA:', err)
+
+      // Tratamento específico por tipo de erro
+      if (err.name === 'AbortError') {
+        return '⏰ Erro: Timeout - A requisição demorou muito para responder'
+      }
+
+      if (err.error) {
+        // Erros da API OpenRouter
+        const status = err.error.code
+        const errorData = err.error
+
+        switch (status) {
+          case 400:
+            return `❌ Erro 400: Solicitação inválida - ${errorData.error?.message || 'Verifique os parâmetros'}`
+          case 401:
+            return '🔑 Erro 401: Não autorizado - Verifique sua API_KEY do OpenRouter'
+          case 402:
+            return '💳 Erro 402: Pagamento necessário - Você pode ter excedido seu limite gratuito'
+          case 403:
+            return '🚫 Erro 403: Proibido - Seu acesso a este modelo foi negado'
+          case 404:
+            return '🔍 Erro 404: Modelo não encontrado - Verifique o nome do modelo'
+          case 429:
+            return `🐌 Erro 429: Muitas requisições - ${errorData.error?.message || 'Tente novamente mais tarde'}`
+          case 500:
+            return '⚙️ Erro 500: Problema no servidor OpenRouter - Tente novamente mais tarde'
+          case 503:
+            return '🛠️ Erro 503: Serviço indisponível - O OpenRouter pode estar em manutenção'
+          default:
+            return `❌ Erro ${status}: ${errorData.error?.message || 'Erro desconhecido na API'}`
+        }
+      }
+
+      if (err.code === 'ENOTFOUND' || err.code === 'ECONNABORTED') {
+        return '🌐 Erro de conexão: Verifique sua internet ou o OpenRouter pode estar offline'
+      }
+
+      if (err.message.includes('API_KEY')) {
+        return '🔐 Erro de autenticação: API_KEY inválida ou não configurada'
+      }
+
+      // Erros genéricos
+      return `❌ Ocorreu um erro: ${err.message || 'Erro desconhecido'}`
     }
   }
 
@@ -399,6 +470,11 @@ export default class IAServico {
     // Handler para alterar o modelo padrão
     ipcMain.handle('set-ai-model', async (event, modelName) => {
       return this.setModel(modelName)
+    })
+
+    ipcMain.handle('set-current-key', async (event, apiKey) => {
+      this.setCurrentKey(apiKey)
+      return true
     })
   }
 }

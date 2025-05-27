@@ -220,12 +220,16 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 @import url('../assets/base.css');
 
 .breadcrumb-item {
   color: var(--breadcrumb-color);
 }
+</style>
+
+<style>
+@import url('../assets/base.css');
 
 .card-dashboard,
 .card-dashboard > .card-body {

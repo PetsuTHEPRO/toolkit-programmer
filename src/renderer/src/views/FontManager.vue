@@ -95,18 +95,18 @@ import FontModal from '@renderer/components/modals/FontModal.vue'
                         >
                           <div class="d-flex align-items-center justify-content-center">
                             <i class="bx bx-copy me-2"></i>
-                            Copy
+                            {{ $t('buttons.copy') }}
                           </div>
                         </button>
                         <button class="btn-system btn-editar me-2" @click="editFont(index)">
                           <div class="d-flex align-items-center justify-content-center">
                             <i class="bx bx-pencil me-2"></i>
-                            Editar
+                            {{ $t('buttons.edit') }}
                           </div>
                         </button>
                         <a class="btn-system btn-deletar" @click="handleDelete(index)">
                           <i class="bx bx-trash me-2"></i>
-                          Delete
+                          {{ $t('buttons.delete') }}
                         </a>
                       </div>
                     </div>

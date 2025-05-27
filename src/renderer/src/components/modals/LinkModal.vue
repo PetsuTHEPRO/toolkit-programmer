@@ -12,7 +12,7 @@
         <div class="modal-content bg-dark text-white">
           <div class="modal-header">
             <h5 class="modal-title" id="modalTitle">
-              <div name="title">{{ !linkEdit ? 'Adicionar Link' : 'Editar Link' }}</div>
+              <div name="title">{{ titleModal }} Link</div>
             </h5>
             <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
           </div>
@@ -23,7 +23,7 @@
                 <label for="linkName" class="form-label">Nome</label>
                 <input
                   id="linkName"
-                  v-model="linkData.name"
+                  v-model="link.name"
                   type="text"
                   class="form-control"
                   placeholder="Digite o nome do link"
@@ -35,7 +35,7 @@
                 <label for="linkDescription" class="form-label">Descrição</label>
                 <textarea
                   id="linkDescription"
-                  v-model="linkData.description"
+                  v-model="link.description"
                   class="form-control"
                   placeholder="Digite a descrição do link"
                 ></textarea>
@@ -46,7 +46,7 @@
                 <label for="link" class="form-label">Url</label>
                 <input
                   id="link"
-                  v-model="linkData.link"
+                  v-model="link.link"
                   type="text"
                   class="form-control"
                   placeholder="Digite o nome do link"
@@ -58,7 +58,7 @@
             <slot name="footer">
               <button type="button" class="btn btn-secondary" @click="closeModal">Cancelar</button>
               <button type="button" class="btn btn-primary" @click="submitLink">
-                {{ !linkEdit ? 'Adicionar' : 'Editar' }}
+                {{ titleModal }}
               </button>
             </slot>
           </div>
@@ -71,6 +71,9 @@
 
 <script>
 import SystemController from '../../controller/SystemController'
+import Link from '../../model/entity/link'
+
+const NO_LINK_ID = -1
 
 export default {
   props: {
@@ -85,51 +88,50 @@ export default {
   },
   data() {
     return {
-      linkData: {
-        name: '',
-        description: '',
-        link: ''
-      },
-      linkEdit: null
+      titleModal: this.linkId !== NO_LINK_ID ? 'Editar' : 'Adicionar',
+      link: new Link(NO_LINK_ID, '', '', '')
     }
   },
   created() {
-    if (this.linkId !== -1) {
-      this.linkEdit = SystemController.getStorage('linksStorage')[this.linkId]
-      this.linkData = {
-        name: this.linkEdit.name,
-        description: this.linkEdit.description,
-        link: this.linkEdit.link
+    if (this.linkId !== NO_LINK_ID) {
+      const storedLinks = SystemController.getStorage('linksStorage')
+      const storedLink = storedLinks.find((v) => v.id === this.linkId)
+      if (storedLink) {
+        this.link = new Link(
+          storedLink.id,
+          storedLink.name,
+          storedLink.description,
+          storedLink.link
+        )
       }
     }
   },
   methods: {
     closeModal() {
+      this.link = new Link(NO_LINK_ID, '', '', '', '', '')
       this.$emit('close')
     },
     submitLink() {
-      if (this.linkEdit) {
-        this.linkEdit = {
-          id: this.linkId,
-          name: this.linkData.name,
-          description: this.linkData.description,
-          link: this.linkData.link
-        }
+      const linkData = {
+        ...this.link.toDTO(),
+        id: this.generateId()
+      }
 
-        SystemController.editLink(this.linkEdit)
+      if (this.linkId !== NO_LINK_ID) {
+        SystemController.editLink({ ...linkData, id: this.linkId })
       } else {
-        SystemController.addLink(this.linkData)
+        SystemController.addLink(linkData)
       }
 
-      // Limpa o formulário após adicionar o link
-      this.linkData = {
-        name: '',
-        description: '',
-        link: ''
-      }
-
-      // Lógica para fechar o modal
       this.closeModal()
+    },
+    generateId() {
+      return (
+        Date.now().toString(36) +
+        Math.floor(Math.random() * 1000)
+          .toString(36)
+          .padStart(4, '0')
+      )
     }
   }
 }

@@ -12,7 +12,7 @@
         <div class="modal-content bg-dark text-white">
           <div class="modal-header">
             <h5 class="modal-title" id="modalTitle">
-              <div name="title">{{ !frameworkEdit ? 'Adicionar Framework' : 'Editar Framework' }}</div>
+              <div name="title">{{ titleModal }} Framework</div>
             </h5>
             <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
           </div>
@@ -23,7 +23,7 @@
                 <label for="frameworkName" class="form-label">Nome</label>
                 <input
                   id="frameworkName"
-                  v-model="frameworkData.name"
+                  v-model="framework.name"
                   type="text"
                   class="form-control"
                   placeholder="Digite o nome do framework"
@@ -35,7 +35,7 @@
                 <label for="frameworkDescription" class="form-label">Descrição</label>
                 <textarea
                   id="frameworkDescription"
-                  v-model="frameworkData.description"
+                  v-model="framework.description"
                   class="form-control"
                   placeholder="Digite a descrição do framework"
                 ></textarea>
@@ -46,7 +46,7 @@
                 <label for="comando" class="form-label">Comando para instalação</label>
                 <input
                   id="comando"
-                  v-model="frameworkData.installation"
+                  v-model="framework.installation"
                   type="text"
                   class="form-control"
                   placeholder="Digite o comando para a instalação do framework"
@@ -58,7 +58,7 @@
                 <label for="linkDocumentation" class="form-label">Link da Documentação</label>
                 <input
                   id="linkDocumentation"
-                  v-model="frameworkData.documentationLink"
+                  v-model="framework.documentationLink"
                   type="text"
                   class="form-control"
                   placeholder="Digite o link para a documentação do framework"
@@ -69,7 +69,9 @@
           <div class="modal-footer">
             <slot name="footer">
               <button type="button" class="btn btn-secondary" @click="closeModal">Cancelar</button>
-              <button type="button" class="btn btn-primary" @click="submitFramework">Adicionar</button>
+              <button type="button" class="btn btn-primary" @click="submitFramework">
+                {{ titleModal }}
+              </button>
             </slot>
           </div>
         </div>
@@ -81,6 +83,9 @@
 
 <script>
 import SystemController from '../../controller/SystemController'
+import Framework from '../../model/entity/framework'
+
+const NO_FRAMEWORK_ID = -1
 
 export default {
   props: {
@@ -95,55 +100,51 @@ export default {
   },
   data() {
     return {
-      frameworkData: {
-        name: '',
-        description: '',
-        installation: '',
-        documentationLink: ''
-      },
-      frameworkEdit: null
+      titleModal: this.idFramework !== NO_FRAMEWORK_ID ? 'Editar' : 'Adicionar',
+      framework: new Framework(NO_FRAMEWORK_ID, '', '', '', '')
     }
   },
   created() {
-    if (this.idFramework !== -1) {
-      this.frameworkEdit = SystemController.getStorage('frameworksStorage')[this.idFramework]
-      this.frameworkData = {
-        name: this.frameworkEdit.name,
-        description: this.frameworkEdit.description,
-        installation: this.frameworkEdit.installation,
-        documentationLink: this.frameworkEdit.documentationLink
+    if (this.idFramework !== NO_FRAMEWORK_ID) {
+      const storedFrameworks = SystemController.getStorage('frameworksStorage')
+      const storedFramework = storedFrameworks.find((v) => v.id === this.idFramework)
+      if (storedFramework) {
+        this.framework = new Framework(
+          storedFramework.id,
+          storedFramework.name,
+          storedFramework.description,
+          storedFramework.installation,
+          storedFramework.documentationLink
+        )
       }
     }
   },
   methods: {
     closeModal() {
+      this.framework = new Framework(NO_FRAMEWORK_ID, '', '', '', '')
       this.$emit('close')
     },
     submitFramework() {
-      // Lógica para adicionar o link
-      if (this.frameworkEdit) {
-        this.frameworkEdit = {
-          id: this.idFramework,
-          name: this.frameworkData.name,
-          description: this.frameworkData.description,
-          installation: this.frameworkData.installation,
-          documentationLink: this.frameworkData.documentationLink
-        }
+      const frameworkData = {
+        ...this.framework.toDTO(),
+        id: this.generateId()
+      }
 
-        SystemController.editFramework(this.frameworkEdit)
+      if (this.idFramework !== NO_FRAMEWORK_ID) {
+        SystemController.editFramework({ ...frameworkData, id: this.idFramework })
       } else {
-        SystemController.addFramework(this.frameworkData)
-      }
-      // Limpa o formulário após adicionar o link
-      this.frameworkData = {
-        name: '',
-        description: '',
-        installation: '',
-        documentationLink: ''
+        SystemController.addFramework(frameworkData)
       }
 
-      // Lógica para fechar o modal
       this.closeModal()
+    },
+    generateId() {
+      return (
+        Date.now().toString(36) +
+        Math.floor(Math.random() * 1000)
+          .toString(36)
+          .padStart(4, '0')
+      )
     }
   }
 }
@@ -166,17 +167,18 @@ export default {
   min-height: 100vh;
 }
 
-.form-control, .form-select {
-  background-color: #282A36;
-  color: #F8F8F2;
+.form-control,
+.form-select {
+  background-color: #282a36;
+  color: #f8f8f2;
 }
 
 .form-control::placeholder {
-  color: #B1B4B8;
+  color: #b1b4b8;
 }
 
-.form-control button{
-  color: #F8F8F2;
+.form-control button {
+  color: #f8f8f2;
 }
 
 .btn-adicionar {

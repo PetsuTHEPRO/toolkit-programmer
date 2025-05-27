@@ -1,5 +1,6 @@
 import store from '../stores/sistema'
 import notification from '../service/notificationService'
+import { getKeyApi } from '../service/userPreferences'
 
 class SystemController {
   static updateSystem() {
@@ -19,6 +20,10 @@ class SystemController {
 
     // Carregar systemInfo e fazer os commits relacionados ao estado do sistema
     let systemInfo = window.api.loadSystemInfo()
+
+    // Atualizar a API Key salva no LocalStorage
+    window.chatAPI.setCurrentKey(getKeyApi())
+
     const data = JSON.parse(systemInfo)
     // Usar a mutação genérica para atualizar o estado
     store.commit('SET_STATE_PROPERTY', { key: 'colorCount', value: data.colorCount })

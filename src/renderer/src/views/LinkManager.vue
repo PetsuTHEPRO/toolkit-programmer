@@ -54,15 +54,11 @@ import LinkModal from '@renderer/components/modals/LinkModal.vue'
                 <li v-if="currentLinks.length === 0" class="text-center text-white mt-3">
                   {{ $t('messages.he-empty', { name: $t('sidebar.learn.links').toLowerCase() }) }}
                 </li>
-                <li
-                  v-for="(item, index) in currentLinks"
-                  :key="item.id"
-                  class="border-bottom pb-4 mt-4"
-                >
-                  <h3 class="h6 font-semibold">{{ item.name }}</h3>
-                  <p class="text-link mt-1">{{ item.description }}</p>
+                <li v-for="link in currentLinks" :key="link.id" class="border-bottom pb-4 mt-4">
+                  <h3 class="h6 font-semibold">{{ link.name }}</h3>
+                  <p class="text-link mt-1">{{ link.description }}</p>
                   <a
-                    :href="item.link"
+                    :href="link.link"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="btn-system btn-link me-2"
@@ -72,16 +68,13 @@ import LinkModal from '@renderer/components/modals/LinkModal.vue'
                       {{ $t('buttons.view') }}
                     </div>
                   </a>
-                  <button
-                    class="btn-system btn-editar me-2"
-                    @click="editLink((currentPage - 1) * 5 + index)"
-                  >
+                  <button class="btn-system btn-editar me-2" @click="editLink(link.id)">
                     <div class="d-flex justitfy-content-between align-items-center">
                       <i class="bx bx-edit me-1"></i>
                       {{ $t('buttons.edit') }}
                     </div>
                   </button>
-                  <a class="btn-system btn-deletar" @click="handleDelete(index)">
+                  <a class="btn-system btn-deletar" @click="handleDelete(link.id)">
                     <div class="d-flex justify-content-center align-items-center">
                       <i class="bx bx-trash me-2"></i>
                       {{ $t('buttons.delete') }}
@@ -131,6 +124,7 @@ import LinkModal from '@renderer/components/modals/LinkModal.vue'
 import { mapGetters } from 'vuex'
 import SystemController from '../controller/SystemController'
 import { getTheme } from '../service/userPreferences'
+import Link from '../model/entity/link'
 
 export default {
   data() {
@@ -165,7 +159,7 @@ export default {
   },
   created() {
     SystemController.updateSystem()
-    this.links = SystemController.getStorage('linksStorage')
+    this.loadLinks()
   },
   methods: {
     handleSearch() {
@@ -183,14 +177,26 @@ export default {
     },
     handleDelete(index) {
       SystemController.deleteLink(index)
+      this.loadLinks()
+    },
+    loadLinks() {
+      const storedLinks = SystemController.getStorage('linksStorage') || []
+      this.links = storedLinks.map((v) => new Link(v.id, v.name, v.description, v.link))
     },
     onCloseLinkModal() {
       this.showModal = false
-      this.links = SystemController.getStorage('linksStorage')
+      this.loadLinks()
       this.idLink = -1
     },
     editLink(index) {
-      this.idLink = index
+      const linkToEdit = this.currentLinks
+
+      for (const link of linkToEdit) {
+        if (link.id === index) {
+          this.idLink = link.id
+        }
+      }
+
       this.showModal = true
     }
   }

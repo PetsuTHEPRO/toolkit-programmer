@@ -5,7 +5,8 @@ const DEFAULT_PREFERENCES = {
   aiModel: 'llama',
   theme: 'dark',
   language: 'pt',
-  name: ''
+  name: '',
+  keyApi: ''
   // Adicione outros campos conforme necessário
 }
 
@@ -33,6 +34,7 @@ const updatePreferences = (updates) => {
   const currentPreferences = getPreferences()
   const newPreferences = { ...currentPreferences, ...updates }
   localStorage.setItem('userPreferences', JSON.stringify(newPreferences))
+  window.chatAPI.setCurrentKey(getKeyApi())
   return newPreferences
 }
 
@@ -60,6 +62,9 @@ const setLanguage = (language) => updatePreferences({ language })
 const getName = () => getPreference('name')
 const setName = (name) => updatePreferences({ name })
 
+const getKeyApi = () => getPreference('keyApi')
+const setKeyApi = (keyApi) => updatePreferences({ keyApi })
+
 export {
   getPreferences,
   getPreference,
@@ -74,5 +79,7 @@ export {
   setLanguage,
   getName,
   setName,
+  getKeyApi,
+  setKeyApi,
   DEFAULT_PREFERENCES
 }

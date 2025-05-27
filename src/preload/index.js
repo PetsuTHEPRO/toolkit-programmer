@@ -66,6 +66,7 @@ contextBridge.exposeInMainWorld('chatAPI', {
   sendMessage: (message) => ipcRenderer.invoke('ask-ai', message),
   // Novos métodos adicionados
   sendMessageWithModel: (message, model, mode) => ipcRenderer.invoke('ask-ai-with-model', { message, model, mode }, ),
+  setCurrentKey: (apiKey) => ipcRenderer.invoke('set-current-key', apiKey),
   getAvailableModels: () => ipcRenderer.invoke('get-ai-models'),
   setCurrentModel: (modelName) => ipcRenderer.invoke('set-ai-model', modelName),
   // Método utilitário para verificar conexão com a API

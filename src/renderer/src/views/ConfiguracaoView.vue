@@ -5,9 +5,9 @@ import Backup from '@renderer/components/Backup.vue'
 </script>
 
 <template>
-  <div 
-  class="container-fluid d-flex p-0"
-  :class="appSettings.darkMode === 'dark' ? 'dark-theme' : 'light-theme'"
+  <div
+    class="container-fluid d-flex p-0"
+    :class="appSettings.darkMode === 'dark' ? 'dark-theme' : 'light-theme'"
   >
     <Sidebar :theme="appSettings.darkMode" />
     <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
@@ -63,7 +63,11 @@ import Backup from '@renderer/components/Backup.vue'
               <Backup :activeTab="activeTab" />
 
               <!-- Configurações do Aplicativo -->
-              <div v-if="activeTab === 'app'" class="settings-section" :class="[appSettings.darkMode === 'dark' ? 'dark-theme' : 'light-theme']">
+              <div
+                v-if="activeTab === 'app'"
+                class="settings-section"
+                :class="[appSettings.darkMode === 'dark' ? 'dark-theme' : 'light-theme']"
+              >
                 <div>
                   <h3 class="mb-4 title">
                     <i class="bx bx-cog"></i> {{ $t('pages.settings.app') }}
@@ -122,7 +126,7 @@ import Backup from '@renderer/components/Backup.vue'
                   </div>
                 </div>
 
-                <div class="card">
+                <div class="card mb-4">
                   <div class="card-header">
                     <strong>🎨 {{ $t('pages.settings.theme.title') }}</strong>
                   </div>
@@ -158,6 +162,38 @@ import Backup from '@renderer/components/Backup.vue'
                     </label>
                   </div>
                 </div>
+
+                <div class="card">
+                  <div class="card-header">{{ $t('pages.settings.key.title') }}</div>
+                  <div class="card-body">
+                    <p class="card-text">{{ $t('pages.settings.key.description') }}</p>
+                    <div class="mb-3">
+                      <label for="importLocation" class="form-label">{{
+                        $t('pages.settings.key.key')
+                      }}</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="importLocation"
+                        :disabled="!isEdit"
+                        v-model="key"
+                      />
+                    </div>
+                    <!--  -->
+                    <button
+                      class="btn btn-primary me-2"
+                      :disabled="!isEdit"
+                      @click="setKeyApiLocale(key)"
+                    >
+                      {{ $t('buttons.save') }}
+                    </button>
+                    <!--  -->
+                    <!-- @click="handleBackupRestoration" -->
+                    <button class="btn btn-warning" :disabled="isEdit" @click="isEdit = !isEdit">
+                      {{ $t('buttons.edit') }}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -175,8 +211,11 @@ import {
   getLanguage,
   setLanguage,
   getTheme,
-  setTheme
+  setTheme,
+  getKeyApi,
+  setKeyApi
 } from '../service/userPreferences'
+import notificationService from '../service/notificationService'
 
 export default {
   name: 'SettingsView',
@@ -187,7 +226,9 @@ export default {
         language: getLanguage(),
         darkMode: getTheme() || 'light',
         preferredAI: getAIModel()
-      }
+      },
+      key: getKeyApi() || 'NO_KEY_SET',
+      isEdit: false
     }
   },
   computed: {
@@ -208,6 +249,11 @@ export default {
     },
     setThemePage() {
       setTheme(this.appSettings.darkMode)
+    },
+    setKeyApiLocale(api) {
+      this.isEdit = !this.isEdit
+      setKeyApi(api)
+      notificationService.success('API Key atualizada com sucesso!')
     }
   }
 }
@@ -220,7 +266,7 @@ export default {
   color: var(--breadcrumb-color);
 }
 
-.containder-fluid{
+.containder-fluid {
   background-color: var(--container-bg);
 }
 

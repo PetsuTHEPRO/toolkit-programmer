@@ -99,10 +99,9 @@ export default {
     }
   },
   created() {
-    if (this.idVideo !== -1) {
+    if (this.idVideo !== NO_VIDEO_ID) {
       const storedVideos = SystemController.getStorage('videosStorage')
       const storedVideo = storedVideos.find((v) => v.id === this.idVideo)
-      console.log(storedVideo)
       if (storedVideo) {
         this.video = new Video(
           storedVideo.id,
@@ -118,7 +117,7 @@ export default {
   },
   methods: {
     closeModal() {
-      this.video = new Video(-1, '', '', '', '', '')
+      this.video = new Video(NO_VIDEO_ID, '', '', '', '', '')
       this.apiIdVideo = -1
       this.$emit('close')
     },
@@ -132,7 +131,6 @@ export default {
       if (this.idVideo !== NO_VIDEO_ID) {
         SystemController.editVideo({ ...videoData, id: this.idVideo })
       } else {
-        console.log(videoData)
         SystemController.addVideo(videoData)
       }
 

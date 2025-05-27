@@ -79,7 +79,7 @@ import ApiModal from '../components/modals/ApiModal.vue'
                     aria-controls="description"
                     aria-selected="true"
                   >
-                    Descrição <i class="bx bx-info-circle" style="font-size: 0.9rem"></i>
+                    {{ $t('buttons.description') }} <i class="bx bx-info-circle" style="font-size: 0.9rem"></i>
                   </button>
                   <button
                     :id="`key-tab-${index}`"
@@ -90,7 +90,7 @@ import ApiModal from '../components/modals/ApiModal.vue'
                     aria-controls="key"
                     aria-selected="false"
                   >
-                    Chave <i class="bx bx-key" style="font-size: 0.9rem"></i>
+                    {{ $t('buttons.key') }} <i class="bx bx-key" style="font-size: 0.9rem"></i>
                   </button>
                 </div>
                 <div class="tab-content mt-3 px-3 d-flex align-items-center">
@@ -128,10 +128,10 @@ import ApiModal from '../components/modals/ApiModal.vue'
 
               <!-- Card footer com os botões de editar e excluir -->
               <div class="card-footer d-flex justify-content-between">
-                <button class="btn btn-editar me-2" @click="editApi(index)">
+                <button class="btn btn-editar me-2" @click="editApi(api.id)">
                   <i class="bx bx-pencil"></i> {{ $t('buttons.edit') }}
                 </button>
-                <button class="btn btn-deletar" @click="handleDelete(index)">
+                <button class="btn btn-deletar" @click="handleDelete(api.id)">
                   <i class="bx bx-trash"></i> {{ $t('buttons.delete') }}
                 </button>
               </div>
@@ -173,6 +173,7 @@ import { mapGetters } from 'vuex'
 import SystemController from '../controller/SystemController'
 import notificationService from '@renderer/service/notificationService'
 import { getTheme } from '@renderer/service/userPreferences'
+import Api from '../model/entity/api'
 
 export default {
   data() {
@@ -207,7 +208,7 @@ export default {
   },
   created() {
     SystemController.updateSystem()
-    this.apis = SystemController.getStorage('apisStorage')
+    this.loadApis()
   },
   methods: {
     handlePrevPage() {
@@ -218,6 +219,7 @@ export default {
     },
     handleDelete(index) {
       SystemController.deleteApi(index)
+      this.loadApis()
     },
     copyCode(code) {
       navigator.clipboard.writeText(code).then(() => {
@@ -235,11 +237,22 @@ export default {
     },
     onCloseApiModal() {
       this.showModal = false
-      this.apis = SystemController.getStorage('apisStorage')
+      this.loadApis() // Recarregar vídeos após fechar o modal
       this.idApi = -1
     },
+    async loadApis() {
+      const storedApis = SystemController.getStorage('apisStorage') || []
+      this.apis = storedApis.map((a) => new Api(a.id, a.name, a.description, a.key))
+    },
     editApi(index) {
-      this.idApi = index
+      const apiToEdit = this.currentApis
+
+      for (const api of apiToEdit) {
+        if (api.id === index) {
+          this.idApi = api.id
+        }
+      }
+
       this.showModal = true
     }
   }

@@ -12,7 +12,7 @@
         <div class="modal-content bg-dark text-white">
           <div class="modal-header">
             <h5 id="modalTitle" class="modal-title">
-              <slot name="title">Adicionar API</slot>
+              <slot name="title">{{ titleModal }} API</slot>
             </h5>
             <button type="button" class="btn-close" aria-label="Close" @click="closeModal"></button>
           </div>
@@ -24,7 +24,7 @@
                   type="text"
                   class="form-control"
                   id="name"
-                  v-model="apiData.name"
+                  v-model="api.name"
                   placeholder="Digite o nome da API"
                   required
                 />
@@ -34,7 +34,7 @@
                 <textarea
                   class="form-control"
                   id="description"
-                  v-model="apiData.description"
+                  v-model="api.description"
                   placeholder="Digite a descrição da api"
                   required
                 ></textarea>
@@ -45,7 +45,7 @@
                   type="text"
                   class="form-control"
                   id="code"
-                  v-model="apiData.key"
+                  v-model="api.key"
                   placeholder="Cole a key da API aqui"
                   required
                 />
@@ -55,7 +55,7 @@
           <div class="modal-footer">
             <slot name="footer">
               <button type="button" class="btn btn-secondary" @click="closeModal">Cancelar</button>
-              <button type="button" class="btn btn-primary" @click="submitApi">Adicionar</button>
+              <button type="button" class="btn btn-primary" @click="submitApi">{{ titleModal }}</button>
             </slot>
           </div>
         </div>
@@ -67,6 +67,10 @@
 
 <script>
 import SystemController from '../../controller/SystemController'
+import Api from '../../model/entity/api'
+
+const NO_API_ID = -1
+
 export default {
   props: {
     visible: {
@@ -80,50 +84,50 @@ export default {
   },
   data() {
     return {
-      apiData: {
-        name: '',
-        description: '',
-        key: ''
-      },
-      apiEdit: null
+      titleModal: this.idApi !== NO_API_ID ? 'Editar' : 'Adicionar',
+      api: new Api(NO_API_ID, '', '', '')
     }
   },
   created() {
-    if (this.idApi !== -1) {
-      this.apiEdit = SystemController.getStorage('apisStorage')[this.idApi]
-      this.apiData = {
-        name: this.apiEdit.name,
-        description: this.apiEdit.description,
-        key: this.apiEdit.key
+    if (this.idApi !== NO_API_ID) {
+      const storedApis = SystemController.getStorage('apisStorage')
+      const storedApi = storedApis.find((v) => v.id === this.idApi)
+      if (storedApi) {
+        this.api = new Api(
+          storedApi.id,
+          storedApi.name,
+          storedApi.description,
+          storedApi.key
+        )
       }
     }
   },
   methods: {
     closeModal() {
+      this.api = new Api(NO_API_ID, '', '', '')
       this.$emit('close')
     },
-    submitApi() {// Lógica para adicionar o link
-      if (this.apiEdit) {
-        this.apiEdit = {
-          id: this.idApi,
-          name: this.apiData.name,
-          description: this.apiData.description,
-          key: this.apiData.key
-        }
+    submitApi() {
+      const apiData = {
+        ...this.api.toDTO(),
+        id: this.generateId()
+      }
 
-        SystemController.editApi(this.apiEdit)
+      if (this.idApi !== NO_API_ID) {
+        SystemController.editApi({ ...apiData, id: this.idApi })
       } else {
-        SystemController.addApi(this.apiData)
-      }
-      // Limpa o formulário após adicionar o link
-      this.apiData = {
-        name: '',
-        description: '',
-        key: ''
+        SystemController.addApi(apiData)
       }
 
-      // Lógica para fechar o modal
       this.closeModal()
+    },
+    generateId() {
+      return (
+        Date.now().toString(36) +
+        Math.floor(Math.random() * 1000)
+          .toString(36)
+          .padStart(4, '0')
+      )
     }
   }
 }

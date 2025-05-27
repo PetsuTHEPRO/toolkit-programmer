@@ -18,6 +18,7 @@ const imgDir = join(dataDir, 'img')
 const pdfDir = join(dataDir, 'pdf')
 const logDir = join(executableDir, 'logs')
 const logFilePath = join(logDir, 'app.log')
+let keyApiLocalStorage = null
 
 // Cria as pastas se não existirem
 const ensureDir = (dirPath) => {
@@ -262,6 +263,16 @@ ipcMain.handle('save-algorithms', async (event, algorithms) => {
 ipcMain.handle('save-apis', async (event, apis) => {
   fileManager.saveApis(txtDir, apis)
   return true
+})
+
+ipcMain.handle('set-key-local', async (event, apiKey) => {
+  process.env.OPENROUTER_API_LOCAL_KEY = apiKey
+  console.log("API_KEY: ", process.env.OPENROUTER_API_LOCAL_KEY)
+  return true
+})
+
+ipcMain.on('save-key-local', async () => {
+  return keyApiLocalStorage
 })
 
 ipcMain.handle('save-images', async (event, images) => {

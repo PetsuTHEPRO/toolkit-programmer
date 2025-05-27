@@ -75,7 +75,7 @@ import FrameworkModal from '../components/modals/FrameworkModal.vue'
                     aria-controls="description"
                     aria-selected="true"
                   >
-                    Descrição <i class="bx bx-info-circle" style="font-size: 0.9rem"></i>
+                    {{ $t('buttons.description') }} <i class="bx bx-info-circle" style="font-size: 0.9rem"></i>
                   </button>
                   <button
                     :id="`installation-tab-${index}`"
@@ -86,7 +86,7 @@ import FrameworkModal from '../components/modals/FrameworkModal.vue'
                     aria-controls="installation"
                     aria-selected="false"
                   >
-                    Instalação <i class="bx bx-download" style="font-size: 0.9rem"></i>
+                    {{ $t('buttons.installation') }} <i class="bx bx-download" style="font-size: 0.9rem"></i>
                   </button>
                   <button
                     :id="`documentation-tab-${index}`"
@@ -156,10 +156,10 @@ import FrameworkModal from '../components/modals/FrameworkModal.vue'
 
               <!-- Card footer com os botões de editar e excluir -->
               <div class="card-footer d-flex justify-content-between">
-                <button class="btn btn-editar me-2" @click="editFramework(index)">
+                <button class="btn btn-editar me-2" @click="editFramework(framework.id)">
                   <i class="bx bx-pencil"></i> {{ $t('buttons.edit') }}
                 </button>
-                <button class="btn btn-deletar" @click="handleDelete(index)">
+                <button class="btn btn-deletar" @click="handleDelete(framework.id)">
                   <i class="bx bx-trash"></i> {{ $t('buttons.delete') }}
                 </button>
               </div>
@@ -206,6 +206,7 @@ import { mapGetters } from 'vuex'
 import SystemController from '../controller/SystemController'
 import notificationService from '@renderer/service/notificationService'
 import { getTheme } from '../service/userPreferences'
+import Framework from '../model/entity/framework'
 
 export default {
   data() {
@@ -214,7 +215,7 @@ export default {
       searchTerm: '',
       currentPage: 1,
       idFramework: -1,
-      frameworksPerPage: 6,
+      frameworksPerPage: 9,
       frameworks: [],
       themeMode: getTheme()
     }
@@ -240,7 +241,7 @@ export default {
   },
   created() {
     SystemController.updateSystem()
-    this.frameworks = SystemController.getStorage('frameworksStorage')
+    this.loadFrameworks()
   },
   methods: {
     handlePrevPage() {
@@ -251,6 +252,7 @@ export default {
     },
     handleDelete(index) {
       SystemController.deleteFramework(index)
+      this.loadFrameworks() // Recarregar a lista atualizada
     },
     copyCode(code) {
       navigator.clipboard.writeText(code).then(() => {
@@ -259,11 +261,31 @@ export default {
     },
     onCloseFrameworkModal() {
       this.showModal = false
-      this.frameworks = SystemController.getStorage('frameworksStorage')
+      this.loadFrameworks()
       this.idFramework = -1
     },
+    async loadFrameworks() {
+      const storedFrameworks = SystemController.getStorage('frameworksStorage') || []
+      this.frameworks = storedFrameworks.map(
+        (v) =>
+          new Framework(
+            v.id,
+            v.name,
+            v.description,
+            v.installation,
+            v.documentationLink
+          )
+      )
+    },
     editFramework(index) {
-      this.idFramework = index
+      const frameworkToEdit = this.currentFrameworks
+
+      for (const framework of frameworkToEdit) {
+        if (framework.id === index) {
+          this.idFramework = framework.id
+        }
+      }
+
       this.showModal = true
     }
   }
@@ -431,7 +453,7 @@ export default {
   cursor: pointer;
   border-radius: 0.30rem 0.30rem 0 0;
   margin-right: 3px; /* Espaçamento entre as abas */
-  padding: 10px 15px; /* Espaçamento interno */
+  padding: 10px 10px; /* Espaçamento interno */
   transition: background-color 0.3s, color 0.3s; /* Transição suave nas alterações */
 }
 
