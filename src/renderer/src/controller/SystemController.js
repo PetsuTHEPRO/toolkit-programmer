@@ -3,7 +3,7 @@ import notification from '../service/notificationService'
 import { getKeyApi } from '../service/userPreferences'
 
 class SystemController {
-  static updateSystem() {
+  static async updateSystem() {
     // Carregar os dados do sistema e armazená-los em variáveis
     const storageItems = {
       links: 'linksStorage',
@@ -34,8 +34,19 @@ class SystemController {
     store.commit('SET_STATE_PROPERTY', { key: 'currentMonth', value: data.currentMonth })
 
     for (const [key, storageKey] of Object.entries(storageItems)) {
-      let loadedData = window.api[`load${key.charAt(0).toUpperCase() + key.slice(1)}`]()
-      store.commit('SET_STATE_PROPERTY', { key: storageKey, value: JSON.parse(loadedData) })
+      // Método para carregar dados do backend
+      const loader = window.api[`load${key.charAt(0).toUpperCase() + key.slice(1)}`]
+
+      // Se for "links", aguarde a Promise (assíncrono)
+      if (key === 'links') {
+        // await para garantir que loadedData está resolvida
+        let loadedData = await loader()
+        store.commit('SET_STATE_PROPERTY', { key: storageKey, value: loadedData })
+      } else {
+        // para os outros, mantenha síncrono (ajuste se migrar depois)
+        let loadedData = loader()
+        store.commit('SET_STATE_PROPERTY', { key: storageKey, value: JSON.parse(loadedData) })
+      }
     }
 
     // Salvar o sistema atualizado
@@ -80,9 +91,8 @@ class SystemController {
     this.editFromStorage('linksStorage', 'Link editado com sucesso!', change)
   }
 
-  static deleteLink(index) {
-    const count = 1
-    this.deleteFromStorage('linksStorage', 'Link removido com sucesso!', index, count)
+  static async deleteLink(index) {
+    await this.deleteLinkSql(index)
   }
 
   static addVideo(change) {
@@ -246,7 +256,18 @@ class SystemController {
     // Itera sobre os itens de armazenamento e salva cada um
     for (const [key] of Object.entries(storageItems)) {
       const data = this.getStorage(key + 'Storage')
-      window.api[`save${key.charAt(0).toUpperCase() + key.slice(1)}`](JSON.stringify(data)) // Salva os dados
+      if (key === 'links') {
+        /* Garante que está enviando objetos literais, não instâncias de classe
+        const plainLinks = data.map((l) => ({
+          id: l.id,
+          name: l.name,
+          description: l.description,
+          link: l.link
+        }))
+        window.api.saveLinks(plainLinks)*/
+      } else {
+        window.api[`save${key.charAt(0).toUpperCase() + key.slice(1)}`](JSON.stringify(data))
+      }
     }
   }
 
@@ -281,7 +302,20 @@ class SystemController {
     this.updateDiaryRoutine()
     this.saveSystem()
   }
-  
+
+  static async deleteLinkSql(id) {
+    // Remove do banco
+    await window.api.deleteLink(id)
+    notification.success('Link removido com sucesso!')
+
+    // Carrega do banco após deletar e atualiza o Vuex
+    const links = await window.api.loadLinks()
+    store.commit('SET_STATE_PROPERTY', { key: 'linksStorage', value: links })
+
+    // Atualiza rotina diária
+    this.updateDiaryRoutine()
+  }
+
   static editFromStorage(storageKey, message, change) {
     store.commit('EDIT_ITEM', { storageKey, change })
     notification.success(message)

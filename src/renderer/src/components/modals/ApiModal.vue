@@ -55,7 +55,9 @@
           <div class="modal-footer">
             <slot name="footer">
               <button type="button" class="btn btn-secondary" @click="closeModal">Cancelar</button>
-              <button type="button" class="btn btn-primary" @click="submitApi">{{ titleModal }}</button>
+              <button type="button" class="btn btn-primary" @click="submitApi">
+                {{ titleModal }}
+              </button>
             </slot>
           </div>
         </div>
@@ -93,12 +95,7 @@ export default {
       const storedApis = SystemController.getStorage('apisStorage')
       const storedApi = storedApis.find((v) => v.id === this.idApi)
       if (storedApi) {
-        this.api = new Api(
-          storedApi.id,
-          storedApi.name,
-          storedApi.description,
-          storedApi.key
-        )
+        this.api = new Api(storedApi.id, storedApi.name, storedApi.description, storedApi.key)
       }
     }
   },
@@ -150,12 +147,13 @@ export default {
   min-height: 100vh;
 }
 
-.form-control, .form-select {
-  background-color: #282A36;
-  color: #F8F8F2;
+.form-control,
+.form-select {
+  background-color: #282a36;
+  color: #f8f8f2;
 }
 
 .form-control::placeholder {
-  color: #B1B4B8;
+  color: #b1b4b8;
 }
 </style>

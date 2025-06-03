@@ -1,5 +1,6 @@
 // gerenciadorArquivo.js
 import fs from 'fs'
+import { connect } from './database.js'
 
 // Caminho para o arquivo linkStorage.txt const filePath = path.join(__dirname, '../../src/renderer/src/data')
 
@@ -22,7 +23,11 @@ export default {
         const data = fs.readFileSync(executableDir + '/systemInfo.txt', 'utf-8')
         return JSON.parse(data)
       } else {
-        fs.writeFileSync(executableDir + '/systemInfo.txt', '"{\\"colorCount\\":0,\\"linkCount\\":0,\\"fontCount\\":0,\\"log\\":[],\\"dailyRoutine\\":{}}"', 'utf-8')
+        fs.writeFileSync(
+          executableDir + '/systemInfo.txt',
+          '"{\\"colorCount\\":0,\\"linkCount\\":0,\\"fontCount\\":0,\\"log\\":[],\\"dailyRoutine\\":{}}"',
+          'utf-8'
+        )
         const data = fs.readFileSync(executableDir + '/systemInfo.txt', 'utf-8')
         return JSON.parse(data)
       }
@@ -31,20 +36,21 @@ export default {
     }
   },
 
-  // Função para salvar os links no arquivo
-  loadLinks(executableDir) {
-    try {
-      if (fs.existsSync(executableDir + '/linkStorage.txt')) {
-        const data = fs.readFileSync(executableDir + '/linkStorage.txt', 'utf-8')
-        return JSON.parse(data)
-      } else {
-        fs.writeFileSync(executableDir + '/linkStorage.txt', '"[]"', 'utf-8')
-        return '[]' // Retorna uma lista vazia
-      }
-    } catch (error) {
-      return [] // Em caso de erro, retorna uma lista vazia
-    }
+  // ---------------- SQLite -------------------
+  async loadLinks() {
+    const db = await connect()
+    const rows = await db.all('SELECT id, name, description, link FROM links')
+    await db.close()
+    // rows já é um array de objetos, pronto para uso!
+    return rows
   },
+
+  async deleteLink(id) {
+    const db = await connect()
+    await db.run('DELETE FROM links WHERE id = ?', [id])
+    await db.close()
+  },
+
   loadArticles(executableDir) {
     try {
       if (fs.existsSync(executableDir + '/articleStorage.txt')) {
@@ -167,16 +173,38 @@ export default {
   },
 
   saveSystemInfo(executableDir, systemInfo) {
-    fs.writeFileSync(executableDir + '/systemInfo.txt', JSON.stringify(systemInfo, null, 2), 'utf-8')
+    fs.writeFileSync(
+      executableDir + '/systemInfo.txt',
+      JSON.stringify(systemInfo, null, 2),
+      'utf-8'
+    )
   },
-  saveLinks(executableDir, links) {
+  /*saveLinks(executableDir, links) {
     fs.writeFileSync(executableDir + '/linkStorage.txt', JSON.stringify(links, null, 2), 'utf-8')
+  },*/
+  async saveLinks(links) {
+    const db = await connect()
+    try {
+      // Insere cada link separadamente
+      for (const link of links) {
+        await db.run(
+          'INSERT OR IGNORE INTO links (id, name, description, link) VALUES (?, ?, ?, ?)',
+          [link.id, link.name, link.description, link.link]
+        )
+      }
+    } finally {
+      await db.close()
+    }
   },
   saveFonts(executableDir, fonts) {
     fs.writeFileSync(executableDir + '/fontStorage.txt', JSON.stringify(fonts, null, 2), 'utf-8')
   },
   saveArticles(executableDir, articles) {
-    fs.writeFileSync(executableDir + '/articleStorage.txt', JSON.stringify(articles, null, 2), 'utf-8')
+    fs.writeFileSync(
+      executableDir + '/articleStorage.txt',
+      JSON.stringify(articles, null, 2),
+      'utf-8'
+    )
   },
   saveVideos(executableDir, videos) {
     fs.writeFileSync(executableDir + '/videoStorage.txt', JSON.stringify(videos, null, 2), 'utf-8')
@@ -205,6 +233,10 @@ export default {
     fs.writeFileSync(executableDir + '/iconStorage.txt', JSON.stringify(icons, null, 2), 'utf-8')
   },
   savePalettes(executableDir, palettes) {
-    fs.writeFileSync(executableDir + '/paletteStorage.txt', JSON.stringify(palettes, null, 2), 'utf-8')
+    fs.writeFileSync(
+      executableDir + '/paletteStorage.txt',
+      JSON.stringify(palettes, null, 2),
+      'utf-8'
+    )
   }
 }

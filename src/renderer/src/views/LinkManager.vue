@@ -175,17 +175,17 @@ export default {
         this.currentPage++
       }
     },
-    handleDelete(index) {
-      SystemController.deleteLink(index)
-      this.loadLinks()
+    async handleDelete(index) {
+      await SystemController.deleteLink(index)
+      await this.loadLinks()
     },
-    loadLinks() {
-      const storedLinks = SystemController.getStorage('linksStorage') || []
+    async loadLinks() {
+      const storedLinks = await SystemController.getStorage('linksStorage')
       this.links = storedLinks.map((v) => new Link(v.id, v.name, v.description, v.link))
     },
-    onCloseLinkModal() {
+    async onCloseLinkModal() {
       this.showModal = false
-      this.loadLinks()
+      await this.loadLinks()
       this.idLink = -1
     },
     editLink(index) {

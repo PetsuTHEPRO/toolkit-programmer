@@ -69,7 +69,6 @@ const store = createStore({
     },
     // Função genérica para adicionar item
     ADD_ITEM(state, { storageKey, items, count }) {
-      console.log("itens", items)
       state.storageKey = items
 
       if (count) {
@@ -93,20 +92,20 @@ const store = createStore({
     },
 
     // Função genérica para remover item
-    REMOVE_ITEM(state, { storageKey, items, count }) {
-      state.storageKey = items
+    REMOVE_ITEM(state, { storageKey, id, count }) {
+      // Remove pelo id diretamente aqui:
+      state[storageKey] = state[storageKey].filter((item) => item.id !== id)
+
       if (count) {
         this.commit('REMOVE_COUNT', { storageKey, count })
       }
-      // Extrai o tipo removendo o sufixo 'sStorage'
-      const type = storageKey.replace('sStorage', '').toUpperCase()
 
-      // Define o gênero com base no tipo
+      // Log e artigos continuam iguais...
+      const type = storageKey.replace('sStorage', '').toUpperCase()
       const isFemale = ['FONT', 'IMAGE', 'PALETTE'].includes(type)
       const article = isFemale ? 'Uma' : 'Um'
       const suffix = isFemale ? 'a' : 'o'
 
-      // Adiciona a mensagem de log
       this.commit('ADD_LOG_MESSAGE', {
         type: type,
         description: `${article} ${type.toLowerCase()} foi removid${suffix} com sucesso.${count ? ` [Quantidade de itens removidos: ${count}]` : ''}`

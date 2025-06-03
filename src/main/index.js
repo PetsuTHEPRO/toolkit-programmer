@@ -7,6 +7,7 @@ import fileManager from '../../src/renderer/src/service/gerenciadorArquivo'
 import IAServico from '../../src/renderer/src/service/IAService'
 import { BackupProcessor, setupBackupIPC } from '../../src/renderer/src/service/backup'
 import dotenv from 'dotenv'
+import { setDbPath, initialize } from '../renderer/src/service/database'
 
 dotenv.config({ path: join(__dirname, '../../.env') })
 
@@ -131,9 +132,14 @@ ipcMain.on('load-system-info', (event) => {
 })
 
 // Comunicação IPC para carregar os links no frontend
-ipcMain.on('load-links', (event) => {
-  let links = fileManager.loadLinks(txtDir)
-  event.returnValue = links
+ipcMain.handle('load-links', async () => {
+  try {
+    let links = await fileManager.loadLinks()
+    return links // Deve ser array/objeto simples!
+  } catch (error) {
+    console.error('Erro ao carregar links:', error)
+    return [] // Ou mensagem de erro simples
+  }
 })
 
 ipcMain.handle('get-image-dir', () => {
@@ -181,9 +187,7 @@ ipcMain.on('load-articles', (event) => {
   event.returnValue = articles
 })
 
-// Depois de criar a janela, instancie o serviço:
-const iaServico = new IAServico()
-iaServico.registerHandlers()
+
 
 // Comunicação IPC para carregar os links no frontend
 ipcMain.on('load-fonts', (event) => {
@@ -233,7 +237,7 @@ ipcMain.handle('save-system-info', async (event, systemInfo) => {
 })
 
 ipcMain.handle('save-links', async (event, links) => {
-  fileManager.saveLinks(txtDir, links)
+  fileManager.saveLinks(links)
   return true
 })
 
@@ -317,6 +321,11 @@ ipcMain.handle('upload-pdf', async (event, pdfBuffer, fileName) => {
   return filePath
 })
 
+ipcMain.handle('delete-link', async (event, linkId) => {
+  fileManager.deleteLink(linkId)
+  return true
+})
+
 ipcMain.handle('select-backup-directory', async () => {
   try {
     const result = await dialog.showOpenDialog({
@@ -357,9 +366,15 @@ ipcMain.handle('get-default-backup-path', async () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
+  setDbPath(dataDir)
+  await initialize()
+
+  // Depois de criar a janela, instancie o serviço:
+  const iaServico = new IAServico()
+  iaServico.registerHandlers()
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.

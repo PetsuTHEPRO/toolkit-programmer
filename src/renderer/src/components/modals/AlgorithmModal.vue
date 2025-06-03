@@ -103,7 +103,7 @@ export default {
     },
     idAlgorithm: {
       type: Number,
-      default: -1
+      default: NO_ALGORITHM_ID
     }
   },
   data() {
@@ -113,7 +113,7 @@ export default {
     }
   },
   created() {
-    if (this.idAlgorithm !== -1) {
+    if (this.idAlgorithm !== NO_ALGORITHM_ID) {
       const storedAlgorithms = SystemController.getStorage('algorithmsStorage')
       const storedAlgorithm = storedAlgorithms.find((v) => v.id === this.idAlgorithm)
       if (storedAlgorithm) {
@@ -141,14 +141,14 @@ export default {
           .padStart(4, '0')
       )
     },
-    async submitAlgorithm() {
+
+    submitAlgorithm() {
       const algorithmData = {
         ...this.algorithm.toDTO(),
         id: this.generateId()
       }
 
-      if (this.algorithm !== NO_ALGORITHM_ID) {
-        console.log(this.algorithm)
+      if (this.idAlgorithm !== NO_ALGORITHM_ID) {
         SystemController.editAlgorithm({ ...algorithmData, id: this.idAlgorithm })
       } else {
         SystemController.addAlgorithm(algorithmData)

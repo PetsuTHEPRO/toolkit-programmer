@@ -17,7 +17,7 @@ const api = {
     ipcRenderer.invoke('upload-image-font', imageBuffer, fileName),
   uploadPdf: (pdfBuffer, fileName) => ipcRenderer.invoke('upload-pdf', pdfBuffer, fileName),
   loadSystemInfo: () => ipcRenderer.sendSync('load-system-info'),
-  loadLinks: () => ipcRenderer.sendSync('load-links'),
+  loadLinks: async () => await ipcRenderer.invoke('load-links'),
   loadFonts: () => ipcRenderer.sendSync('load-fonts'),
   loadFrameworks: () => ipcRenderer.sendSync('load-frameworks'),
   loadAlgorithms: () => ipcRenderer.sendSync('load-algorithms'),
@@ -38,6 +38,9 @@ const api = {
   saveIcons: (icons) => ipcRenderer.invoke('save-icons', icons),
   savePalettes: (palettes) => ipcRenderer.invoke('save-palettes', palettes),
   saveArticles: (articles) => ipcRenderer.invoke('save-articles', articles),
+  // Metodos Delete
+  deleteLink: async (linkId) => await ipcRenderer.invoke('delete-link', linkId),
+
   downloadImage: (imageBuffer) => ipcRenderer.invoke('download-image', imageBuffer),
   // Métodos para backup
   createBackup: (backupPath) => ipcRenderer.invoke('create-backup', backupPath),
