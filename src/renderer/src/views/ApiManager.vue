@@ -42,7 +42,7 @@ import ApiModal from '../components/modals/ApiModal.vue'
             <button
               type="button"
               class="btn-system btn-adicionar me-2 d-flex align-items-center"
-              @click="showModal = true"
+              @click="openAddModal"
             >
               <i class="bx bx-plus-circle me-1"></i>
               {{ $t('buttons.upload') }}
@@ -183,12 +183,16 @@ export default {
       currentPage: 1,
       idApi: -1,
       apisPerPage: 6,
-      apis: [],
       themeMode: getTheme()
     }
   },
   computed: {
     ...mapGetters(['isSidebarOpen']),
+    // 1. A PROPRIEDADE REATIVA que lê da store.
+    apis() {
+      const storedApis = this.$store.getters.getStorage('apisStorage') || []
+      return storedApis.map((a) => new Api(a.id, a.name, a.description, a.key))
+    },
     filteredApis() {
       return this.apis.filter(
         (api) =>
@@ -206,10 +210,6 @@ export default {
       return totalPages === 0 ? 1 : totalPages
     }
   },
-  created() {
-    SystemController.updateSystem()
-    this.loadApis()
-  },
   methods: {
     handlePrevPage() {
       this.currentPage = Math.max(this.currentPage - 1, 1)
@@ -217,9 +217,24 @@ export default {
     handleNextPage() {
       this.currentPage = Math.min(this.currentPage + 1, this.totalPages)
     },
-    handleDelete(index) {
-      SystemController.deleteApi(index)
-      this.loadApis()
+    // 3. MÉTODOS DE AÇÃO E MODAL CORRIGIDOS
+    handleDelete(apiId) {
+      SystemController.deleteApi(apiId);
+      // A chamada para 'loadApis()' foi REMOVIDA.
+    },
+    onCloseApiModal() {
+      this.showModal = false;
+      this.idApi = -1;
+      // A chamada para 'loadApis()' foi REMOVIDA.
+    },
+    // Lógica corrigida para abrir o modal
+    openAddModal() {
+      this.idApi = -1
+      this.showModal = true
+    },
+    editApi(apiId) {
+      this.idApi = apiId
+      this.showModal = true
     },
     copyCode(code) {
       navigator.clipboard.writeText(code).then(() => {
@@ -234,26 +249,6 @@ export default {
       const inicio = key.slice(0, 12)
       const fim = key.slice(-12)
       return `${inicio}...${fim}`
-    },
-    onCloseApiModal() {
-      this.showModal = false
-      this.loadApis() // Recarregar vídeos após fechar o modal
-      this.idApi = -1
-    },
-    async loadApis() {
-      const storedApis = SystemController.getStorage('apisStorage') || []
-      this.apis = storedApis.map((a) => new Api(a.id, a.name, a.description, a.key))
-    },
-    editApi(index) {
-      const apiToEdit = this.currentApis
-
-      for (const api of apiToEdit) {
-        if (api.id === index) {
-          this.idApi = api.id
-        }
-      }
-
-      this.showModal = true
     }
   }
 }

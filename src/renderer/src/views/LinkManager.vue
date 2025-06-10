@@ -130,7 +130,6 @@ export default {
   data() {
     return {
       showModal: false,
-      links: [],
       idLink: -1,
       searchTerm: '',
       currentPage: 1,
@@ -140,6 +139,12 @@ export default {
   },
   computed: {
     ...mapGetters(['isSidebarOpen']),
+    links() {
+      // Usamos o getter genérico que criamos na store
+      const storedLinks = this.$store.getters.getStorage('linksStorage') || [];
+      // O mapeamento para a classe Link continua aqui, se você precisar dos métodos da classe
+      return storedLinks.map((v) => new Link(v.id, v.name, v.description, v.link));
+    },
     filteredLinks() {
       return this.links.filter(
         (item) =>
@@ -158,7 +163,6 @@ export default {
     }
   },
   created() {
-    SystemController.updateSystem()
     this.loadLinks()
   },
   methods: {
@@ -176,7 +180,7 @@ export default {
       }
     },
     async handleDelete(index) {
-      await SystemController.deleteLink(index)
+      SystemController.deleteLink(index)
       await this.loadLinks()
     },
     async loadLinks() {

@@ -42,6 +42,7 @@
   --link-text: #166333;
 
   --breadcrumb-color: #424242;
+  --breadcrumb-color-active: #121212;
 
   --font-bg: #f3e8ff;
   --font-text: #6b21a7;
@@ -129,6 +130,7 @@
   --link-text: #166333;
 
   --breadcrumb-color: #e4e4e4;
+  --breadcrumb-color-active: #F8F8F8;
 
   --font-bg: #f3e8ff;
   --font-text: #6b21a7;

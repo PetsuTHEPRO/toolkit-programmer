@@ -40,7 +40,7 @@
                 ></textarea>
               </div>
               <!-- Input para upload de PDF -->
-              <div v-if="!articleEdit" class="mb-3">
+              <div v-if="!isEditMode" class="mb-3">
                 <label for="materialPdf" class="form-label">Arquivo PDF</label>
                 <input
                   id="materialPdf"
@@ -51,25 +51,12 @@
                 />
               </div>
 
-              <div class="pdf-preview d-flex align-items-center justify-content-center">
-                <!-- Exibe o link de visualização do PDF -->
-                <a
-                  v-if="article.pdfPreviewUrl"
-                  :href="article.pdfPreviewUrl"
-                  target="_blank"
-                  class="btn btn-primary"
-                >
-                  Visualizar PDF
-                </a>
-
-                <!-- Exibe uma pré-visualização do PDF com iframe -->
-                <iframe
-                  v-if="article.pdfPreviewUrl"
-                  :src="article.pdfPreviewUrl"
-                  width="100"
-                  height="100"
-                  frameborder="0"
-                ></iframe>
+              <div class="pdf-preview d-flex flex-column align-items-center justify-content-center">
+                <webview
+                  v-if="pdfPreviewUrl"
+                  :src="pdfPreviewUrl"
+                  style="width: 100%; height: 300px; border: none"
+                ></webview>
               </div>
             </slot>
           </div>
@@ -100,10 +87,6 @@ export default {
       type: Boolean,
       default: false
     },
-    programmingLanguages: {
-      type: Array,
-      default: () => []
-    },
     idArticle: {
       type: Number,
       default: -1
@@ -111,41 +94,116 @@ export default {
   },
   data() {
     return {
-      titleModal: this.idArticle !== NO_ARTICLE_ID ? 'Editar' : 'Adicionar',
-      article: new Article(-1, '', '', '', '', ''),
-      articleEdit: null
+      titleModal: 'Adicionar',
+      article: new Article(-1, '', '', null, '', ''),
+      selectedFilePath: null
     }
   },
+  computed: {
+    isEditMode() {
+      return this.idArticle !== NO_ARTICLE_ID
+    },
+    pdfPreviewUrl() {
+      if (this.article.path) {
+        return `app://${this.article.path}`
+      }
+      return null
+    }
+  },
+  // O 'watch' foi removido e substituído pelo 'created'
   created() {
-    if (this.idArticle !== -1) {
-      const storedArticles = SystemController.getStorage('articlesStorage')
+    // Esta lógica agora roda no momento da criação do modal
+    if (this.isEditMode) {
+      this.titleModal = 'Editar'
+      this.loadArticleForEditing()
+    } else {
+      this.titleModal = 'Adicionar'
+      this.resetForm()
+    }
+  },
+  methods: {
+    resetForm() {
+      this.article = new Article(-1, '', '', null, '', '')
+      this.selectedFilePath = null
+    },
+    closeModal() {
+      this.$emit('close')
+    },
+    loadArticleForEditing() {
+      // --- CORREÇÃO APLICADA AQUI ---
+      // Buscamos os dados diretamente da store para garantir a reatividade.
+      const storedArticles = this.$store.getters.getStorage('articlesStorage')
+      console.log(storedArticles)
       const storedArticle = storedArticles.find((v) => v.id === this.idArticle)
       if (storedArticle) {
+        // Preenche o formulário com TODOS os dados existentes
         this.article = new Article(
           storedArticle.id,
           storedArticle.name,
           storedArticle.description,
-          storedArticle.pdfFileName,
-          storedArticle.pdfSize,
-          storedArticle.path
+          storedArticle.path,
+          storedArticle.pdfFilename,
+          storedArticle.pdfSize
         )
+        console.log("created: ", this.article)
       }
-    }
-  },
-  methods: {
-    closeModal() {
-      this.article = new Article(-1, '', '', '', '', '')
-      this.$emit('close')
     },
+    // Em ArticleModal.vue, dentro de 'methods'
+
     handleFileUpload(event) {
       const file = event.target.files[0]
-      if (file && file.type === 'application/pdf') {
-        this.article.pdfFile = file
-        this.article.pdfFileName = file.name
-        this.article.pdfSize = (file.size / 1024).toFixed(2) + ' KB' // Converte o tamanho para KB
-      } else {
-        alert('Por favor, selecione um arquivo PDF.')
+      if (file) {
+        this.selectedFilePath = file.path
+        // GARANTA QUE A ORDEM AQUI TAMBÉM ESTEJA CORRETA:
+        this.article = new Article(
+          this.article.id,
+          this.article.name,
+          this.article.description,
+          file.path, // 4. O caminho do arquivo para o preview
+          file.name, // 5. O nome original do arquivo
+          `${(file.size / 1024).toFixed(2)} KB` // 6. O tamanho do arquivo
+        )
       }
+    },
+    async submitArticle() {
+      let finalArticlePath = this.article.path
+
+      // 1. Se um novo arquivo foi selecionado, faz o upload e obtém o novo caminho
+      if (this.selectedFilePath) {
+        try {
+          finalArticlePath = await window.api.files.handleFileUpload(this.selectedFilePath)
+        } catch (error) {
+          console.error('Erro no upload:', error)
+          alert('Erro ao fazer upload do arquivo.')
+          return
+        }
+      }
+
+      if (this.idArticle === NO_ARTICLE_ID && !finalArticlePath) {
+        alert('Por favor, anexe um documento para o novo artigo.')
+        return
+      }
+      console.log("Article antes:", this.article)
+      // 2. Monta o objeto final com TODOS os campos necessários
+      const articleData = {
+        id: this.generateId(),
+        name: this.article.name,
+        description: this.article.description,
+        path: finalArticlePath, // O caminho para o arquivo salvo
+        pdfFilename: this.article.pdfFilename, // O nome original do arquivo
+        pdfSize: this.article.pdfSize // O tamanho do arquivo
+      }
+      console.log("Depois:", articleData)
+
+      // 3. Salva ou Edita no banco de dados
+      if (this.idArticle !== NO_ARTICLE_ID) {
+        console.log(articleData)
+        SystemController.editArticle({ ...articleData, id: this.idArticle })
+      } else {
+        SystemController.addArticle(articleData)
+      }
+
+      this.closeModal()
     },
     generateId() {
       return (
@@ -154,41 +212,6 @@ export default {
           .toString(36)
           .padStart(4, '0')
       )
-    },
-    async submitArticle() {
-      const articleData = {
-        ...this.article.toDTO(),
-        id: this.generateId()
-      }
-
-      if (this.idArticle !== NO_ARTICLE_ID) {
-        SystemController.editArticle({ ...articleData, id: this.idArticle })
-      } else {
-        // Modo criação
-        if (!this.article.pdfFile) {
-          alert('Por favor, faça upload de um arquivo PDF.')
-          return
-        }
-
-        try {
-          // Lê o conteúdo do arquivo PDF como base64 (ou você pode salvar diretamente o File)
-          const pdfBase64 = await this.readFileAsDataURL(this.article.pdfFile)
-          SystemController.addArticle({ ...articleData, path: pdfBase64 })
-        } catch (error) {
-          console.error('Erro ao fazer upload do PDF:', error)
-          alert('Erro ao fazer upload do PDF.')
-        }
-      }
-
-      this.closeModal()
-    },
-    readFileAsDataURL(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = () => resolve(reader.result)
-        reader.onerror = reject
-        reader.readAsDataURL(file)
-      })
     }
   }
 }

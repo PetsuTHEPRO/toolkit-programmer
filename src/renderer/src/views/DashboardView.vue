@@ -11,10 +11,7 @@ import UpdateHistoryModal from '@renderer/components/modals/UpdateHistoryModal.v
   >
     <UpdateHistoryModal />
     <Sidebar />
-    <div
-      class="row w-100 m-0"
-      :class="isSidebarOpen ? 'open-menu' : 'close-menu'"
-    >
+    <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <div class="col">
         <nav aria-label="breadcrumb" class="my-3">
           <ol class="breadcrumb">
@@ -37,12 +34,14 @@ import UpdateHistoryModal from '@renderer/components/modals/UpdateHistoryModal.v
           </div>
         </div>
 
+        <!-- <InsightCard /> -->
+
+        <!-- Log de Atividades -->
         <!-- Log de Atividades -->
         <div class="row mb-4">
           <div class="col">
             <div class="card">
-              <div
-                class="card-header d-flex align-items-center justify-content-between">
+              <div class="card-header d-flex align-items-center justify-content-between">
                 <div class="console d-flex align-items-center">
                   <i class="bx bx-history fs-4 me-2" style="color: #727ddc"></i>
                   <h5 class="mt-2">{{ $t('pages.dashboard.activityLog.title') }}</h5>
@@ -50,16 +49,22 @@ import UpdateHistoryModal from '@renderer/components/modals/UpdateHistoryModal.v
                 <button class="btn btn-danger" @click="clearLog">{{ $t('buttons.clear') }}</button>
               </div>
               <div class="card-body p-0">
-                <pre class="p-3 m-0" style="max-height: 250px">
-              <div v-if="logData.length === 0" class="d-flex align-items-center justify-content-center text-center text-gray mt-3">
-                <span class="text-secondary me-2">{{ $t('pages.dashboard.activityLog.empty') }}</span>
-              </div>
-              <div v-for="(log, index) in logData" v-else :key="index" class="d-flex align-items-center">
-                <span class="text-secondary me-2">[{{ log.timestamp }}]</span>
-                <span class="me-2" :class="getLogTypeColor(log.type)">{{ log.type }}</span>
-                <span>{{ log.description }}</span>
-              </div>
-            </pre>
+                <pre class="log-box p-3" style="max-height: 250px">
+                  <div v-if="logData.length === 0" class="d-flex align-items-center justify-content-center text-center text-gray mt-3">
+                    <span class="text-secondary me-2">{{ $t('pages.dashboard.activityLog.empty') }}</span>
+                  </div>
+                  <!-- ESTRUTURA DO LOG CORRIGIDA -->
+                  <div v-for="log in logData" :key="log.id" class="log-line d-flex">
+                    <!-- Parte 1: O prefixo que NÃO quebra a linha -->
+                    <div class="log-prefix me-2">
+                      <span class="text-secondary">[{{ new Date(log.timestamp).toLocaleString() }}]</span>
+                      <span class="ms-2" :class="log.level === 'ERROR' || log.level === 'FATAL' ? 'text-danger' : 'text-warning'">[{{ log.level }}]</span>
+                      <span class="ms-2 text-info">{{ log.source === 'USER_ACTIVITY' ? 'USER' : log.source === 'APP_EVENT' ? 'SYSTEM' : log.source }}</span>
+                    </div>
+                    <!-- Parte 2: A mensagem que PODE quebrar a linha -->
+                    <span class="log-message">{{ log.message }}</span>
+                  </div>
+                </pre>
               </div>
             </div>
           </div>
@@ -69,8 +74,7 @@ import UpdateHistoryModal from '@renderer/components/modals/UpdateHistoryModal.v
         <div class="row mb-4">
           <div class="col">
             <div class="card">
-              <div
-                class="card-header d-flex align-items-center justify-content-between">
+              <div class="card-header d-flex align-items-center justify-content-between">
                 <h5>{{ $t('pages.dashboard.dailyActivity.title') }}</h5>
                 <div class="d-flex align-items-center">
                   <div class="d-flex align-items-center me-2">
@@ -152,47 +156,65 @@ export default {
     return {
       imageSrc: null,
       themeMode: getTheme() || 'light',
-      showUpdateHistory: true
+      showUpdateHistory: true,
+      stats: [], // Começa como um array vazio, que será preenchido
+      logEntries: [] // Armazena os logs de atividade
     }
   },
   computed: {
     ...mapGetters(['isSidebarOpen', 'isSubmenuOpen']),
-    stats() {
-      return [
+    logData() {
+      // Ordena os logs mais recentes primeiro
+      return this.logEntries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    }
+  },
+  async created() {
+    // Busca os dados quando o componente é criado
+    this.statsDashboard = await SystemController.getDashboardStats()
+  },
+  mounted() {
+    // Atualiza baseado no localStorage APÓS a inicialização
+    this.showUpdateHistory = localStorage.getItem('hideUpdateHistory') !== 'true'
+    this.loadDashboardData()
+  },
+  methods: {
+    // Função central para carregar todos os dados do dashboard
+    async loadDashboardData() {
+      // Promise.all busca as estatísticas e os logs ao mesmo tempo, é mais rápido.
+      const [statsData, activities] = await Promise.all([
+        SystemController.getDashboardStats(),
+        SystemController.getRecentActivities()
+      ])
+
+      // AJUSTE: Construímos o array de stats aqui para combinar com o template
+      this.stats = [
         {
           title: this.$t('pages.dashboard.stats.colors'),
-          value: SystemController.getColor(),
+          value: statsData.palettes || 0, // Usamos os valores recebidos
           icon: 'bx bx-palette',
           class: 'card-palette'
         },
         {
           title: this.$t('pages.dashboard.stats.links'),
-          value: SystemController.getLink(),
+          value: statsData.links || 0,
           icon: 'bx bx-link',
           class: 'card-link'
         },
         {
           title: this.$t('pages.dashboard.stats.fonts'),
-          value: SystemController.getFont(),
+          value: statsData.fonts || 0,
           icon: 'bx bx-text',
           class: 'card-font'
         }
       ]
+
+      this.logEntries = activities
     },
-    logData() {
-      return SystemController.getMessagesLog()
-    }
-  },
-  mounted(){
-      // Atualiza baseado no localStorage APÓS a inicialização
-      this.showUpdateHistory = localStorage.getItem('hideUpdateHistory') !== 'true'
-  },
-  created() {
-    SystemController.updateSystem()
-  },
-  methods: {
-    clearLog() {
-      SystemController.clearMessagesLog()
+
+    async clearLog() {
+      await SystemController.clearUserLogs()
+      // Atualiza a lista na tela (agora estará vazia)
+      this.logEntries = []
     },
     getLogTypeColor(type) {
       switch (type) {
@@ -314,5 +336,24 @@ body {
 
 .text-article {
   color: var(--text-article);
+}
+
+/* ESTILOS CORRIGIDOS PARA O LOG */
+.log-box {
+  margin: 0;
+  background-color: var(--card-element-bg);
+}
+
+.log-prefix {
+  /* Impede que o prefixo (timestamp, level, source) quebre a linha */
+  white-space: nowrap;
+  flex-shrink: 0; /* Impede que o prefixo seja "esmagado" pela mensagem longa */
+}
+
+.log-message {
+  /* Permite que apenas a mensagem quebre a linha */
+  white-space: pre-wrap;
+  /* CORREÇÃO: Impede que palavras sejam cortadas no meio, quebrando apenas quando necessário */
+  overflow-wrap: break-word;
 }
 </style>

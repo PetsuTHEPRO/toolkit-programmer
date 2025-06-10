@@ -4,8 +4,10 @@ import ColorModal from '@renderer/components/modals/ColorModal.vue'
 </script>
 
 <template>
-  <div class="container-fluid d-flex p-0"
-    :class="themeMode === 'dark' ? 'dark-theme' : 'light-theme'">
+  <div
+    class="container-fluid d-flex p-0"
+    :class="themeMode === 'dark' ? 'dark-theme' : 'light-theme'"
+  >
     <Sidebar />
     <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <div class="col">
@@ -40,7 +42,7 @@ import ColorModal from '@renderer/components/modals/ColorModal.vue'
             <button
               type="button"
               class="btn-system btn-adicionar me-2 d-flex align-items-center"
-              @click="showModal = true"
+              @click="openAddModal"
             >
               <i class="bx bx-plus-circle me-1"></i>
               {{ $t('buttons.upload') }}
@@ -52,13 +54,13 @@ import ColorModal from '@renderer/components/modals/ColorModal.vue'
                 <li v-if="currentItems.length === 0" class="text-center text-gray mt-3">
                   {{ $t('messages.she-empty', { name: $t('pages.palette.title').toLowerCase() }) }}
                 </li>
-                <div v-for="(palette, index) in currentItems" :key="index" class="col-md-4 mt-4">
+                <div v-for="palette in currentItems" :key="palette.id" class="col-md-4 mt-4">
                   <ColorPalette
-                    :index="index"
+                    :id="palette.id"
                     :colors="palette.colors"
                     :title="palette.name"
                     :description="palette.description"
-                    @edit-palette="handleEditPalette"
+                    @edit-palette="editPalette"
                   />
                 </div>
               </ul>
@@ -72,13 +74,15 @@ import ColorModal from '@renderer/components/modals/ColorModal.vue'
             >
               <i class="bx bx-chevron-left me-2"></i> {{ $t('buttons.previous') }}
             </button>
-            <span>{{  $t('pagination', { currentPage: currentPage, totalPages: totalPages}) }}</span>
+            <span>{{
+              $t('pagination', { currentPage: currentPage, totalPages: totalPages })
+            }}</span>
             <button
               class="btn btn-control d-flex align-items-center"
               :disabled="currentPage === totalPages"
               @click="nextPage"
             >
-              {{  $t('buttons.next') }} <i class="bx bx-chevron-right fs-5"></i>
+              {{ $t('buttons.next') }} <i class="bx bx-chevron-right fs-5"></i>
             </button>
           </div>
           <ColorModal
@@ -97,7 +101,6 @@ import ColorModal from '@renderer/components/modals/ColorModal.vue'
 <script>
 import { mapGetters } from 'vuex'
 import ColorPalette from '../components/ColorPalette.vue'
-import SystemController from '../controller/SystemController'
 import { getTheme } from '../service/userPreferences'
 
 export default {
@@ -107,7 +110,6 @@ export default {
   data() {
     return {
       showModal: false,
-      palettes: [],
       idPalette: -1,
       currentPage: 1,
       itemsPerPage: 9,
@@ -117,6 +119,11 @@ export default {
   },
   computed: {
     ...mapGetters(['isSidebarOpen']),
+    palettes() {
+      // O 'loadPalettes' no gerenciador já faz o JSON.parse,
+      // então os dados aqui já chegam com a propriedade 'colors' como um array.
+      return this.$store.getters.getStorage('palettesStorage') || []
+    },
     filteredItems() {
       return this.palettes.filter(
         (item) =>
@@ -134,10 +141,6 @@ export default {
       return totalPages === 0 ? 1 : totalPages
     }
   },
-  created() {
-    SystemController.updateSystem()
-    this.palettes = SystemController.getStorage('palettesStorage')
-  },
   methods: {
     handleSearch() {
       this.currentPage = 1 // Reset to first page on new search
@@ -154,15 +157,19 @@ export default {
     },
     clearSearch() {
       this.searchTerm = ''
-    },
+    }, // 3. MÉTODOS DE AÇÃO E MODAL CORRIGIDOS
     onClosePaletteModal() {
       this.showModal = false
-      SystemController.updateSystem()
-      this.palettes = SystemController.getStorage('palettesStorage')
       this.idPalette = -1
+      // A chamada de recarregamento manual foi REMOVIDA.
     },
-    handleEditPalette(index) {
-      this.idPalette = index
+    openAddModal() {
+      this.idPalette = -1
+      this.showModal = true
+    },
+    // Este método agora recebe o ID real da paleta, não o índice.
+    editPalette(paletteId) {
+      this.idPalette = paletteId
       this.showModal = true
     }
   }

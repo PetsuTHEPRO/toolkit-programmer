@@ -7,20 +7,16 @@
     </div>
 
     <div class="calendar-grid">
-      <div
-        v-for="(activity, dayPrevious) in dataPrevious"
-        :key="dayPrevious"
-        class="calendar-previous-day d-flex align-items-center justify-content-center"
-      >
-        {{ activity }}
-      </div>
-      <div
-        v-for="(activity, day) in data"
-        :key="day"
-        :style="getDayStyle(activity)"
-        class="calendar-day d-flex align-items-center justify-content-center"
-      >
-        {{ day }}
+      <div v-for="(day, index) in daysWithPadding" :key="index">
+        <div
+          v-if="day.type === 'day'"
+          :style="getDayStyle(day.activity)"
+          class="calendar-day d-flex align-items-center justify-content-center"
+          :title="`${day.activity} atividades`"
+        >
+          {{ day.number }}
+        </div>
+        <div v-else class="calendar-padding"></div>
       </div>
     </div>
   </div>
@@ -32,87 +28,64 @@ import SystemController from '../controller/SystemController'
 export default {
   data() {
     return {
-      data: {},
-      dataPrevious: {},
-      dayNames: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+      // O 'data' agora será preenchido com os dados do banco
+      activityData: {},
+      daysWithPadding: [],
+      dayNames: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
+      currentDate: new Date()
     }
   },
-  created() {
-    this.data = this.generateActivityData()
-    this.previousData = this.getPreviousData()
+  // Usamos 'mounted' porque é assíncrono e garante que o componente está na tela
+  async mounted() {
+    this.buildCalendar()
   },
   methods: {
-    getDayStyle(activity) {
+    async buildCalendar() {
+      const year = this.currentDate.getFullYear()
+      const month = this.currentDate.getMonth() + 1 // getMonth() é 0-11
+
+      // 1. Busca as atividades do banco de dados
+      const activities = await SystemController.getActivitiesForMonth(year, month)
+
+      const daysInMonth = new Date(year, month, 0).getDate()
+      const firstDayOfMonth = new Date(year, month - 1, 1).getDay() // 0 = Domingo
+
+      const calendarDays = []
+
+      // 2. Adiciona "espaçadores" para os dias do mês anterior
+      for (let i = 0; i < firstDayOfMonth; i++) {
+        calendarDays.push({ type: 'padding' })
+      }
+
+      // 3. Adiciona os dias do mês atual, juntando com os dados de atividade
+      for (let day = 1; day <= daysInMonth; day++) {
+        calendarDays.push({
+          type: 'day',
+          number: day,
+          activity: activities[day] || 0 // Pega a contagem do dia ou 0 se não houver
+        })
+      }
+
+      this.daysWithPadding = calendarDays
+    },
+
+    getDayStyle(activityCount) {
+      // Sua lógica de intensidade de cor continua perfeita
       const colors = ['#161B22', '#39D353', '#26A641', '#006D32', '#0E4429']
+      let intensity = 0
+      if (activityCount >= 1 && activityCount <= 9) intensity = 1
+      else if (activityCount >= 10 && activityCount <= 27) intensity = 2
+      else if (activityCount >= 28 && activityCount <= 54) intensity = 3
+      else if (activityCount >= 55) intensity = 4
+
       return {
-        backgroundColor: colors[this.getIntensity(activity)],
+        backgroundColor: colors[intensity],
         width: '30px',
         height: '30px',
         margin: '2px',
         display: 'inline-block',
         borderRadius: '25px'
       }
-    },
-
-    getIntensity(activity) {
-      if (activity === 0) {
-        return 0
-      } else if (activity >= 1 && activity <= 9) {
-        return 1
-      } else if (activity >= 10 && activity <= 27) {
-        return 2
-      } else if (activity >= 28 && activity <= 54) {
-        return 3
-      } else if (activity >= 55) {
-        return 4
-      } else {
-        return 5
-      }
-    },
-    getPreviousData() {
-      this.dataPrevious = {}
-      const today = new Date()
-      const year = today.getFullYear()
-      const month = today.getMonth()
-
-      // Obtém o dia da semana do último dia do mês anterior
-      const lastDayOfPreviousMonth = new Date(year, month, 0)
-      const weekDay = lastDayOfPreviousMonth.getDay() // Dia da semana (0 = Domingo, 6 = Sábado)
-      const lastDateOfPreviousMonth = lastDayOfPreviousMonth.getDate() // Último dia do mês anterior
-
-      // Preencher os dias da semana anteriores ao mês atual com os dias do mês anterior
-      // Para inverter a ordem, começamos com o primeiro dia "não exibido" da semana
-      for (let i = 0; i <= weekDay; i++) {
-        this.dataPrevious[i] = lastDateOfPreviousMonth - weekDay + i
-      }
-
-      return this.dataPrevious
-    },
-
-    generateActivityData() {
-      const today = new Date()
-      const year = today.getFullYear()
-      const month = today.getMonth()
-      const daysInMonth = new Date(year, month + 1, 0).getDate()
-      const resertCalendar = SystemController.getCurrentCalendar()
-      const calendarWithRoutine = SystemController.getDiaryRoutine()
-
-      // Preencher os dias do mês atual com 0
-      for (let i = 1; i <= daysInMonth; i++) {
-        this.data[i] = 0
-      }
-
-      if (resertCalendar !== month + 1) {
-        SystemController.resetCalendar(month + 1)
-      } else {
-        for (let chave in calendarWithRoutine) {
-          if (Object.prototype.hasOwnProperty.call(calendarWithRoutine, chave)) {
-            this.data[chave] = calendarWithRoutine[chave]
-          }
-        }
-      }
-
-      return this.data
     }
   }
 }
@@ -143,8 +116,8 @@ export default {
 }
 
 .calendar-previous-day {
-  background-color: #EBEDF0; /* Cinza claro */
-  color: #A9A9A9; /* Cinza para texto */
+  background-color: #ebedf0; /* Cinza claro */
+  color: #a9a9a9; /* Cinza para texto */
   width: 30px;
   height: 30px;
   margin: 2px;

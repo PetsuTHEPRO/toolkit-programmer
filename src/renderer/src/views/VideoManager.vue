@@ -174,7 +174,6 @@ export default {
       idVideo: -1,
       isLoading: true, // Adicione esta linha
       videosPerPage: 9,
-      videos: [],
       selectedVideo: null, // Controla qual vídeo está sendo assistido
       thumbnailUrl: '',
       themeMode: getTheme()
@@ -182,6 +181,15 @@ export default {
   },
   computed: {
     ...mapGetters(['isSidebarOpen']),
+    // 1. ESTA É A MUDANÇA PRINCIPAL. 'videos' agora é um espelho reativo da store.
+    videos() {
+      const storedVideos = this.$store.getters.getStorage('videosStorage') || []
+      // Mapeia para a classe Video, como você já fazia, o que está correto.
+      return storedVideos.map(
+        (v) =>
+          new Video(v.id, v.name, v.description, v.link, v.thumbnailUrl, v.titulo, v.apiIdVideo)
+      )
+    },
     filteredVideos() {
       return this.videos.filter((video) => {
         const search = this.searchTerm.toLowerCase()
@@ -190,7 +198,6 @@ export default {
         return name.includes(search) || description.includes(search)
       })
     },
-
     currentVideos() {
       const indexOfLastVideo = this.currentPage * this.videosPerPage
       const indexOfFirstVideo = indexOfLastVideo - this.videosPerPage
@@ -201,11 +208,41 @@ export default {
       return totalPages === 0 ? 1 : totalPages
     }
   },
-  created() {
-    SystemController.updateSystem()
-    this.loadVideos()
+  watch: {
+    // ESTE É O OBSERVADOR. Ele será acionado sempre que a 'computed property' `videos` mudar.
+    videos: {
+      // O 'handler' é a função que executa quando há uma mudança.
+      async handler(newVideoList) {
+        if (!newVideoList || newVideoList.length === 0) {
+          this.isLoading = false
+          return
+        }
+        this.isLoading = true // Ativa o skeleton loader
+        await this.preloadImages(newVideoList) // Espera as imagens carregarem
+        this.isLoading = false // Desativa o skeleton loader
+      },
+      // 'immediate: true' força a execução do handler assim que o componente é criado,
+      // para carregar as imagens da lista inicial que vem da store.
+      immediate: true
+    }
   },
   methods: {
+    // Reintroduzimos o preloadImages como um método normal.
+    async preloadImages(videosToLoad) {
+      const promises = videosToLoad.map((video) => {
+        return new Promise((resolve) => {
+          if (!video.thumbnailUrl) {
+            resolve() // Resolve imediatamente se não houver URL
+            return
+          }
+          const img = new Image()
+          img.src = video.thumbnailUrl
+          img.onload = resolve // Resolve quando a imagem carrega
+          img.onerror = resolve // Resolve também em caso de erro para não travar a UI
+        })
+      })
+      await Promise.all(promises)
+    },
     handlePrevPage() {
       this.currentPage = Math.max(this.currentPage - 1, 1)
     },
@@ -226,48 +263,8 @@ export default {
       const fim = key.slice(-12)
       return `${inicio}...${fim}`
     },
-    async loadVideos() {
-      this.isLoading = true // Ativa o estado de carregamento
-      const storedVideos = SystemController.getStorage('videosStorage') || []
-      this.videos = storedVideos.map(
-        (v) =>
-          new Video(
-            v.id,
-            v.name,
-            v.description,
-            v.link,
-            v.thumbnailUrl,
-            v.titulo,
-            v.apiIdVideo // Adicione se necessário
-          )
-      )
-      // Agora vamos esperar as imagens carregarem
-      await this.preloadImages()
-
-      // Simula um delay de carregamento (você pode remover isso em produção)
-      this.isLoading = false
-    },
-    // Adicione este método para pré-carregar as imagens
-    async preloadImages() {
-      const promises = this.videos.map((video) => {
-        return new Promise((resolve) => {
-          if (!video.thumbnailUrl) {
-            resolve()
-            return
-          }
-
-          const img = new Image()
-          img.src = video.thumbnailUrl
-          img.onload = resolve
-          img.onerror = resolve // Resolve mesmo se houver erro para não travar a UI
-        })
-      })
-
-      await Promise.all(promises)
-    },
-    handleDelete(index) {
+    async handleDelete(index) {
       SystemController.deleteVideo(index)
-      this.loadVideos() // Recarregar a lista atualizada
     },
     editVideo(index) {
       const videoToEdit = this.currentVideos
@@ -283,7 +280,6 @@ export default {
     // ... outros métodos permanecem iguais ...
     onCloseVideoModal() {
       this.showModal = false
-      this.loadVideos() // Recarregar vídeos após fechar o modal
       this.idVideo = -1
     }
   }

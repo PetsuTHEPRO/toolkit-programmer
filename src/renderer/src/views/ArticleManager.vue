@@ -68,7 +68,7 @@ import Sidebar from '@renderer/components/Sidebar.vue'
                 <h5 class="card-title">{{ article.name }}</h5>
                 <button
                   class="btn-system btn-link ms-2 d-flex align-items-center"
-                  @click="handleOpenArticle(index)"
+                  @click="handleOpenArticle(article.id)"
                 >
                   {{ $t('buttons.open') }}
                   <i class="bx bx-link-external ms-1"></i>
@@ -134,7 +134,6 @@ export default {
     return {
       showModal: false,
       searchTerm: '',
-      articles: [],
       idArticle: -1,
       currentPage: 1,
       articlesPerPage: 6,
@@ -143,6 +142,13 @@ export default {
   },
   computed: {
     ...mapGetters(['isSidebarOpen']),
+    // TORNA A LISTA DE ARTIGOS REATIVA
+    articles() {
+      const storedArticles = this.$store.getters.getStorage('articlesStorage') || [];
+      return storedArticles.map(
+        (a) => new Article(a.id, a.name, a.description, a.pdfFileName, a.pdfSize, a.path)
+      )
+    },
     filteredArticles() {
       return this.articles.filter(
         (article) =>
@@ -161,19 +167,9 @@ export default {
       return totalPages === 0 ? 1 : totalPages
     }
   },
-  created() {
-    SystemController.updateSystem()
-    this.loadArticles()
-  },
   methods: {
     handlePrevPage() {
       this.currentPage = Math.max(this.currentPage - 1, 1)
-    },
-    loadArticles() {
-      const storedArticles = SystemController.getStorage('articlesStorage') || []
-      this.articles = storedArticles.map(
-        (a) => new Article(a.id, a.name, a.description, a.pdfFileName, a.pdfSize, a.path)
-      )
     },
     handleNextPage() {
       this.currentPage = Math.min(this.currentPage + 1, this.totalPages)

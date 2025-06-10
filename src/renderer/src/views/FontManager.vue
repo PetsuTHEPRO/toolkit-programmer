@@ -183,7 +183,7 @@ export default {
     }
   },
   created() {
-    SystemController.updateSystem()
+    SystemController.initializeSystem()
     this.items = SystemController.getStorage('fontsStorage')
   },
   methods: {

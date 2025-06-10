@@ -89,7 +89,7 @@ export default {
   },
   created() {
     document.title = 'Programmer\'s Toolkit'
-    SystemController.updateSystem()
+    SystemController.initializeSystem()
   }
 }
 </script>

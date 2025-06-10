@@ -3,12 +3,14 @@
     <div class="card-header p-4">
       <div class="d-flex justify-content-between align-items-center">
         <h5 class="card-title text-lg">{{ title }}</h5>
+        <!-- Dentro do template de ColorPalette.vue -->
+
         <div class="icons d-flex align-items-center">
-          <i
-            class="bx bx-trash me-1 cursor-pointer"
-            @click="handleDelete(index, colors.length)"
-          ></i>
-          <i class="bx bx-edit cursor-pointer" @click="editPalette(index)"></i>
+          <!-- A chamada handleDelete não precisa mais passar argumentos -->
+          <i class="bx bx-trash me-1 cursor-pointer" @click="handleDelete"></i>
+
+          <!-- A chamada editPalette não precisa mais passar argumentos -->
+          <i class="bx bx-edit cursor-pointer" @click="editPalette"></i>
         </div>
       </div>
       <p class="card-text text-muted">{{ description }}</p>
@@ -38,7 +40,8 @@ import notificationService from '@renderer/service/notificationService.js'
 import SystemController from '@renderer/controller/SystemController.js'
 export default {
   props: {
-    index: {
+    // CORREÇÃO 1: Trocamos 'index' por 'id'. Este é o ID do banco de dados.
+    id: {
       type: Number,
       required: true
     },
@@ -89,11 +92,12 @@ export default {
           console.error('Erro ao copiar o texto: ', err)
         })
     },
-    handleDelete(index, count) {
-      SystemController.deletePalette(index, count)
+    handleDelete() {
+      // O segundo argumento 'count' não é mais necessário.
+      SystemController.deletePalette(this.id)
     },
-    editPalette(index) {
-      this.$emit('edit-palette', index)
+    editPalette() {
+      this.$emit('edit-palette', this.id)
     }
   }
 }
@@ -119,7 +123,10 @@ export default {
 
 .color-box {
   position: relative;
-  transition: flex-grow 0.3s ease, transform 0.3s ease, z-index 0s;
+  transition:
+    flex-grow 0.3s ease,
+    transform 0.3s ease,
+    z-index 0s;
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -149,9 +156,9 @@ export default {
   opacity: 1; /* Mostra o código da cor quando o mouse está sobre ela */
 }
 
-.card-text{
+.card-text {
   display: -webkit-box;
-  color: #A2A89D !important;
+  color: #a2a89d !important;
   -webkit-line-clamp: 2; /* Limita para 2 linhas */
   -webkit-box-orient: vertical;
   height: 50px;
@@ -159,7 +166,7 @@ export default {
   text-overflow: ellipsis;
 }
 
-.bx{
+.bx {
   font-size: 20px;
   width: 25px;
   height: 25px;
@@ -169,12 +176,12 @@ export default {
   align-items: center;
 }
 
-.bx-trash:hover{
+.bx-trash:hover {
   background-color: rgba(255, 107, 107, 0.884);
   border-radius: 15px;
 }
 
-.bx-edit:hover{
+.bx-edit:hover {
   background-color: rgba(107, 220, 255, 0.884);
   border-radius: 15px;
 }

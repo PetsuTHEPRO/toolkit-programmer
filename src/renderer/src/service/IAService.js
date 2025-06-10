@@ -394,50 +394,59 @@ export default class IAServico {
 
       return this.processResponse(chat)
     } catch (err) {
+      // 1. Loga o erro completo no console do terminal para depuração profunda.
       console.error('Erro na chamada da IA:', err)
 
-      // Tratamento específico por tipo de erro
-      if (err.name === 'AbortError') {
-        return '⏰ Erro: Timeout - A requisição demorou muito para responder'
-      }
+      // 2. Define valores padrão para a mensagem e o nível do erro.
+      let errorMessage = `❌ Ocorreu um erro desconhecido: ${err.message || 'Verifique os logs do aplicativo.'}`
+      let errorLevel = 'ERROR'
 
+      // 3. Lógica para determinar a mensagem e o nível de erro específicos.
       if (err.error) {
         // Erros da API OpenRouter
         const status = err.error.code
         const errorData = err.error
-
         switch (status) {
           case 400:
-            return `❌ Erro 400: Solicitação inválida - ${errorData.error?.message || 'Verifique os parâmetros'}`
+            errorMessage = `❌ Erro 400: Solicitação inválida - ${errorData.error?.message || 'Verifique os parâmetros.'}`
+            break
           case 401:
-            return '🔑 Erro 401: Não autorizado - Verifique sua API_KEY do OpenRouter'
+            errorMessage = '🔑 Erro 401: Não autorizado - Verifique sua API_KEY do OpenRouter.'
+            break
           case 402:
-            return '💳 Erro 402: Pagamento necessário - Você pode ter excedido seu limite gratuito'
+            errorMessage =
+              '💳 Erro 402: Pagamento necessário - Você pode ter excedido seu limite gratuito.'
+            break
           case 403:
-            return '🚫 Erro 403: Proibido - Seu acesso a este modelo foi negado'
+            errorMessage = '🚫 Erro 403: Proibido - Seu acesso a este modelo foi negado.'
+            break
           case 404:
-            return '🔍 Erro 404: Modelo não encontrado - Verifique o nome do modelo'
+            errorMessage = '🔍 Erro 404: Modelo não encontrado - Verifique o nome do modelo.'
+            break
           case 429:
-            return `🐌 Erro 429: Muitas requisições - ${errorData.error?.message || 'Tente novamente mais tarde'}`
+            errorMessage = `🐌 Erro 429: Muitas requisições - Tente novamente mais tarde.`
+            break
           case 500:
-            return '⚙️ Erro 500: Problema no servidor OpenRouter - Tente novamente mais tarde'
           case 503:
-            return '🛠️ Erro 503: Serviço indisponível - O OpenRouter pode estar em manutenção'
+            errorMessage = `⚙️ Erro ${status}: Problema no servidor OpenRouter. O serviço pode estar temporariamente indisponível.`
+            break
           default:
-            return `❌ Erro ${status}: ${errorData.error?.message || 'Erro desconhecido na API'}`
+            errorMessage = `❌ Erro ${status}: ${errorData.error?.message || 'Erro desconhecido na API.'}`
         }
+      } else if (err.code === 'ENOTFOUND' || err.code === 'ECONNABORTED') {
+        errorMessage =
+          '🌐 Erro de conexão: Verifique sua internet ou o OpenRouter pode estar offline.'
+      } else if (err.message && err.message.includes('API_KEY')) {
+        errorMessage = '🔐 Erro de autenticação: API_KEY inválida ou não configurada.'
+      } else if (err.name === 'AbortError') {
+        errorMessage = '⏰ Erro: Timeout - A requisição demorou muito para responder.'
       }
 
-      if (err.code === 'ENOTFOUND' || err.code === 'ECONNABORTED') {
-        return '🌐 Erro de conexão: Verifique sua internet ou o OpenRouter pode estar offline'
-      }
+      // 4. Salva o log no banco de dados com a mensagem e o nível corretos.
+      fileManager.addLog(errorLevel, 'AI_SERVICE', errorMessage)
 
-      if (err.message.includes('API_KEY')) {
-        return '🔐 Erro de autenticação: API_KEY inválida ou não configurada'
-      }
-
-      // Erros genéricos
-      return `❌ Ocorreu um erro: ${err.message || 'Erro desconhecido'}`
+      // 5. Retorna a mensagem de erro específica para ser exibida na interface.
+      return errorMessage
     }
   }
 

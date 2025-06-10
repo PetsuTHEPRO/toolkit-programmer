@@ -4,7 +4,10 @@ import FrameworkModal from '../components/modals/FrameworkModal.vue'
 </script>
 
 <template>
-  <div class="container-fluid d-flex p-0" :class="themeMode === 'dark' ? 'dark-theme' : 'light-theme'">
+  <div
+    class="container-fluid d-flex p-0"
+    :class="themeMode === 'dark' ? 'dark-theme' : 'light-theme'"
+  >
     <Sidebar />
     <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
       <!-- Título da Página -->
@@ -39,17 +42,20 @@ import FrameworkModal from '../components/modals/FrameworkModal.vue'
             <button
               type="button"
               class="btn-system btn-adicionar me-2 d-flex align-items-center"
-              @click="showModal = true"
+              @click="openAddModal"
             >
               <i class="bx bx-plus-circle me-1"></i>
-              {{  $t('buttons.upload') }}
+              {{ $t('buttons.upload') }}
             </button>
           </div>
           <div v-if="frameworks.length === 0" class="card-body card-element py-0">
             <div class="overflow-auto" style="max-height: 400px">
               <ul class="list-unstyled">
-                <li class="text-center text-gray mt-3">{{
-                    $t('messages.he-empty', { name: $t('sidebar.developers.framework').toLowerCase() })
+                <li class="text-center text-gray mt-3">
+                  {{
+                    $t('messages.he-empty', {
+                      name: $t('sidebar.developers.framework').toLowerCase()
+                    })
                   }}
                 </li>
               </ul>
@@ -75,7 +81,8 @@ import FrameworkModal from '../components/modals/FrameworkModal.vue'
                     aria-controls="description"
                     aria-selected="true"
                   >
-                    {{ $t('buttons.description') }} <i class="bx bx-info-circle" style="font-size: 0.9rem"></i>
+                    {{ $t('buttons.description') }}
+                    <i class="bx bx-info-circle" style="font-size: 0.9rem"></i>
                   </button>
                   <button
                     :id="`installation-tab-${index}`"
@@ -86,7 +93,8 @@ import FrameworkModal from '../components/modals/FrameworkModal.vue'
                     aria-controls="installation"
                     aria-selected="false"
                   >
-                    {{ $t('buttons.installation') }} <i class="bx bx-download" style="font-size: 0.9rem"></i>
+                    {{ $t('buttons.installation') }}
+                    <i class="bx bx-download" style="font-size: 0.9rem"></i>
                   </button>
                   <button
                     :id="`documentation-tab-${index}`"
@@ -118,10 +126,10 @@ import FrameworkModal from '../components/modals/FrameworkModal.vue'
                     role="tabpanel"
                     :aria-labelledby="`installation-tab-${index}`"
                   >
-                  <pre
-                    class="bg-code p-2 rounded d-flex align-items-center justify-content-between"
-                    style="min-width: 310px;"
-                  >
+                    <pre
+                      class="bg-code p-2 rounded d-flex align-items-center justify-content-between"
+                      style="min-width: 310px"
+                    >
                     <code ref="codeText">{{ framework.installation }}</code>
 
                     <button
@@ -132,7 +140,6 @@ import FrameworkModal from '../components/modals/FrameworkModal.vue'
                       <i class="bx bx-copy" style="font-size: 1.2rem;"></i>
                     </button>
                   </pre>
-
                   </div>
                   <div
                     :id="`documentation-${index}`"
@@ -216,12 +223,17 @@ export default {
       currentPage: 1,
       idFramework: -1,
       frameworksPerPage: 9,
-      frameworks: [],
       themeMode: getTheme()
     }
   },
   computed: {
     ...mapGetters(['isSidebarOpen']),
+    frameworks() {
+      const storedFrameworks = this.$store.getters.getStorage('frameworksStorage') || []
+      return storedFrameworks.map(
+        (v) => new Framework(v.id, v.name, v.description, v.installation, v.documentationLink)
+      )
+    },
     filteredFrameworks() {
       return this.frameworks.filter(
         (framework) =>
@@ -239,10 +251,6 @@ export default {
       return totalPages === 0 ? 1 : totalPages
     }
   },
-  created() {
-    SystemController.updateSystem()
-    this.loadFrameworks()
-  },
   methods: {
     handlePrevPage() {
       this.currentPage = Math.max(this.currentPage - 1, 1)
@@ -250,32 +258,25 @@ export default {
     handleNextPage() {
       this.currentPage = Math.min(this.currentPage + 1, this.totalPages)
     },
-    handleDelete(index) {
-      SystemController.deleteFramework(index)
-      this.loadFrameworks() // Recarregar a lista atualizada
-    },
     copyCode(code) {
       navigator.clipboard.writeText(code).then(() => {
         notificationService.success('Código copiado com sucesso!')
       })
     },
+    // 3. MÉTODOS DE AÇÃO SIMPLIFICADOS
+    handleDelete(frameworkId) {
+      SystemController.deleteFramework(frameworkId)
+      // A linha 'this.loadFrameworks()' foi REMOVIDA.
+    },
     onCloseFrameworkModal() {
       this.showModal = false
-      this.loadFrameworks()
       this.idFramework = -1
+      // A linha 'this.loadFrameworks()' foi REMOVIDA.
     },
-    async loadFrameworks() {
-      const storedFrameworks = SystemController.getStorage('frameworksStorage') || []
-      this.frameworks = storedFrameworks.map(
-        (v) =>
-          new Framework(
-            v.id,
-            v.name,
-            v.description,
-            v.installation,
-            v.documentationLink
-          )
-      )
+    // Lógica corrigida para abrir o modal
+    openAddModal() {
+      this.idFramework = -1
+      this.showModal = true
     },
     editFramework(index) {
       const frameworkToEdit = this.currentFrameworks
@@ -318,7 +319,6 @@ export default {
   transition: color 0.3s;
   z-index: 10; /* Garantindo que o botão fique visível acima do conteúdo */
 }
-
 
 .btn-copy:hover {
   color: #007bff; /* Cor ao passar o mouse */
@@ -416,32 +416,32 @@ export default {
   color: var(--card-header-color);
 }
 
-.search{
+.search {
   font-family: 'Poppins', sans-serif;
   border-radius: 20px;
   border: none;
   height: 40px;
-  background-color: #3D444D;
+  background-color: #3d444d;
   color: white;
 }
 
-.search:focus{
-  background-color: #3D444D;
+.search:focus {
+  background-color: #3d444d;
   color: white;
 }
 
-.search::-webkit-input-placeholder{
-  color: #B1B4B8;
+.search::-webkit-input-placeholder {
+  color: #b1b4b8;
 }
 
-.bg-code{
+.bg-code {
   background-color: var(--code-background);
   border: 2px solid var(--code-border);
   position: relative;
   overflow: hidden;
 }
 
-.nav-tabs{
+.nav-tabs {
   border-bottom: 1px solid var(--tabs-background-active);
 }
 
@@ -451,10 +451,12 @@ export default {
   background-color: var(--tabs-background);
   border: 1px solid var(--tabs-background-active);
   cursor: pointer;
-  border-radius: 0.30rem 0.30rem 0 0;
+  border-radius: 0.3rem 0.3rem 0 0;
   margin-right: 3px; /* Espaçamento entre as abas */
   padding: 10px 10px; /* Espaçamento interno */
-  transition: background-color 0.3s, color 0.3s; /* Transição suave nas alterações */
+  transition:
+    background-color 0.3s,
+    color 0.3s; /* Transição suave nas alterações */
 }
 
 .nav-tabs .nav-link:hover {

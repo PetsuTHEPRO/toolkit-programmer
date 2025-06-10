@@ -18,6 +18,18 @@ import esMsg from '@renderer/assets/locales/es.json'
 
 import { getLanguage } from '@renderer/service/userPreferences'
 
+// --- CONFIGURAÇÃO DO PDF.JS WORKER ---
+// Importamos a configuração global da biblioteca pdfjs-dist (que vue-pdf usa por baixo dos panos)
+import { GlobalWorkerOptions } from 'pdfjs-dist/build/pdf'
+
+// Dizemos a ela para carregar o worker a partir da sua localização em node_modules.
+// O Vite vai entender isso e empacotar o worker corretamente.
+GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs', // Usamos a versão .mjs para compatibilidade com Vite
+  import.meta.url
+).toString()
+// --- FIM DA CONFIGURAÇÃO ---
+
 // Import the CSS or use your own!
 import 'vue-toastification/dist/index.css'
 const i18n = createI18n({

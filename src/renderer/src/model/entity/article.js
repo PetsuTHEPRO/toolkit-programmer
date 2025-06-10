@@ -1,11 +1,11 @@
 export default class Article {
-  constructor(id, name, description, pdfFileName, pdfSize, path) {
+  constructor(id, name, description, path, pdfFilename, pdfSize) {
     ;(this.id = id),
       (this.name = name),
       (this.description = description),
-      (this.pdfFileName = pdfFileName),
-      (this.pdfSize = pdfSize),
-      (this.path = path)
+      (this.path = path),
+      (this.pdfFilename = pdfFilename),
+      (this.pdfSize = pdfSize)
   }
 
   toDTO() {
@@ -13,7 +13,7 @@ export default class Article {
       id: this.idArticle,
       name: this.name,
       description: this.description,
-      pdfFileName: this.pdfFileName,
+      pdfFilename: this.pdfFilename,
       pdfSize: this.pdfSize,
       path: this.path
     }

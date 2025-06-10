@@ -2,18 +2,20 @@ import { createStore } from 'vuex'
 
 const store = createStore({
   state: {
+    // Estado da UI
     sidebarOpen: true,
     submenus: {
       Resources: false,
       Developers: false,
       Learn: false
     },
-    colorCount: 0,
-    linkCount: 0,
-    fontCount: 0,
+
+    // Estado de configurações e logs
     log: [],
     dailyRoutine: {},
     currentMonth: 0,
+
+    // Arrays de dados (cache do banco de dados)
     linksStorage: [],
     fontsStorage: [],
     frameworksStorage: [],
@@ -26,114 +28,25 @@ const store = createStore({
     articlesStorage: []
   },
   mutations: {
+    /**
+     * Mutação genérica e central para definir qualquer propriedade no estado.
+     * É a única forma de atualizar os arrays de dados com informações do backend.
+     */
+    SET_STATE_PROPERTY(state, { key, value }) {
+      if (Object.prototype.hasOwnProperty.call(state, key)) {
+        state[key] = value
+      } else {
+        console.warn(`[Vuex] Tentativa de definir uma propriedade de estado inexistente: ${key}`)
+      }
+    },
+
+    // --- Mutações de UI e Logs (específicas do cliente) ---
+
     RESET_CALENDAR(state, month) {
       state.currentMonth = month
       state.dailyRoutine = {}
     },
-    ADD_COUNT(state, payload) {
-      const { storageKey, count } = payload
-      switch (storageKey) {
-        case 'palettesStorage':
-          state.colorCount += count
-          break
-        case 'linksStorage':
-          state.linkCount += count
-          break
-        case 'fontsStorage':
-          state.fontCount += count
-          break
-      }
-    },
-    REMOVE_COUNT(state, payload) {
-      const { storageKey, count } = payload
-      switch (storageKey) {
-        case 'palettesStorage':
-          if (state.colorCount === 0) {
-            break
-          }
-          state.colorCount -= count
-          break
-        case 'linksStorage':
-          if (state.linkCount === 0) {
-            break
-          }
-          state.linkCount -= count
-          break
-        case 'fontsStorage':
-          if (state.fontCount === 0) {
-            break
-          }
-          state.fontCount -= count
-          break
-      }
-    },
-    // Função genérica para adicionar item
-    ADD_ITEM(state, { storageKey, items, count }) {
-      state.storageKey = items
 
-      if (count) {
-        this.commit('ADD_COUNT', { storageKey, count })
-      }
-
-      // Extrai o tipo removendo o sufixo 'sStorage'
-      const type = storageKey.replace('sStorage', '').toUpperCase()
-
-      // Define o gênero com base no tipo
-      const isFemale = ['FONT', 'IMAGE', 'PALETTE'].includes(type)
-      const article = isFemale ? 'Uma' : 'Um'
-      const suffix = isFemale ? 'a' : 'o'
-
-      // Adiciona a mensagem de log
-      // Adiciona a mensagem de log
-      this.commit('ADD_LOG_MESSAGE', {
-        type: type,
-        description: `${article} ${type.toLowerCase()} foi adicionad${suffix} com sucesso.${count ? ` [Quantidade de itens adicionados: ${count}]` : ''}`
-      })
-    },
-
-    // Função genérica para remover item
-    REMOVE_ITEM(state, { storageKey, id, count }) {
-      // Remove pelo id diretamente aqui:
-      state[storageKey] = state[storageKey].filter((item) => item.id !== id)
-
-      if (count) {
-        this.commit('REMOVE_COUNT', { storageKey, count })
-      }
-
-      // Log e artigos continuam iguais...
-      const type = storageKey.replace('sStorage', '').toUpperCase()
-      const isFemale = ['FONT', 'IMAGE', 'PALETTE'].includes(type)
-      const article = isFemale ? 'Uma' : 'Um'
-      const suffix = isFemale ? 'a' : 'o'
-
-      this.commit('ADD_LOG_MESSAGE', {
-        type: type,
-        description: `${article} ${type.toLowerCase()} foi removid${suffix} com sucesso.${count ? ` [Quantidade de itens removidos: ${count}]` : ''}`
-      })
-    },
-
-    EDIT_ITEM(state, { storageKey, change }) {
-      for (const item of state[storageKey]) {
-        if (item.id === change.id) {
-          Object.assign(item, change)
-          break
-        }
-      }
-      // Extrai o tipo removendo o sufixo 'sStorage'
-      const type = storageKey.replace('sStorage', '').toUpperCase()
-
-      // Define o gênero com base no tipo
-      const isFemale = ['FONT', 'IMAGE', 'PALETTE'].includes(type)
-      const article = isFemale ? 'Uma' : 'Um'
-      const suffix = isFemale ? 'a' : 'o'
-
-      this.commit('ADD_LOG_MESSAGE', {
-        type: type,
-        description: `${article} ${type.toLowerCase()} foi editad${suffix} com sucesso.`
-      })
-    },
-
-    // Função genérica para adicionar mensagens de log
     ADD_LOG_MESSAGE(state, { type, description }) {
       const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ')
       const logEntry = { timestamp, type, description }
@@ -167,65 +80,35 @@ const store = createStore({
 
     SET_SUBMENU(state, { submenu, isOpen }) {
       state.submenus[submenu] = isOpen
-    },
-    SET_STATE_PROPERTY(state, { key, value }) {
-      state[key] = value
-    },
-    SET_DIARY_ROUTINE(state, dailyRoutine) {
-      state.dailyRoutine = dailyRoutine
-      console.log('STATE', state)
     }
   },
-
   actions: {
-    updateCount({ commit }, { count, key }) {
-      commit('SET_COUNT', { count, key })
-    },
-
-    updateStateProperty({ commit }, { key, value }) {
-      commit('SET_STATE_PROPERTY', { key, value })
-    },
-
-    addItem({ commit }, payload) {
-      commit('ADD_ITEM', payload)
-    },
-
-    removeItem({ commit }, payload) {
-      commit('REMOVE_ITEM', payload)
-    },
-
-    editItem({ commit }, payload) {
-      commit('EDIT_ITEM', payload)
-    },
-
-    addLogMessage({ commit }, { type, description }) {
-      commit('ADD_LOG_MESSAGE', { type, description })
-    },
-
+    // Ações agora são focadas em UI ou lógicas assíncronas que não envolvem o CRUD principal.
+    // A lógica de CRUD foi movida para o SystemController para melhor organização.
     toggleSidebar({ commit }) {
       commit('TOGGLE_SIDEBAR')
     },
 
     toggleSubmenu({ commit }, submenu) {
       commit('TOGGLE_SUBMENU', submenu)
+    },
+
+    addLogMessage({ commit }, { type, description }) {
+      commit('ADD_LOG_MESSAGE', { type, description })
     }
   },
-
   getters: {
-    getColorCount: (state) => state.colorCount,
-    getLinkCount: (state) => state.linkCount,
-    getFontCount: (state) => state.fontCount,
+    // Getters de contagem são calculados a partir do estado, garantindo consistência.
+    getColorCount: (state) =>
+      state.palettesStorage.reduce(
+        (sum, palette) => sum + (Array.isArray(palette.colors) ? palette.colors.length : 0),
+        0
+      ),
+    getLinkCount: (state) => state.linksStorage.length,
+    getFontCount: (state) => state.fontsStorage.length,
+
+    // Getters de dados e UI
     getLog: (state) => state.log,
-    getSistemaState: (state) => {
-      return {
-        colorCount: state.colorCount,
-        linkCount: state.linkCount,
-        fontCount: state.fontCount,
-        log: state.log,
-        dailyRoutine: state.dailyRoutine,
-        currentMonth: state.currentMonth
-      }
-    },
     getDiaryRoutine: (state) => state.dailyRoutine,
     getCurrentCalendar: (state) => state.currentMonth,
     getStorage: (state) => (storageKey) => state[storageKey],

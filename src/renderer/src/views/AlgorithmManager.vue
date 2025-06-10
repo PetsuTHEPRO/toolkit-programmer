@@ -42,7 +42,7 @@ import Sidebar from '@renderer/components/Sidebar.vue'
             <button
               type="button"
               class="btn-system btn-adicionar me-2 d-flex align-items-center"
-              @click="showModal = true"
+              @click="openAddModal"
             >
               <i class="bx bx-plus-circle me-1"></i>
               {{ $t('buttons.upload') }}
@@ -62,13 +62,13 @@ import Sidebar from '@renderer/components/Sidebar.vue'
         </div>
 
         <div class="row g-4 mb-4">
-          <div v-for="(algorithm, index) in currentAlgorithms" :key="algorithm.index" class="col-4">
+          <div v-for="algorithm in currentAlgorithms" :key="algorithm.index" class="col-4">
             <div class="card d-flex flex-column" style="min-height: 300px">
               <div class="card-header d-flex align-items-center justify-content-between">
                 <h5 class="card-title">{{ algorithm.name }}</h5>
                 <button
                   class="btn-system btn-link ms-2 d-flex align-items-center"
-                  @click="handleOpenAlgorithm(index)"
+                  @click="handleOpenAlgorithm(algorithm.id)"
                 >
                   {{ $t('buttons.view') }}
                   <i class="bx bx-link-external ms-1"></i>
@@ -76,9 +76,6 @@ import Sidebar from '@renderer/components/Sidebar.vue'
               </div>
               <div class="card-body card-element">
                 <p class="card-text truncate-text">{{ algorithm.explanation }}</p>
-                <span class="badge" :class="getBadgeClass(algorithm)">
-                  {{ getLanguage(algorithm) }}
-                </span>
               </div>
               <div class="card-footer d-flex justify-content-between">
                 <button class="btn btn-editar me-2" @click="editAlgorithm(algorithm.id)">
@@ -138,7 +135,6 @@ export default {
     return {
       showModal: false,
       searchTerm: '',
-      algorithms: [],
       idAlgorithm: -1,
       currentPage: 1,
       algorithmsPerPage: 6,
@@ -148,13 +144,20 @@ export default {
   },
   computed: {
     ...mapGetters(['isSidebarOpen']),
+    // 1. A PROPRIEDADE REATIVA que lê da store.
+    algorithms() {
+      const storedAlgorithms = this.$store.getters.getStorage('algorithmsStorage') || []
+      // Mapeia para sua classe de modelo. Note que usei 'explanation' para consistência com seu filtro.
+      // Se o campo for 'explanation' no banco, ajuste aqui e no filtro.
+      return storedAlgorithms.map((v) => new Algorithm(v.id, v.name, v.explanation))
+    },
     filteredAlgorithms() {
       return this.algorithms.filter((algorithm) => {
         const name = algorithm.name?.toLowerCase() ?? ''
-        const description = algorithm.description?.toLowerCase() ?? ''
+        const explanation = algorithm.explanation?.toLowerCase() ?? ''
         const term = this.searchTerm.toLowerCase()
 
-        return name.includes(term) || description.includes(term)
+        return name.includes(term) || explanation.includes(term)
       })
     },
     currentAlgorithms() {
@@ -167,10 +170,6 @@ export default {
       return totalPages === 0 ? 1 : totalPages
     }
   },
-  created() {
-    SystemController.updateSystem()
-    this.loadAlgorithms()
-  },
   methods: {
     handlePrevPage() {
       this.currentPage = Math.max(this.currentPage - 1, 1)
@@ -178,11 +177,19 @@ export default {
     handleNextPage() {
       this.currentPage = Math.min(this.currentPage + 1, this.totalPages)
     },
-    handleOpenAlgorithm(index) {
-      this.$router.push({ name: 'algorithmPreview', params: { id: index } })
+    handleOpenAlgorithm(algorithmId) {
+      // CORRIGIDO: Recebe e passa o ID real do banco de dados.
+      if (!algorithmId) {
+        console.error('Tentativa de navegar sem um ID de algoritmo válido!')
+        return
+      }
+      this.$router.push({ name: 'algorithmPreview', params: { id: algorithmId } })
+    },
+    openAddModal() {
+      this.idAlgorithm = -1;
+      this.showModal = true;
     },
     getLanguage(algorithm) {
-      
       if (!algorithm.lang) {
         return 'N/A'
       }
@@ -215,28 +222,13 @@ export default {
     },
     onCloseAlgorithmModal() {
       this.showModal = false
-      this.loadAlgorithms()
       this.idAlgorithm = -1
     },
-    handleDelete(index) {
-      SystemController.deleteAlgorithm(index)
-      this.loadAlgorithms()
+    handleDelete(algorithmId) {
+      SystemController.deleteAlgorithm(algorithmId)
     },
-    loadAlgorithms() {
-      const storedAlgorithms = SystemController.getStorage('algorithmsStorage') || []
-      this.algorithms = storedAlgorithms.map(
-        (v) => new Algorithm(v.id, v.name, v.explanation, v.lang, v.code)
-      )
-    },
-    editAlgorithm(index) {
-      const algorithmToEdit = this.currentAlgorithms
-
-      for (const algorithm of algorithmToEdit) {
-        if (algorithm.id === index) {
-          this.idAlgorithm = algorithm.id
-        }
-      }
-
+    editAlgorithm(algorithmId) {
+      this.idAlgorithm = algorithmId
       this.showModal = true
     }
   }

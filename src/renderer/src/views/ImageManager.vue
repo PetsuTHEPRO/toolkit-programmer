@@ -223,7 +223,7 @@ export default {
     }
   },
   created() {
-    SystemController.updateSystem()
+    SystemController.initializeSystem()
     this.images = SystemController.getStorage('imagesStorage')
     this.icons = SystemController.getStorage('iconsStorage')
   },

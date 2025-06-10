@@ -9,12 +9,12 @@
     content="
       default-src 'self';
       script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net data:;
-      style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+      style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com;
       font-src 'self' https://cdn.jsdelivr.net;
-      connect-src 'self' https://mozilla.github.io https://www.youtube.com https://www.googleapis.com/ https://openrouter.ai https://api.deepseek.com;
+      connect-src 'self' app: https://mozilla.github.io https://www.youtube.com https://www.googleapis.com/ https://openrouter.ai https://api.deepseek.com;
       img-src 'self' https: data:;
       worker-src 'self' blob:;
-      frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com;
+      frame-src 'self' app: https://www.youtube.com https://www.youtube-nocookie.com;
     "
   />
 

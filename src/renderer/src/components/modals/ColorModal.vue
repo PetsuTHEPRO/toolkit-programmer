@@ -78,7 +78,9 @@
           <div class="modal-footer">
             <slot name="footer">
               <button type="button" class="btn btn-secondary" @click="closeModal">Cancelar</button>
-              <button type="button" class="btn btn-primary" @click="submitPalette">Adicionar</button>
+              <button type="button" class="btn btn-primary" @click="submitPalette">
+                Adicionar
+              </button>
             </slot>
           </div>
         </div>
@@ -90,6 +92,8 @@
 
 <script>
 import SystemController from '../../controller/SystemController'
+
+const NO_PALETTE_ID = -1
 
 export default {
   props: {
@@ -104,51 +108,107 @@ export default {
   },
   data() {
     return {
+      titleModal: 'Adicionar',
+      // 'paletteData' é o estado local do nosso formulário. É sempre um objeto simples.
       paletteData: {
         name: '',
         description: '',
-        colors: []
-      },
-      paletteEdit: null
+        colors: ['#FFFFFF'] // Começa com uma cor padrão
+      }
     }
   },
-  created() {
-    if (this.paletteId !== -1) {
-      this.paletteEdit = SystemController.getStorage('palettesStorage')[this.paletteId]
-      this.paletteData = {
-        name: this.paletteEdit.name,
-        description: this.paletteEdit.description,
-        colors: this.paletteEdit.colors
-      }
+  computed: {
+    // Computed property para saber claramente em qual modo estamos.
+    isEditMode() {
+      return this.paletteId !== NO_PALETTE_ID
+    }
+  },
+  watch: {
+    // Este "observador" é acionado sempre que o modal se torna visível.
+    // Esta é a forma mais robusta de preparar o estado do modal.
+    visible: {
+      handler(isNowVisible) {
+        if (isNowVisible) {
+          if (this.isEditMode) {
+            this.titleModal = 'Editar'
+            this.loadPaletteForEditing()
+          } else {
+            this.titleModal = 'Adicionar'
+            this.resetForm()
+          }
+        }
+      },
+      immediate: true // Garante que rode uma vez na criação do componente
     }
   },
   methods: {
+    // Limpa o formulário para o modo de adição.
+    resetForm() {
+      this.paletteData = {
+        id: NO_PALETTE_ID,
+        name: '',
+        description: '',
+        colors: ['#FFFFFF']
+      }
+    },
     closeModal() {
       this.$emit('close')
     },
-    submitPalette() {
-      if (this.paletteEdit) {
-        this.paletteEdit = {
-          id: this.paletteId,
-          name: this.paletteData.name,
-          description: this.paletteData.description,
-          colors: this.paletteData.colors
+    // Busca os dados da forma correta para o modo de edição.
+    loadPaletteForEditing() {
+      const storedPalettes = this.$store.getters.getStorage('palettesStorage')
+      const paletteToEdit = storedPalettes.find((p) => p.id === this.paletteId)
+
+      if (paletteToEdit) {
+        // Criamos uma cópia profunda para evitar modificar a store diretamente.
+        this.paletteData = JSON.parse(JSON.stringify(paletteToEdit))
+      }
+    },
+    // O método de submissão agora é simples e seguro.
+    // Em ColorModal.vue, dentro de 'methods'
+
+    // Em ColorModal.vue, dentro de 'methods'
+
+    async submitPalette() {
+      if (!this.paletteData.name || this.paletteData.colors.length === 0) {
+        alert('Por favor, preencha o nome e adicione pelo menos uma cor.')
+        return
+      }
+
+      // AQUI ESTÁ A CORREÇÃO FINAL:
+      // Criamos um objeto "plano" manualmente para garantir 100% de pureza.
+      const plainPaletteData = {
+        name: this.paletteData.name,
+        description: this.paletteData.description,
+        // Usamos JSON.parse(JSON.stringify(...)) para criar uma cópia "morta"
+        // e não reativa do array de cores, resolvendo o problema do clone.
+        colors: JSON.parse(JSON.stringify(this.paletteData.colors))
+      }
+
+      if (this.isEditMode) {
+        // Para editar, passamos o ID existente e o objeto limpo.
+        // --- AQUI ESTÁ A CORREÇÃO QUE VOCÊ PEDIU ---
+
+        // 1. Criamos um novo objeto combinando os dados do formulário com o ID existente.
+        // O '...' (spread operator) copia as chaves de plainPaletteData (name, description, colors)
+        // e em seguida nós adicionamos a chave 'id'.
+        const dataWithId = {
+          ...plainPaletteData,
+          id: this.paletteId
         }
 
-        SystemController.editPalette(this.paletteEdit)
+        // 2. Enviamos este ÚNICO objeto para o controller, como você queria.
+        await SystemController.editPalette(dataWithId)
       } else {
-        SystemController.addPalette(this.paletteData)
+        // Para criar, geramos um novo ID e o adicionamos ao objeto limpo.
+        plainPaletteData.id = this.generateId()
+        await SystemController.addPalette(plainPaletteData)
       }
 
-      this.paletteData = {
-        name: '',
-        description: '',
-        colors: []
-      }
-
-      // Lógica para fechar o modal
       this.closeModal()
     },
+
+    // Métodos de UI para manipular o array de cores.
     addColor() {
       if (this.paletteData.colors.length < 5) {
         this.paletteData.colors.push('#FFFFFF')
@@ -158,7 +218,18 @@ export default {
       this.paletteData.colors.splice(index, 1)
     },
     updateColor(index, value) {
-      this.paletteData.colors[index] = value
+      // Garante que o input de texto atualize a cor corretamente
+      if (/^#[0-9A-F]{6}$/i.test(value)) {
+        this.paletteData.colors[index] = value
+      }
+    },
+    generateId() {
+      return (
+        Date.now().toString(36) +
+        Math.floor(Math.random() * 1000)
+          .toString(36)
+          .padStart(4, '0')
+      )
     }
   }
 }
@@ -181,17 +252,18 @@ export default {
   min-height: 100vh;
 }
 
-.form-control, .form-select {
-  background-color: #282A36;
-  color: #F8F8F2;
+.form-control,
+.form-select {
+  background-color: #282a36;
+  color: #f8f8f2;
 }
 
 .form-control::placeholder {
-  color: #B1B4B8;
+  color: #b1b4b8;
 }
 
-.form-control button{
-  color: #F8F8F2;
+.form-control button {
+  color: #f8f8f2;
 }
 
 .btn-adicionar {
