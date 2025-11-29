@@ -78,7 +78,19 @@ export default {
       dontShowAgain: false,
       currentLogId: 'log-24-04-25/12:23',
       logs: [
-      {
+        {
+          version: 'Versão 1.5 - Melhoria de IA',
+          date: '29/11/2025',
+          items: [
+            'Melhoria: Melhoria da Interface dos links',
+            'Melhoria: Melhoria da Interface dos videos',
+            'Melhoria: Melhoria da Interface da paleta de cores',
+            'Melhoria: Troca dos multimodelos de IA pelo Gemini CLI',
+            'Novo: Implementando o preenchimento com IA nos artigos',
+            'Novo: Implementando o preenchimento com IA nos links'
+          ]
+        },
+        {
           version: 'Versão 1.2.3 - Melhoria de IA',
           date: '25/04/2025',
           items: [
