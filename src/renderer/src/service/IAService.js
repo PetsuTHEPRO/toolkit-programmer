@@ -7,7 +7,6 @@ import OpenAI from 'openai'
 export default class IAServico {
   constructor() {
     this.API_KEY = process.env.OPENROUTER_API_KEY ? process.env.OPENROUTER_API_KEY : ''
-    this.resources = this.loadAllResources()
 
     // Configuração inicial padrão
     this.currentModel = 'openai/gpt-oss-20b:free'
