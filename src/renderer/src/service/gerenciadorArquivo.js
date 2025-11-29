@@ -87,12 +87,13 @@ const fileManager = {
   },
   saveArticle(data) {
     // Adicione 'path', 'pdfFileName', e 'pdfSize' na lista de colunas
+    console.log("Vamos ver:", data)
     return this._create('articles', data, [
       'id',
       'name',
       'description',
       'path',
-      'pdfFileName',
+      'pdfFilename',
       'pdfSize'
     ])
   },

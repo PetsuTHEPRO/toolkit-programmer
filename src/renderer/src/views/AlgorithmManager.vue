@@ -9,107 +9,132 @@ import Sidebar from '@renderer/components/Sidebar.vue'
     :class="themeMode === 'dark' ? 'dark-theme' : 'light-theme'"
   >
     <Sidebar />
-    <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
-      <!-- Título da Página -->
-      <div class="col">
-        <nav aria-label="breadcrumb" class="mt-3">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page">
-              {{ $t('sidebar.developers.code') }}
-            </li>
-          </ol>
-        </nav>
-        <div class="input-group my-5">
-          <input
-            v-model="searchTerm"
-            type="text"
-            class="form-control search py-4"
-            :placeholder="$t('search', { name: $t('sidebar.developers.code').toLowerCase() })"
-            @input="handleSearch"
-          />
-          <button
-            class="btn btn-outline-secondary search d-flex align-items-center p-4"
-            style="background-color: #727ddc; color: white"
-            type="button"
-          >
-            <i class="bx bx-search fs-4" style="font-weight: bold"></i>
-          </button>
-        </div>
-
-        <div class="card mb-2">
-          <div class="card-header d-flex align-items-center justify-content-between">
-            <h5 class="card-title">{{ $t('pages.algorithms.list') }}</h5>
+    <div class="main-content w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
+      <div class="content-wrapper">
+        <!-- Header Section -->
+        <div class="header-section mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h1 class="page-title mb-2">{{ $t('sidebar.developers.code') }}</h1>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb custom-breadcrumb mb-0">
+                  <li class="breadcrumb-item">
+                    <i class="bx bx-home-alt me-1"></i>
+                    Home
+                  </li>
+                  <li class="breadcrumb-item active" aria-current="page">
+                    {{ $t('sidebar.developers.code') }}
+                  </li>
+                </ol>
+              </nav>
+            </div>
             <button
               type="button"
-              class="btn-system btn-adicionar me-2 d-flex align-items-center"
+              class="btn-modern btn-add"
               @click="openAddModal"
             >
-              <i class="bx bx-plus-circle me-1"></i>
+              <i class="bx bx-plus-circle me-2"></i>
               {{ $t('buttons.upload') }}
             </button>
           </div>
-          <div v-if="algorithms.length === 0" class="card-body card-element py-0">
-            <div class="overflow-auto" style="max-height: 400px">
-              <ul class="list-unstyled">
-                <li class="text-center text-gray mt-3">
-                  {{
-                    $t('messages.she-empty', { name: $t('sidebar.developers.code').toLowerCase() })
-                  }}
-                </li>
-              </ul>
+
+          <!-- Search Bar -->
+          <div class="search-container">
+            <i class="bx bx-search search-icon"></i>
+            <input
+              v-model="searchTerm"
+              type="text"
+              class="search-input"
+              :placeholder="$t('search', { name: $t('sidebar.developers.code').toLowerCase() })"
+              @input="handleSearch"
+            />
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div v-if="algorithms.length === 0" class="empty-state-card">
+          <i class="bx bx-code-alt empty-icon"></i>
+          <h4>{{ $t('messages.she-empty', { name: $t('sidebar.developers.code').toLowerCase() }) }}</h4>
+          <p>Adicione seu primeiro algoritmo para começar</p>
+          <button class="btn-modern btn-add" @click="openAddModal">
+            <i class="bx bx-plus-circle me-2"></i>
+            Adicionar Algoritmo
+          </button>
+        </div>
+
+        <!-- Algorithms Grid -->
+        <div v-else class="algorithms-grid">
+          <div v-for="(algorithm) in currentAlgorithms" :key="algorithm.index" class="algorithm-card-wrapper">
+            <div class="algorithm-card">
+              <!-- Header -->
+              <div class="algorithm-header">
+                <div class="algorithm-icon-wrapper">
+                  <i class="bx bx-code-curly algorithm-icon"></i>
+                </div>
+                <div class="algorithm-meta">
+                  <h5 class="algorithm-title" :title="algorithm.name">{{ algorithm.name }}</h5>
+                  <div class="algorithm-badges">
+                    <span v-if="algorithm.lang" class="language-badge" :class="getBadgeClass(algorithm)">
+                      <i class="bx bx-code-alt"></i>
+                      {{ getLanguage(algorithm) }}
+                    </span>
+                    <span class="complexity-badge">
+                      <i class="bx bx-brain"></i>
+                      Algoritmo
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Content -->
+              <div class="algorithm-content">
+                <p class="algorithm-explanation" :title="algorithm.explanation">
+                  {{ algorithm.explanation }}
+                </p>
+              </div>
+
+              <!-- Actions -->
+              <div class="algorithm-actions">
+                <button class="btn-action btn-view" @click="handleOpenAlgorithm(algorithm.id)">
+                  <i class="bx bx-show"></i>
+                  <span>{{ $t('buttons.view') }}</span>
+                </button>
+                <button class="btn-action btn-edit" @click="editAlgorithm(algorithm.id)">
+                  <i class="bx bx-pencil"></i>
+                </button>
+                <button class="btn-action btn-delete" @click="handleDelete(algorithm.id)">
+                  <i class="bx bx-trash"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="row g-4 mb-4">
-          <div v-for="algorithm in currentAlgorithms" :key="algorithm.index" class="col-4">
-            <div class="card d-flex flex-column" style="min-height: 300px">
-              <div class="card-header d-flex align-items-center justify-content-between">
-                <h5 class="card-title">{{ algorithm.name }}</h5>
-                <button
-                  class="btn-system btn-link ms-2 d-flex align-items-center"
-                  @click="handleOpenAlgorithm(algorithm.id)"
-                >
-                  {{ $t('buttons.view') }}
-                  <i class="bx bx-link-external ms-1"></i>
-                </button>
-              </div>
-              <div class="card-body card-element">
-                <p class="card-text truncate-text">{{ algorithm.explanation }}</p>
-              </div>
-              <div class="card-footer d-flex justify-content-between">
-                <button class="btn btn-editar me-2" @click="editAlgorithm(algorithm.id)">
-                  <i class="bx bx-pencil"></i> {{ $t('buttons.edit') }}
-                </button>
-                <button class="btn btn-deletar" @click="handleDelete(algorithm.id)">
-                  <i class="bx bx-trash"></i> {{ $t('buttons.delete') }}
-                </button>
-              </div>
-            </div>
+        <!-- Pagination -->
+        <div v-if="algorithms.length > 0" class="pagination-card">
+          <button
+            class="btn-pagination"
+            :disabled="currentPage === 1"
+            @click="handlePrevPage"
+          >
+            <i class="bx bx-chevron-left"></i>
+            {{ $t('buttons.previous') }}
+          </button>
+          <div class="pagination-info">
+            <span class="current-page">{{ currentPage }}</span>
+            <span class="separator">/</span>
+            <span class="total-pages">{{ totalPages }}</span>
           </div>
+          <button
+            class="btn-pagination"
+            :disabled="currentPage === totalPages"
+            @click="handleNextPage"
+          >
+            {{ $t('buttons.next') }}
+            <i class="bx bx-chevron-right"></i>
+          </button>
         </div>
 
-        <div class="card mb-4 d-flex flex-column border-top-0">
-          <div class="card-footer d-flex align-items-center justify-content-between">
-            <button
-              class="btn btn-control d-flex align-items-center"
-              :disabled="currentPage === 1"
-              @click="handlePrevPage"
-            >
-              <i class="bx bx-chevron-left me-2"></i> {{ $t('buttons.previous') }}
-            </button>
-            <span>{{
-              $t('pagination', { currentPage: currentPage, totalPages: totalPages })
-            }}</span>
-            <button
-              class="btn btn-control d-flex align-items-center"
-              :disabled="currentPage === totalPages"
-              @click="handleNextPage"
-            >
-              {{ $t('buttons.next') }} <i class="bx bx-chevron-right fs-5"></i>
-            </button>
-          </div>
-        </div>
         <!-- Modal -->
         <AlgorithmModal
           :key="idAlgorithm"
@@ -117,8 +142,7 @@ import Sidebar from '@renderer/components/Sidebar.vue'
           :programmingLanguages="programmingLanguages"
           :idAlgorithm="idAlgorithm"
           @close="onCloseAlgorithmModal"
-        >
-        </AlgorithmModal>
+        />
       </div>
     </div>
   </div>
@@ -144,11 +168,8 @@ export default {
   },
   computed: {
     ...mapGetters(['isSidebarOpen']),
-    // 1. A PROPRIEDADE REATIVA que lê da store.
     algorithms() {
       const storedAlgorithms = this.$store.getters.getStorage('algorithmsStorage') || []
-      // Mapeia para sua classe de modelo. Note que usei 'explanation' para consistência com seu filtro.
-      // Se o campo for 'explanation' no banco, ajuste aqui e no filtro.
       return storedAlgorithms.map((v) => new Algorithm(v.id, v.name, v.explanation))
     },
     filteredAlgorithms() {
@@ -156,7 +177,6 @@ export default {
         const name = algorithm.name?.toLowerCase() ?? ''
         const explanation = algorithm.explanation?.toLowerCase() ?? ''
         const term = this.searchTerm.toLowerCase()
-
         return name.includes(term) || explanation.includes(term)
       })
     },
@@ -173,12 +193,13 @@ export default {
   methods: {
     handlePrevPage() {
       this.currentPage = Math.max(this.currentPage - 1, 1)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     },
     handleNextPage() {
       this.currentPage = Math.min(this.currentPage + 1, this.totalPages)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     },
     handleOpenAlgorithm(algorithmId) {
-      // CORRIGIDO: Recebe e passa o ID real do banco de dados.
       if (!algorithmId) {
         console.error('Tentativa de navegar sem um ID de algoritmo válido!')
         return
@@ -186,39 +207,29 @@ export default {
       this.$router.push({ name: 'algorithmPreview', params: { id: algorithmId } })
     },
     openAddModal() {
-      this.idAlgorithm = -1;
-      this.showModal = true;
+      this.idAlgorithm = -1
+      this.showModal = true
     },
     getLanguage(algorithm) {
       if (!algorithm.lang) {
         return 'N/A'
       }
-
       return algorithm.lang
     },
     getBadgeClass(algorithm) {
-      const lang = this.getLanguage(algorithm)
-
-      switch (lang.toLowerCase()) {
-        case 'java':
-          return 'bg-warning text-dark'
-        case 'python':
-          return 'bg-info text-dark'
-        case 'ruby':
-          return 'bg-danger text-dark'
-        case 'javascript':
-          return 'bg-primary text-dark'
-        case 'rust':
-          return 'bg-secondary text-dark'
-        case 'go':
-          return 'bg-success text-dark'
-        case 'php':
-          return 'bg-success text-dark'
-        case 'c++':
-          return 'bg-success text-dark'
-        default:
-          return 'bg-light text-dark'
+      const lang = this.getLanguage(algorithm).toLowerCase()
+      const badgeMap = {
+        'java': 'badge-java',
+        'python': 'badge-python',
+        'ruby': 'badge-ruby',
+        'javascript': 'badge-javascript',
+        'rust': 'badge-rust',
+        'go': 'badge-go',
+        'php': 'badge-php',
+        'c++': 'badge-cpp',
+        'c/c++': 'badge-cpp'
       }
+      return badgeMap[lang] || 'badge-default'
     },
     onCloseAlgorithmModal() {
       this.showModal = false
@@ -238,129 +249,532 @@ export default {
 <style scoped>
 @import url('../assets/base.css');
 
-.breadcrumb-item {
-  color: var(--breadcrumb-color);
+/* Layout Principal */
+.main-content {
+  background: linear-gradient(135deg, var(--container-bg) 0%, var(--container-bg-alt, var(--container-bg)) 100%);
+  min-height: 100vh;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.container-fluid {
-  background-color: var(--container-bg);
+.close-menu {
+  margin-left: 90px !important;
 }
 
-.truncate {
+.open-menu {
+  margin-left: 230px !important;
+}
+
+.content-wrapper {
+  padding: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Header Section */
+.header-section {
+  animation: fadeInDown 0.6s ease-out;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.custom-breadcrumb {
+  background: transparent;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+.custom-breadcrumb .breadcrumb-item {
+  color: var(--text-muted, #6c757d);
+}
+
+.custom-breadcrumb .breadcrumb-item.active {
+  color: var(--text-primary, #333);
+  font-weight: 500;
+}
+
+/* Search Bar */
+.search-container {
+  position: relative;
+  margin-top: 1.5rem;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  z-index: 1;
+}
+
+.search-input {
+  width: 100%;
+  padding: 1rem 1.5rem 1rem 4rem;
+  border: 2px solid var(--card-border, rgba(0, 0, 0, 0.1));
+  border-radius: 16px;
+  background: var(--card-element-bg);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Buttons */
+.btn-modern {
+  padding: 0.75rem 1.75rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-add {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.btn-add:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+}
+
+/* Empty State */
+.empty-state-card {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--card-element-bg);
+  border-radius: 20px;
+  margin-top: 2rem;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.empty-icon {
+  font-size: 5rem;
+  color: var(--text-muted);
+  opacity: 0.3;
+  margin-bottom: 1.5rem;
+}
+
+.empty-state-card h4 {
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-card p {
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+/* Algorithms Grid */
+.algorithms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Algorithm Card - ALTURA FIXA */
+.algorithm-card-wrapper {
+  animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.algorithm-card {
+  background: var(--card-element-bg);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid var(--card-border, rgba(0, 0, 0, 0.1));
+  display: flex;
+  flex-direction: column;
+  height: 340px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.algorithm-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  border-color: #667eea;
+}
+
+/* Header */
+.algorithm-header {
+  padding: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid var(--card-border, rgba(0, 0, 0, 0.05));
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  flex-shrink: 0;
+}
+
+.algorithm-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.algorithm-card:hover .algorithm-icon-wrapper {
+  transform: rotate(10deg) scale(1.05);
+}
+
+.algorithm-icon {
+  font-size: 1.75rem;
+  color: white;
+}
+
+.algorithm-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.algorithm-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.btn-system {
-  display: inline-block;
-  box-sizing: border-box;
-  text-decoration: none;
-  font-family: 'Roboto', sans-serif;
-  font-weight: 300;
-  text-align: center;
-  position: relative;
-  cursor: pointer;
+.algorithm-badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
-.btn-adicionar {
-  background-color: rgba(0, 0, 0, 0);
-  padding: 0.65em 1.6em;
-  margin: 0 0.3em 0.3em 0;
-  border-radius: 25px;
-  border: 2px solid #22c55e;
-  color: #22c55e;
-  transition: all 0.2s;
-  animation: bn13bouncy 5s infinite linear;
+.language-badge,
+.complexity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
-.btn-adicionar:hover {
-  background-color: #22c55e;
-  color: #000000;
+.language-badge i,
+.complexity-badge i {
+  font-size: 0.9rem;
 }
 
-.btn-link {
-  background-color: #a855f7;
-  border: 2px solid #a855f7;
-  padding: 0.5em 1em;
-  border-radius: 5px;
+/* Language Badge Colors */
+.badge-java {
+  background: linear-gradient(135deg, #f89820 0%, #d97706 100%);
   color: white;
 }
 
-.btn-link:hover {
-  background-color: #9333ea;
+.badge-python {
+  background: linear-gradient(135deg, #3776ab 0%, #2563eb 100%);
   color: white;
 }
 
-.btn-editar {
-  background-color: #3b82f6;
-  border: 2px solid #3b82f6;
-  border-radius: 5px;
+.badge-ruby {
+  background: linear-gradient(135deg, #cc342d 0%, #dc2626 100%);
   color: white;
 }
 
-.btn-editar:hover {
-  background-color: #2563eb;
+.badge-javascript {
+  background: linear-gradient(135deg, #f7df1e 0%, #eab308 100%);
+  color: #1a1a1a;
+}
+
+.badge-rust {
+  background: linear-gradient(135deg, #ce422b 0%, #b91c1c 100%);
   color: white;
 }
 
-.btn-deletar {
-  background-color: #ef4444;
-  border: 2px solid #ef4444;
-  border-radius: 5px;
+.badge-go {
+  background: linear-gradient(135deg, #00add8 0%, #0891b2 100%);
   color: white;
 }
 
-.btn-deletar:hover {
-  background-color: #dc2626;
-}
-
-.search {
-  font-family: 'Poppins', sans-serif;
-  border-radius: 20px;
-  border: none;
-  height: 40px;
-  background-color: #3d444d;
+.badge-php {
+  background: linear-gradient(135deg, #8892be 0%, #6366f1 100%);
   color: white;
 }
 
-.search:focus {
-  background-color: #3d444d;
+.badge-cpp {
+  background: linear-gradient(135deg, #00599c 0%, #1e40af 100%);
   color: white;
 }
 
-.search::-webkit-input-placeholder {
-  color: #b1b4b8;
+.badge-default {
+  background: var(--card-header, rgba(0, 0, 0, 0.1));
+  color: var(--text-muted);
 }
 
-.card-header,
-.card-footer {
-  background-color: var(--card-header);
-  color: var(--card-header-color);
+.complexity-badge {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+  border: 1px solid rgba(102, 126, 234, 0.2);
 }
 
-.btn-control {
-  background-color: var(--pagination-bg);
-  border-radius: 25px;
-  border: 2px solid var(--pagination-border);
-  color: var(--pagination-color);
-  transition: all 0.2s;
-  animation: bn13bouncy 5s infinite linear;
+/* Content */
+.algorithm-content {
+  padding: 1.25rem 1.5rem;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
-.btn-control:hover {
-  background-color: var(--pagination-hover-bg);
-  color: var(--pagination-hover-color);
-}
-
-.truncate-text {
-  display: -webkit-box;
-  -webkit-line-clamp: 4; /* Mostra no máximo 3 linhas */
-  -webkit-box-orient: vertical;
+.algorithm-explanation {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-height: 6.3em; /* Aproximadamente 3 linhas de texto */
-  line-height: 1.5em; /* Altura da linha */
-  cursor: pointer; /* Mostra que é clicável/interativo */
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+}
+
+/* Actions */
+.algorithm-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--card-border, rgba(0, 0, 0, 0.1));
+  background: var(--card-header, rgba(0, 0, 0, 0.02));
+  flex-shrink: 0;
+}
+
+.btn-action {
+  padding: 0.65rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-view {
+  flex: 1;
+  background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+  color: white;
+}
+
+.btn-view:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+}
+
+.btn-edit {
+  width: 44px;
+  padding: 0.65rem;
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-edit:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+.btn-delete {
+  width: 44px;
+  padding: 0.65rem;
+  background: #ef4444;
+  color: white;
+}
+
+.btn-delete:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
+/* Pagination */
+.pagination-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: var(--card-element-bg);
+  border-radius: 16px;
+  margin-top: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.btn-pagination {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid var(--card-border, rgba(0, 0, 0, 0.1));
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-primary);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-pagination:hover:not(:disabled) {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+  transform: translateY(-2px);
+}
+
+.btn-pagination:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.current-page {
+  font-weight: 700;
+  color: #667eea;
+  font-size: 1.3rem;
+}
+
+.separator {
+  color: var(--text-muted);
+}
+
+.total-pages {
+  color: var(--text-muted);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+  .algorithms-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 1rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .algorithms-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header-section .d-flex {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem;
+  }
+
+  .btn-add {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .pagination-card {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .btn-view span {
+    display: none;
+  }
+
+  .btn-view {
+    width: 44px;
+    padding: 0.65rem;
+  }
+
+  .algorithm-badges {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .algorithm-header {
+    padding: 1rem;
+  }
+
+  .algorithm-icon-wrapper {
+    width: 48px;
+    height: 48px;
+  }
+
+  .algorithm-icon {
+    font-size: 1.5rem;
+  }
+
+  .algorithm-content {
+    padding: 1rem;
+  }
+
+  .algorithm-actions {
+    padding: 0.75rem 1rem;
+  }
 }
 </style>

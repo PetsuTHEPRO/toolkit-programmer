@@ -2,6 +2,7 @@
 import Sidebar from '@renderer/components/Sidebar.vue'
 import ActivityCalendar from '@renderer/components/ActivityCalendar.vue'
 import UpdateHistoryModal from '@renderer/components/modals/UpdateHistoryModal.vue'
+import AdsCard from '@renderer/components/AdsCard.vue'
 </script>
 
 <template>
@@ -34,7 +35,7 @@ import UpdateHistoryModal from '@renderer/components/modals/UpdateHistoryModal.v
           </div>
         </div>
 
-        <!-- <InsightCard /> -->
+        <AdsCard />
 
         <!-- Log de Atividades -->
         <!-- Log de Atividades -->

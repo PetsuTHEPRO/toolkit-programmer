@@ -3,8 +3,9 @@
     <div class="flex-grow-1">
       <div class="d-flex align-items-center justify-content-center py-4">
         <div class="d-flex align-items-center justify-content-around">
-          <i :class="isSidebarOpen ? 'bx bx-pen mx-2' : ''"></i>
-          <h3 :class="['fw-bold fs-5 my-0', { 'd-none': !isSidebarOpen }]">Toolkit Programmer</h3>
+          <!-- <i :class="isSidebarOpen ? 'bx bx-pen mx-2' : ''"></i>-->
+          <img src="../assets/icons/image_white.png" alt="Logo" class="mx-2" style="width: 32px; height: 32px" />
+          <h3 :class="['fw-bold fs-5 my-0', { 'd-none': !isSidebarOpen }]">Coderya</h3>
         </div>
         <button
           class="btn-sidebar d-flex align-items-center justify-content-center mx-2"

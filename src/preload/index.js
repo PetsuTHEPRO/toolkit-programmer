@@ -2,6 +2,13 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
+contextBridge.exposeInMainWorld('GeminiCLI', {
+  isInstalled: () => ipcRenderer.invoke('gemini:isInstalled'),
+  getAuthStatus: () => ipcRenderer.invoke('gemini:authStatus'),
+  sendToGemini: (prompt) => ipcRenderer.invoke('gemini:ask', prompt),
+  run: (prompt, mode = 'auto') => ipcRenderer.invoke('gemini:run', prompt, mode)
+})
+
 // Helper para criar um conjunto de funções CRUD para uma entidade
 const createCrudApi = (entityType) => ({
   /**

@@ -9,160 +9,174 @@ import ApiModal from '../components/modals/ApiModal.vue'
     :class="themeMode === 'dark' ? 'dark-theme' : 'light-theme'"
   >
     <Sidebar />
-    <div class="row w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
-      <!-- Título da Página -->
-      <div class="col">
-        <nav aria-label="breadcrumb" class="mt-3">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page">
-              {{ $t('sidebar.developers.api') }}
-            </li>
-          </ol>
-        </nav>
-        <div class="input-group my-5">
-          <input
-            v-model="searchTerm"
-            type="text"
-            class="form-control search py-4"
-            :placeholder="$t('search', { name: $t('sidebar.developers.api').toLowerCase() })"
-            @input="handleSearch"
-          />
-          <button
-            class="btn btn-outline-secondary search d-flex align-items-center p-4"
-            style="background-color: #727ddc; color: white"
-            type="button"
-          >
-            <i class="bx bx-search fs-4" style="font-weight: bold"></i>
-          </button>
-        </div>
-
-        <div class="card mb-2">
-          <div class="card-header d-flex align-items-center justify-content-between">
-            <h5 class="card-title">{{ $t('pages.api.list') }}</h5>
+    <div class="main-content w-100 m-0" :class="isSidebarOpen ? 'open-menu' : 'close-menu'">
+      <div class="content-wrapper">
+        <!-- Header Section -->
+        <div class="header-section mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h1 class="page-title mb-2">{{ $t('sidebar.developers.api') }}</h1>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb custom-breadcrumb mb-0">
+                  <li class="breadcrumb-item">
+                    <i class="bx bx-home-alt me-1"></i>
+                    Home
+                  </li>
+                  <li class="breadcrumb-item active" aria-current="page">
+                    {{ $t('sidebar.developers.api') }}
+                  </li>
+                </ol>
+              </nav>
+            </div>
             <button
               type="button"
-              class="btn-system btn-adicionar me-2 d-flex align-items-center"
+              class="btn-modern btn-add"
               @click="openAddModal"
             >
-              <i class="bx bx-plus-circle me-1"></i>
+              <i class="bx bx-plus-circle me-2"></i>
               {{ $t('buttons.upload') }}
             </button>
           </div>
-          <div v-if="apis.length === 0" class="card-body card-element py-0">
-            <div class="overflow-auto" style="max-height: 400px">
-              <ul class="list-unstyled">
-                <li class="text-center text-gray mt-3">
-                  {{
-                    $t('messages.she-empty', { name: $t('sidebar.developers.api').toLowerCase() })
-                  }}
-                </li>
-              </ul>
-            </div>
+
+          <!-- Search Bar -->
+          <div class="search-container">
+            <i class="bx bx-search search-icon"></i>
+            <input
+              v-model="searchTerm"
+              type="text"
+              class="search-input"
+              :placeholder="$t('search', { name: $t('sidebar.developers.api').toLowerCase() })"
+              @input="handleSearch"
+            />
           </div>
         </div>
 
-        <div class="row g-4 mb-4">
-          <div v-for="(api, index) in currentApis" :key="api.index" class="col-4">
-            <div class="card d-flex flex-column">
-              <div class="card-header d-flex align-items-center justify-content-between">
-                <h5 class="card-title">{{ api.name }}</h5>
-              </div>
+        <!-- Empty State -->
+        <div v-if="apis.length === 0" class="empty-state-card">
+          <i class="bx bx-cloud empty-icon"></i>
+          <h4>{{ $t('messages.she-empty', { name: $t('sidebar.developers.api').toLowerCase() }) }}</h4>
+          <p>Adicione sua primeira API para começar</p>
+          <button class="btn-modern btn-add" @click="openAddModal">
+            <i class="bx bx-plus-circle me-2"></i>
+            Adicionar API
+          </button>
+        </div>
 
-              <div class="card-body card-element p-0 py-2 ps-1">
-                <div id="myTab" class="nav nav-tabs" role="tablist">
-                  <button
-                    :id="`description-tab-${index}`"
-                    class="nav-link active"
-                    data-bs-toggle="tab"
-                    :data-bs-target="`#description-${index}`"
-                    role="tab"
-                    aria-controls="description"
-                    aria-selected="true"
-                  >
-                    {{ $t('buttons.description') }} <i class="bx bx-info-circle" style="font-size: 0.9rem"></i>
-                  </button>
-                  <button
-                    :id="`key-tab-${index}`"
-                    class="nav-link"
-                    data-bs-toggle="tab"
-                    :data-bs-target="`#key-${index}`"
-                    role="tab"
-                    aria-controls="key"
-                    aria-selected="false"
-                  >
-                    {{ $t('buttons.key') }} <i class="bx bx-key" style="font-size: 0.9rem"></i>
-                  </button>
+        <!-- APIs Grid -->
+        <div v-else class="apis-grid">
+          <div v-for="(api) in currentApis" :key="api.index" class="api-card-wrapper">
+            <div class="api-card">
+              <!-- Header -->
+              <div class="api-header">
+                <div class="api-icon-wrapper">
+                  <i class="bx bx-plug api-icon"></i>
                 </div>
-                <div class="tab-content mt-3 px-3 d-flex align-items-center">
-                  <div
-                    :id="`description-${index}`"
-                    class="tab-pane fade show active"
-                    role="tabpanel"
-                    :aria-labelledby="`description-tab-${index}`"
-                  >
-                    <p class="text-sm text-gray-600">{{ api.description }}</p>
-                  </div>
-                  <div
-                    :id="`key-${index}`"
-                    class="tab-pane fade"
-                    role="tabpanel"
-                    :aria-labelledby="`key-tab-${index}`"
-                  >
-                    <pre
-                      class="bg-code p-2 rounded d-flex align-items-center justify-content-between"
-                      style="min-width: 310px"
-                    >
-                    <code ref="codeText">{{ resumirKey(api.key) }}</code>
-
-                    <button
-                      class="btn btn-copy d-flex align-items-center justify-content-center"
-                      title="Copiar código"
-                      @click="copyCode(api.key)"
-                    >
-                      <i class="bx bx-copy" style="font-size: 1.2rem;"></i>
-                    </button>
-                  </pre>
+                <div class="api-meta">
+                  <h5 class="api-title" :title="api.name">{{ api.name }}</h5>
+                  <div class="api-badge">
+                    <i class="bx bx-shield-quarter"></i>
+                    <span>API Key</span>
                   </div>
                 </div>
               </div>
 
-              <!-- Card footer com os botões de editar e excluir -->
-              <div class="card-footer d-flex justify-content-between">
-                <button class="btn btn-editar me-2" @click="editApi(api.id)">
-                  <i class="bx bx-pencil"></i> {{ $t('buttons.edit') }}
+              <!-- Tabs Navigation -->
+              <div class="tabs-navigation">
+                <button
+                  :class="['tab-btn', { active: activeTab[api.id] === 'description' }]"
+                  @click="setActiveTab(api.id, 'description')"
+                >
+                  <i class="bx bx-info-circle"></i>
+                  <span>{{ $t('buttons.description') }}</span>
                 </button>
-                <button class="btn btn-deletar" @click="handleDelete(api.id)">
-                  <i class="bx bx-trash"></i> {{ $t('buttons.delete') }}
+                <button
+                  :class="['tab-btn', { active: activeTab[api.id] === 'key' }]"
+                  @click="setActiveTab(api.id, 'key')"
+                >
+                  <i class="bx bx-key"></i>
+                  <span>{{ $t('buttons.key') }}</span>
+                </button>
+              </div>
+
+              <!-- Tab Content -->
+              <div class="tab-content-area">
+                <!-- Description Tab -->
+                <div v-show="activeTab[api.id] === 'description'" class="tab-panel">
+                  <p class="api-description">{{ api.description }}</p>
+                </div>
+
+                <!-- Key Tab -->
+                <div v-show="activeTab[api.id] === 'key'" class="tab-panel">
+                  <div class="key-container">
+                    <div class="key-label">
+                      <i class="bx bx-lock-alt"></i>
+                      <span>Chave de API</span>
+                    </div>
+                    <div class="key-block">
+                      <code class="key-text">{{ resumirKey(api.key) }}</code>
+                      <button
+                        class="btn-copy-key"
+                        @click="copyCode(api.key)"
+                        title="Copiar chave completa"
+                      >
+                        <i class="bx bx-copy"></i>
+                      </button>
+                    </div>
+                    <div class="key-hint">
+                      <i class="bx bx-info-circle"></i>
+                      <span>Clique no ícone para copiar a chave completa</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="api-actions">
+                <button class="btn-action btn-edit" @click="editApi(api.id)">
+                  <i class="bx bx-pencil"></i>
+                  <span>{{ $t('buttons.edit') }}</span>
+                </button>
+                <button class="btn-action btn-delete" @click="handleDelete(api.id)">
+                  <i class="bx bx-trash"></i>
+                  <span>{{ $t('buttons.delete') }}</span>
                 </button>
               </div>
             </div>
           </div>
         </div>
-        <div class="card mb-4 d-flex flex-column border-top-0">
-          <div class="card-footer d-flex align-items-center justify-content-between">
-            <button
-              class="btn btn-control d-flex align-items-center"
-              :disabled="currentPage === 1"
-              @click="handlePrevPage"
-            >
-              <i class="bx bx-chevron-left me-2"></i> {{ $t('buttons.previous') }}
-            </button>
-            <span>{{
-              $t('pagination', { currentPage: currentPage, totalPages: totalPages })
-            }}</span>
-            <button
-              class="btn btn-control d-flex align-items-center"
-              :disabled="currentPage === totalPages"
-              @click="handleNextPage"
-            >
-              {{ $t('buttons.next') }} <i class="bx bx-chevron-right fs-5"></i>
-            </button>
+
+        <!-- Pagination -->
+        <div v-if="apis.length > 0" class="pagination-card">
+          <button
+            class="btn-pagination"
+            :disabled="currentPage === 1"
+            @click="handlePrevPage"
+          >
+            <i class="bx bx-chevron-left"></i>
+            {{ $t('buttons.previous') }}
+          </button>
+          <div class="pagination-info">
+            <span class="current-page">{{ currentPage }}</span>
+            <span class="separator">/</span>
+            <span class="total-pages">{{ totalPages }}</span>
           </div>
+          <button
+            class="btn-pagination"
+            :disabled="currentPage === totalPages"
+            @click="handleNextPage"
+          >
+            {{ $t('buttons.next') }}
+            <i class="bx bx-chevron-right"></i>
+          </button>
         </div>
 
         <!-- Modal -->
-        <ApiModal :key="idApi" :visible="showModal" :idApi="idApi" @close="onCloseApiModal">
-        </ApiModal>
+        <ApiModal
+          :key="idApi"
+          :visible="showModal"
+          :idApi="idApi"
+          @close="onCloseApiModal"
+        />
       </div>
     </div>
   </div>
@@ -183,12 +197,12 @@ export default {
       currentPage: 1,
       idApi: -1,
       apisPerPage: 6,
-      themeMode: getTheme()
+      themeMode: getTheme(),
+      activeTab: {}
     }
   },
   computed: {
     ...mapGetters(['isSidebarOpen']),
-    // 1. A PROPRIEDADE REATIVA que lê da store.
     apis() {
       const storedApis = this.$store.getters.getStorage('apisStorage') || []
       return storedApis.map((a) => new Api(a.id, a.name, a.description, a.key))
@@ -210,24 +224,38 @@ export default {
       return totalPages === 0 ? 1 : totalPages
     }
   },
+  watch: {
+    apis: {
+      handler(newApis) {
+        newApis.forEach(api => {
+          if (!this.activeTab[api.id]) {
+            this.activeTab[api.id] = 'description'
+          }
+        })
+      },
+      immediate: true
+    }
+  },
   methods: {
+    setActiveTab(apiId, tab) {
+      this.activeTab[apiId] = tab
+      this.$forceUpdate()
+    },
     handlePrevPage() {
       this.currentPage = Math.max(this.currentPage - 1, 1)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     },
     handleNextPage() {
       this.currentPage = Math.min(this.currentPage + 1, this.totalPages)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     },
-    // 3. MÉTODOS DE AÇÃO E MODAL CORRIGIDOS
     handleDelete(apiId) {
-      SystemController.deleteApi(apiId);
-      // A chamada para 'loadApis()' foi REMOVIDA.
+      SystemController.deleteApi(apiId)
     },
     onCloseApiModal() {
-      this.showModal = false;
-      this.idApi = -1;
-      // A chamada para 'loadApis()' foi REMOVIDA.
+      this.showModal = false
+      this.idApi = -1
     },
-    // Lógica corrigida para abrir o modal
     openAddModal() {
       this.idApi = -1
       this.showModal = true
@@ -238,14 +266,13 @@ export default {
     },
     copyCode(code) {
       navigator.clipboard.writeText(code).then(() => {
-        notificationService.success('Código copiado com sucesso!')
+        notificationService.success('Chave copiada com sucesso!')
       })
     },
     resumirKey(key) {
       if (!key || key.length <= 24) {
-        return key // se a key for muito curta, retorna ela inteira
+        return key
       }
-
       const inicio = key.slice(0, 12)
       const fim = key.slice(-12)
       return `${inicio}...${fim}`
@@ -257,194 +284,602 @@ export default {
 <style scoped>
 @import url('../assets/base.css');
 
-.breadcrumb-item {
-  color: var(--breadcrumb-color);
+/* Layout Principal */
+.main-content {
+  background: linear-gradient(135deg, var(--container-bg) 0%, var(--container-bg-alt, var(--container-bg)) 100%);
+  min-height: 100vh;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.container-fluid {
-  background-color: var(--container-bg);
+.close-menu {
+  margin-left: 90px !important;
 }
 
-.object-contain {
-  object-fit: contain;
+.open-menu {
+  margin-left: 230px !important;
 }
 
-.btn-control {
-  background-color: var(--pagination-bg);
-  border-radius: 25px;
-  border: 2px solid var(--pagination-border);
-  color: var(--pagination-color);
-  transition: all 0.2s;
-  animation: bn13bouncy 5s infinite linear;
+.content-wrapper {
+  padding: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
-.btn-control:hover {
-  background-color: var(--pagination-hover-bg);
-  color: var(--pagination-hover-color);
+/* Header Section */
+.header-section {
+  animation: fadeInDown 0.6s ease-out;
 }
 
-/* Estilo do botão de copiar */
-.btn-copy {
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.custom-breadcrumb {
   background: transparent;
-  width: 30px;
-  height: 30px;
-  border: none;
-  color: #6c757d; /* Cor padrão do ícone */
-  cursor: pointer;
-  transition: color 0.3s;
-  z-index: 10; /* Garantindo que o botão fique visível acima do conteúdo */
+  padding: 0;
+  font-size: 0.9rem;
 }
 
-.btn-copy:hover {
-  color: #007bff; /* Cor ao passar o mouse */
+.custom-breadcrumb .breadcrumb-item {
+  color: var(--text-muted, #6c757d);
 }
 
-.btn-system {
-  display: inline-block;
-  padding: 0.65em 1.6em;
-  margin: 0 0.3em 0.3em 0;
-  box-sizing: border-box;
-  text-decoration: none;
-  font-family: 'Roboto', sans-serif;
-  font-weight: 300;
-  text-align: center;
+.custom-breadcrumb .breadcrumb-item.active {
+  color: var(--text-primary, #333);
+  font-weight: 500;
+}
+
+/* Search Bar */
+.search-container {
   position: relative;
+  margin-top: 1.5rem;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  z-index: 1;
+}
+
+.search-input {
+  width: 100%;
+  padding: 1rem 1.5rem 1rem 4rem;
+  border: 2px solid var(--card-border, rgba(0, 0, 0, 0.1));
+  border-radius: 16px;
+  background: var(--card-element-bg);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Buttons */
+.btn-modern {
+  padding: 0.75rem 1.75rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.3s ease;
   cursor: pointer;
 }
 
-.btn-adicionar {
-  background-color: rgba(0, 0, 0, 0);
-  border-radius: 25px;
-  border: 2px solid #22c55e;
-  color: #22c55e;
-  transition: all 0.2s;
-  animation: bn13bouncy 5s infinite linear;
-}
-
-.btn-adicionar:hover {
-  background-color: #22c55e;
-  color: #000000;
-}
-
-.btn-editar {
-  background-color: #3b82f6;
-  border: 2px solid #3b82f6;
-  border-radius: 5px;
+.btn-add {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
 }
 
-.btn-editar:hover {
-  background-color: #2563eb;
-  color: white;
+.btn-add:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
 }
 
-.btn-deletar {
-  background-color: #ef4444;
-  border: 2px solid #ef4444;
-  border-radius: 5px;
-  color: white;
-}
-
-.btn-deletar:hover {
-  background-color: #dc2626;
-}
-
-.btn-link {
-  background-color: #a855f7;
-  border: 2px solid #a855f7;
-  border-radius: 5px;
-  color: white;
-}
-
-.btn-link:hover {
-  background-color: #9333ea;
-  color: white;
-}
-
-@keyframes bn13bouncy {
-  0% {
-    top: 0em;
-  }
-  40% {
-    top: 0em;
-  }
-  43% {
-    top: -0.9em;
-  }
-  46% {
-    top: 0em;
-  }
-  48% {
-    top: -0.4em;
-  }
-  50% {
-    top: 0em;
-  }
-  100% {
-    top: 0em;
-  }
-}
-
-.card-header,
-.card-footer {
-  background-color: var(--card-header);
-  color: var(--card-header-color);
-}
-
-.search {
-  font-family: 'Poppins', sans-serif;
+/* Empty State */
+.empty-state-card {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--card-element-bg);
   border-radius: 20px;
+  margin-top: 2rem;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.empty-icon {
+  font-size: 5rem;
+  color: var(--text-muted);
+  opacity: 0.3;
+  margin-bottom: 1.5rem;
+}
+
+.empty-state-card h4 {
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-card p {
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+/* APIs Grid */
+.apis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* API Card - ALTURA FIXA */
+.api-card-wrapper {
+  animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.api-card {
+  background: var(--card-element-bg);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid var(--card-border, rgba(0, 0, 0, 0.1));
+  display: flex;
+  flex-direction: column;
+  height: 420px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.api-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Header */
+.api-header {
+  padding: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid var(--card-border, rgba(0, 0, 0, 0.05));
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  flex-shrink: 0;
+}
+
+.api-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.api-card:hover .api-icon-wrapper {
+  transform: rotate(-10deg) scale(1.05);
+}
+
+.api-icon {
+  font-size: 1.75rem;
+  color: white;
+}
+
+.api-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.api-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.api-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.api-badge i {
+  font-size: 0.9rem;
+}
+
+/* Tabs Navigation */
+.tabs-navigation {
+  display: flex;
+  background: var(--card-header, rgba(0, 0, 0, 0.02));
+  border-bottom: 2px solid var(--card-border, rgba(0, 0, 0, 0.05));
+  flex-shrink: 0;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 0.875rem 1rem;
   border: none;
-  height: 40px;
-  background-color: #3d444d;
-  color: white;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
 }
 
-.search:focus {
-  background-color: #3d444d;
-  color: white;
+.tab-btn i {
+  font-size: 1.1rem;
 }
 
-.search::-webkit-input-placeholder {
-  color: #b1b4b8;
+.tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
 }
 
-.bg-code {
-  background-color: var(--code-background); /*#282a36;*/
-  color: var(--code-color);
-  border: 2px solid var(--code-border);
+.tab-btn.active {
+  color: #10b981;
+  background: var(--card-element-bg);
+}
+
+.tab-btn.active::after {
+  transform: scaleX(1);
+}
+
+.tab-btn:hover:not(.active) {
+  color: var(--text-primary);
+  background: rgba(16, 185, 129, 0.05);
+}
+
+/* Tab Content Area */
+.tab-content-area {
+  flex: 1;
+  padding: 1.5rem;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.tab-content-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tab-content-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tab-content-area::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.tab-panel {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Description Panel */
+.api-description {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Key Panel */
+.key-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.key-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.key-label i {
+  font-size: 1rem;
+  color: #10b981;
+}
+
+.key-block {
+  background: var(--code-background, #1e1e1e);
+  border: 2px solid rgba(16, 185, 129, 0.2);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   position: relative;
   overflow: hidden;
 }
 
-.nav-tabs {
-  border-bottom: 1px solid var(--tabs-background-active);
+.key-text {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  color: #10b981;
+  flex: 1;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
-/* Estilo geral para as abas */
-.nav-tabs .nav-link {
-  color: var(--tabs-color);
-  background-color: var(--tabs-background);
-  border: 1px solid var(--tabs-background-active);
+.key-text::-webkit-scrollbar {
+  height: 4px;
+}
+
+.key-text::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.key-text::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.3);
+  border-radius: 2px;
+}
+
+.btn-copy-key {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  border-radius: 0.3rem 0.3rem 0 0;
-  margin-right: 5px; /* Espaçamento entre as abas */
-  padding: 10px 15px; /* Espaçamento interno */
-  transition:
-    background-color 0.3s,
-    color 0.3s; /* Transição suave nas alterações */
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
-.nav-tabs .nav-link:hover {
-  color: var(--tabs-color-active);
-  background-color: var(--tabs-background-active);
+.btn-copy-key:hover {
+  background: #10b981;
+  color: white;
+  transform: scale(1.1);
 }
 
-/* Estilo para a aba ativa */
-.nav-tabs .nav-link.active {
-  color: var(--tabs-color-active);
-  cursor: default;
-  background-color: var(--tabs-background-active);
-  border-color: var(--tabs-background-active);
+.btn-copy-key i {
+  font-size: 1.2rem;
+}
+
+.key-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.key-hint i {
+  font-size: 0.9rem;
+}
+
+/* Actions */
+.api-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--card-border, rgba(0, 0, 0, 0.1));
+  background: var(--card-header, rgba(0, 0, 0, 0.02));
+  flex-shrink: 0;
+}
+
+.btn-action {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-edit {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-edit:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+.btn-delete {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-delete:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
+/* Pagination */
+.pagination-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: var(--card-element-bg);
+  border-radius: 16px;
+  margin-top: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.btn-pagination {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid var(--card-border, rgba(0, 0, 0, 0.1));
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-primary);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-pagination:hover:not(:disabled) {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+  transform: translateY(-2px);
+}
+
+.btn-pagination:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.current-page {
+  font-weight: 700;
+  color: #667eea;
+  font-size: 1.3rem;
+}
+
+.separator {
+  color: var(--text-muted);
+}
+
+.total-pages {
+  color: var(--text-muted);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+  .apis-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 1rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .apis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header-section .d-flex {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem;
+  }
+
+  .btn-add {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .pagination-card {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .tab-btn span {
+    display: none;
+  }
+
+  .tab-btn {
+    padding: 0.75rem;
+  }
 }
 </style>

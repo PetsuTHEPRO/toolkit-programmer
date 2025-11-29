@@ -8,6 +8,7 @@ import crypto from 'crypto' // <-- CORRETO
 
 // Importe os módulos de serviço e banco de dados
 import fileManager from '../../src/renderer/src/service/gerenciadorArquivo'
+import geminiService from './services/geminiService'
 import IAServico from '../../src/renderer/src/service/IAService'
 import { BackupProcessor, setupBackupIPC } from '../../src/renderer/src/service/backup'
 import { setDbPath, initialize } from '../renderer/src/service/database'
@@ -270,6 +271,33 @@ function registerAllIpcHandlers() {
       return null
     }
     return process.env.YOUTUBE_API_KEY
+  })
+
+  ipcMain.handle('gemini:isInstalled', async () => {
+    return geminiService.isInstalled()
+  })
+
+  ipcMain.handle('gemini:authStatus', async () => {
+    return geminiService.getAuthStatus()
+  })
+
+  ipcMain.handle('gemini:run', async (_, prompt, mode = 'auto') => {
+    return geminiService.run(prompt, { mode })
+  })
+
+  ipcMain.handle('gemini:ask', async (event, { prompt, mode }) => {
+    // Ex: mode pode ser 'auto', 'apikey' ou 'google' vindo do front
+    const result = await geminiService.run(prompt, { mode })
+
+    if (result.success) {
+      return result.output
+    } else {
+      throw new Error(result.error)
+    }
+  })
+
+  ipcMain.handle('gemini:status', async () => {
+    return await geminiService.getAuthStatus()
   })
 
   // Handlers de Backup
